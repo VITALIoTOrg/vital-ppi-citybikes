@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/PPI.iml" filepath="$PROJECT_DIR$/PPI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ppi.iml" filepath="$PROJECT_DIR$/ppi.iml" />
     </modules>
   </component>
 </project>

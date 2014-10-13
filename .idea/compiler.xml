@@ -22,11 +22,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="PPI" />
+        <module name="ppi" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="PPI" target="1.7" />
+      <module name="ppi" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>

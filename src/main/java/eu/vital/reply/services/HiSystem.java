@@ -28,6 +28,7 @@ public class HiSystem
         logger = LogManager.getLogger(HiSystem.class);
     }
 
+
     /**
      *
      * @return
