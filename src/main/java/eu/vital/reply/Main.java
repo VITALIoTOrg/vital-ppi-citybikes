@@ -38,19 +38,6 @@ public class Main {
      */
     public static void main(String[] args) throws IOException {
 
-        // TEST
-        try
-        {
-            HiReplySvc hi = new HiReplySvc();
-            String xml = hi.getSnapshot();
-            System.out.println(xml);
-        }
-        catch (URISyntaxException e)
-        {
-            e.printStackTrace();
-        }
-
-
         final HttpServer server = startServer();
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));

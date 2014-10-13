@@ -1,0 +1,100 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="ServiceList">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Thermometer" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:string" name="ID"/>
+                            <xs:element type="xs:string" name="Description"/>
+                            <xs:element type="xs:integer" name="Persistence"/>
+                            <xs:element type="xs:string" name="Visibility"/>
+                            <xs:element type="xs:string" name="HostMode"/>
+                            <xs:element type="xs:string" name="Owner"/>
+                            <xs:element type="xs:boolean" name="Mobile"/>
+                            <xs:element type="xs:string" name="PhysicalLocation"/>
+                            <xs:element type="xs:string" name="LogicalLocation"/>
+                            <xs:element type="xs:string" name="RFIDTag"/>
+                            <xs:element type="xs:string" name="DeviceModel"/>
+                            <xs:element type="xs:string" name="DeviceState"/>
+                            <xs:element name="CurrentValue">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:float">
+                                        <xs:minInclusive value="-20"/>
+                                        <xs:maxInclusive value="100.0"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="IoTSystem" maxOccurs="1" minOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:string" name="ID"/>
+                            <xs:element type="xs:string" name="Description"/>
+                            <xs:element type="xs:byte" name="Persistence"/>
+                            <xs:element type="xs:string" name="Visibility"/>
+                            <xs:element type="xs:string" name="HostMode"/>
+                            <xs:element type="xs:string" name="Uri"/>
+                            <xs:element type="xs:string" name="ServiceArea"/>
+                            <xs:element type="xs:string" name="Operator"/>
+                            <xs:element type="xs:string" name="Status"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="TrafficSensor" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:string" name="ID"/>
+                            <xs:element type="xs:string" name="Description"/>
+                            <xs:element type="xs:byte" name="Persistence"/>
+                            <xs:element type="xs:string" name="Visibility"/>
+                            <xs:element type="xs:string" name="HostMode"/>
+                            <xs:element type="xs:string" name="Mobile"/>
+                            <xs:element type="xs:string" name="PhysicalLocation"/>
+                            <xs:element type="xs:string" name="LogicalLocation"/>
+                            <xs:element type="xs:string" name="RFIDTag"/>
+                            <xs:element type="xs:string" name="DeviceModel"/>
+                            <xs:element type="xs:string" name="DeviceState"/>
+                            <xs:element type="xs:byte" name="DirectionCount"/>
+                            <xs:element type="xs:dateTime" name="MeasureTime"/>
+                            <xs:element name="Speed">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:float">
+                                        <xs:minInclusive value="0.0"/>
+                                        <xs:maxInclusive value="200.0"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="Color">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:integer">
+                                        <xs:minInclusive value="0"/>
+                                        <xs:maxInclusive value="4"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="ReverseSpeed">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:float">
+                                        <xs:minInclusive value="0.0"/>
+                                        <xs:maxInclusive value="200.0"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="ReverseColor">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:integer">
+                                        <xs:minInclusive value="0"/>
+                                        <xs:maxInclusive value="4"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
