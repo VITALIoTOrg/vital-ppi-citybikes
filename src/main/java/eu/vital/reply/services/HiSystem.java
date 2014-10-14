@@ -37,21 +37,7 @@ public class HiSystem
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String getSnapshot() {
-
-        try
-        {
-            return hiReplySvc.getSnapshot().getIoTSystem().getID(); // test, deve resituire json
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            return "Error: " + e.getMessage();
-        }
-        catch (URISyntaxException e)
-        {
-            e.printStackTrace();
-            return "Error: " + e.getMessage();
-        }
+        return hiReplySvc.getSnapshot().getIoTSystem().getID(); // test, deve resituire json
     }
 
     @Path("serviceClasses")

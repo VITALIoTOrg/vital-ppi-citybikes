@@ -2,11 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0cf48201-d005-4797-80f1-ec7e583d6020" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logs/ALL.log" afterPath="$PROJECT_DIR$/logs/ALL.log" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/logs/ERROR.log" afterPath="$PROJECT_DIR$/logs/ERROR.log" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/eu/vital/reply/clients/HiReplySvc.java" afterPath="$PROJECT_DIR$/src/main/java/eu/vital/reply/clients/HiReplySvc.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/eu/vital/reply/services/HiService.java" afterPath="$PROJECT_DIR$/src/main/java/eu/vital/reply/services/HiService.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/eu/vital/reply/services/HiSystem.java" afterPath="$PROJECT_DIR$/src/main/java/eu/vital/reply/services/HiSystem.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/eu/vital/reply/Main.java" afterPath="$PROJECT_DIR$/src/main/java/eu/vital/reply/Main.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="PPI.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -29,14 +30,14 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="HiReplySvc.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="HiReplySvc.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/eu/vital/reply/clients/HiReplySvc.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.4123077" vertical-offset="561" max-vertical-offset="4420">
-              <caret line="109" column="0" selection-start-line="109" selection-start-column="0" selection-end-line="109" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="5147" max-vertical-offset="6766">
+              <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
               <folding>
-                <element signature="e#3640#3641#0" expanded="true" />
-                <element signature="e#3688#3689#0" expanded="true" />
+                <element signature="e#4551#4552#0" expanded="true" />
+                <element signature="e#4599#4600#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -52,11 +53,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Main.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="Main.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/eu/vital/reply/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="952">
-              <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+            <state vertical-scroll-proportion="-0.20307693" vertical-offset="404" max-vertical-offset="1054">
+              <caret line="16" column="13" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -97,9 +98,12 @@
       <file leaf-file-name="HiSystem.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/eu/vital/reply/services/HiSystem.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="319" max-vertical-offset="1224">
-              <caret line="38" column="32" selection-start-line="38" selection-start-column="32" selection-end-line="38" selection-end-column="32" />
-              <folding />
+            <state vertical-scroll-proportion="0.0" vertical-offset="336" max-vertical-offset="986">
+              <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+              <folding>
+                <element signature="e#795#796#0" expanded="true" />
+                <element signature="e#894#895#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -107,8 +111,8 @@
       <file leaf-file-name="HiService.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/eu/vital/reply/services/HiService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="591" max-vertical-offset="1241">
-              <caret line="61" column="30" selection-start-line="61" selection-start-column="20" selection-end-line="61" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="234" max-vertical-offset="1292">
+              <caret line="37" column="41" selection-start-line="37" selection-start-column="41" selection-end-line="37" selection-end-column="41" />
               <folding />
             </state>
           </provider>
@@ -161,8 +165,8 @@
         <option value="$PROJECT_DIR$/src/main/java/eu/vital/reply/model/IoTSystem.java" />
         <option value="$PROJECT_DIR$/src/main/java/eu/vital/reply/services/HiSystem.java" />
         <option value="$PROJECT_DIR$/src/main/java/eu/vital/reply/services/HiService.java" />
-        <option value="$PROJECT_DIR$/src/main/java/eu/vital/reply/clients/HiReplySvc.java" />
         <option value="$PROJECT_DIR$/src/main/java/eu/vital/reply/Main.java" />
+        <option value="$PROJECT_DIR$/src/main/java/eu/vital/reply/clients/HiReplySvc.java" />
       </list>
     </option>
   </component>
@@ -744,7 +748,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.146875" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26875" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16927083" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2428115" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -771,7 +775,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="19" />
+      <option name="time" value="21" />
     </breakpoint-manager>
   </component>
   <component name="antWorkspaceConfiguration">
@@ -816,8 +820,8 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="612" max-vertical-offset="4488">
           <caret line="36" column="24" selection-start-line="36" selection-start-column="24" selection-end-line="36" selection-end-column="24" />
           <folding>
-            <element signature="e#3640#3641#0" expanded="true" />
-            <element signature="e#3688#3689#0" expanded="true" />
+            <element signature="e#4551#4552#0" expanded="true" />
+            <element signature="e#4599#4600#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -860,7 +864,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="476" max-vertical-offset="1530">
           <caret line="28" column="5" selection-start-line="28" selection-start-column="5" selection-end-line="28" selection-end-column="5" />
-          <folding />
+          <folding>
+            <element signature="e#795#796#0" expanded="true" />
+            <element signature="e#894#895#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -893,8 +900,8 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="612" max-vertical-offset="4488">
           <caret line="36" column="24" selection-start-line="36" selection-start-column="24" selection-end-line="36" selection-end-column="24" />
           <folding>
-            <element signature="e#3640#3641#0" expanded="true" />
-            <element signature="e#3688#3689#0" expanded="true" />
+            <element signature="e#4551#4552#0" expanded="true" />
+            <element signature="e#4599#4600#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -929,7 +936,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1105" max-vertical-offset="1513">
           <caret line="65" column="62" selection-start-line="65" selection-start-column="62" selection-end-line="65" selection-end-column="62" />
-          <folding />
+          <folding>
+            <element signature="e#795#796#0" expanded="true" />
+            <element signature="e#894#895#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -938,8 +948,8 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="4267" max-vertical-offset="4488">
           <caret line="251" column="31" selection-start-line="251" selection-start-column="31" selection-end-line="251" selection-end-column="31" />
           <folding>
-            <element signature="e#3640#3641#0" expanded="true" />
-            <element signature="e#3688#3689#0" expanded="true" />
+            <element signature="e#4551#4552#0" expanded="true" />
+            <element signature="e#4599#4600#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -974,7 +984,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1105" max-vertical-offset="1513">
           <caret line="65" column="62" selection-start-line="65" selection-start-column="62" selection-end-line="65" selection-end-column="62" />
-          <folding />
+          <folding>
+            <element signature="e#795#796#0" expanded="true" />
+            <element signature="e#894#895#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -983,8 +996,8 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="3876" max-vertical-offset="4386">
           <caret line="234" column="40" selection-start-line="234" selection-start-column="40" selection-end-line="234" selection-end-column="40" />
           <folding>
-            <element signature="e#3640#3641#0" expanded="true" />
-            <element signature="e#3688#3689#0" expanded="true" />
+            <element signature="e#4551#4552#0" expanded="true" />
+            <element signature="e#4599#4600#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1019,7 +1032,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1365" max-vertical-offset="1869">
           <caret line="65" column="62" selection-start-line="65" selection-start-column="62" selection-end-line="65" selection-end-column="62" />
-          <folding />
+          <folding>
+            <element signature="e#795#796#0" expanded="true" />
+            <element signature="e#894#895#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1028,8 +1044,8 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="4537" max-vertical-offset="5418">
           <caret line="252" column="42" selection-start-line="252" selection-start-column="42" selection-end-line="252" selection-end-column="42" />
           <folding>
-            <element signature="e#3640#3641#0" expanded="true" />
-            <element signature="e#3688#3689#0" expanded="true" />
+            <element signature="e#4551#4552#0" expanded="true" />
+            <element signature="e#4599#4600#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1056,7 +1072,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="467" max-vertical-offset="1785">
           <caret line="36" column="19" selection-start-line="36" selection-start-column="19" selection-end-line="36" selection-end-column="19" />
-          <folding />
+          <folding>
+            <element signature="e#795#796#0" expanded="true" />
+            <element signature="e#894#895#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1180,39 +1199,42 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/eu/vital/reply/Main.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/eu/vital/reply/services/HiSystem.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="952">
-          <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="183" max-vertical-offset="986">
+          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="e#795#796#0" expanded="true" />
+            <element signature="e#894#895#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/eu/vital/reply/services/HiService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="561" max-vertical-offset="1241">
-          <caret line="61" column="30" selection-start-line="61" selection-start-column="20" selection-end-line="61" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/eu/vital/reply/services/HiSystem.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="360" max-vertical-offset="1224">
-          <caret line="38" column="32" selection-start-line="38" selection-start-column="32" selection-end-line="38" selection-end-column="32" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="234" max-vertical-offset="1292">
+          <caret line="37" column="41" selection-start-line="37" selection-start-column="41" selection-end-line="37" selection-end-column="41" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/eu/vital/reply/clients/HiReplySvc.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.4123077" vertical-offset="561" max-vertical-offset="4420">
-          <caret line="109" column="0" selection-start-line="109" selection-start-column="0" selection-end-line="109" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="5147" max-vertical-offset="6766">
+          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
           <folding>
-            <element signature="e#3640#3641#0" expanded="true" />
-            <element signature="e#3688#3689#0" expanded="true" />
+            <element signature="e#4551#4552#0" expanded="true" />
+            <element signature="e#4599#4600#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/eu/vital/reply/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.20307693" vertical-offset="404" max-vertical-offset="1054">
+          <caret line="16" column="13" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>

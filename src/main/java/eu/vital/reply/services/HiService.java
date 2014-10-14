@@ -36,7 +36,8 @@ public class HiService
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String isRunning(@PathParam("id") String id) {
-        return "System isRunning {" + id + "}";
+        //return "System isRunning {" + id + "}";
+        return this.hiReplySvc.isServiceRunning(id);
     }
 
     @Path("{id}/property/names")
