@@ -23,10 +23,12 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="ppi" />
+        <module name="PPI" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="ppi" target="1.7" />
+      <module name="PPI" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>
