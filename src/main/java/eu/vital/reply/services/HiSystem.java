@@ -40,7 +40,7 @@ public class HiSystem
 
         try
         {
-            return hiReplySvc.getSnapshot();
+            return hiReplySvc.getSnapshot().getIoTSystem().getID(); // test, deve resituire json
         }
         catch (IOException e)
         {

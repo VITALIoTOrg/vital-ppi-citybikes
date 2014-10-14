@@ -1,6 +1,8 @@
 package eu.vital.reply.clients;
 
 import eu.vital.reply.ConfigReader;
+import eu.vital.reply.UnmarshalUtil;
+import eu.vital.reply.xmlpojos.ServiceList;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -10,7 +12,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xml.sax.SAXException;
 
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -67,7 +71,7 @@ public class HiReplySvc
         isServiceRunningPath  = config.get(ConfigReader.HI_ISSERVICERUNNING_PATH);
     }
 
-    public String getSnapshotFiltered(String filter) throws URISyntaxException, IOException
+    public ServiceList getSnapshotFiltered(String filter) throws URISyntaxException, IOException
     {
         String respString;
         URI uri = new URIBuilder()
@@ -87,13 +91,24 @@ public class HiReplySvc
         HttpGet get = new HttpGet(uri);
 
         HttpResponse resp = http.execute(get);
-        respString = EntityUtils.toString(resp.getEntity());
+        respString = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
+
+        ServiceList serviceList = null;
+
+        try {
+            serviceList = (ServiceList) UnmarshalUtil.getInstance().unmarshal(respString);
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
 
         // TODO: XML: ServiceList -> known services [0..*]
-        return cleanOutput(respString);
+        //return cleanOutput(respString);
+        return serviceList;
     }
 
-    public String getSnapshot() throws IOException, URISyntaxException
+    public ServiceList getSnapshot() throws IOException, URISyntaxException
     {
         return getSnapshotFiltered(null);
     }
@@ -105,7 +120,7 @@ public class HiReplySvc
                 .setScheme("http")
                 .setHost(host)
                 .setPort(port)
-                .setPath(serviceId + "/" + getPropNamesPath)
+                .setPath( "/" + serviceId + getPropNamesPath)
                 .build();
 
         HttpGet get = new HttpGet(uri);
@@ -125,7 +140,7 @@ public class HiReplySvc
                 .setScheme("http")
                 .setHost(host)
                 .setPort(port)
-                .setPath(serviceId + "/" + getPropValuePath)
+                .setPath("/" + serviceId + getPropValuePath)
                 .addParameter("prop", propertyName)
                 .build();
 
@@ -137,7 +152,7 @@ public class HiReplySvc
         return cleanOutput(respString);
     }
 
-    public String setPropertyValue(String serviceId, String propertyName, String value)
+    public boolean setPropertyValue(String serviceId, String propertyName, String value)
             throws URISyntaxException, IOException
     {
         String respString;
@@ -145,7 +160,7 @@ public class HiReplySvc
                 .setScheme("http")
                 .setHost(host)
                 .setPort(port)
-                .setPath(serviceId + "/" + setPropValuePath)
+                .setPath("/" + serviceId + setPropValuePath)
                 .addParameter("prop", propertyName)
                 .addParameter("value", value)
                 .build();
@@ -153,10 +168,16 @@ public class HiReplySvc
         HttpGet get = new HttpGet(uri);
 
         HttpResponse resp = http.execute(get);
-        respString = EntityUtils.toString(resp.getEntity());
+        respString = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
+
+        if (respString.contains("correctly")) {
+            return true;
+        } else {
+            return false;
+        }
 
         // TODO: XML: manage response string OK/Error
-        return cleanOutput(respString);
+       // return cleanOutput(respString);
     }
 
     public String getPropertyAttribute(String serviceId, String propertyName, String attributeName)
@@ -167,7 +188,7 @@ public class HiReplySvc
                 .setScheme("http")
                 .setHost(host)
                 .setPort(port)
-                .setPath(serviceId + "/" + getPropAttrPath)
+                .setPath("/" + serviceId + getPropAttrPath)
                 .addParameter("prop", propertyName)
                 .addParameter("attribute", attributeName)
                 .build();
@@ -189,7 +210,7 @@ public class HiReplySvc
                 .setScheme("http")
                 .setHost(host)
                 .setPort(port)
-                .setPath(serviceId + "/" + getPropHistValuesPath)
+                .setPath("/" + serviceId + getPropHistValuesPath)
                 .addParameter("prop", propertyName)
                 .addParameter("starttime", df.format(startTime))
                 .addParameter("endtime", df.format(endTime))
@@ -211,7 +232,7 @@ public class HiReplySvc
                 .setScheme("http")
                 .setHost(host)
                 .setPort(port)
-                .setPath(serviceId + "/" + isServiceRunningPath)
+                .setPath("/" + serviceId + isServiceRunningPath)
                 .build();
 
         HttpGet get = new HttpGet(uri);
