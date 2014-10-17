@@ -2,7 +2,10 @@ package eu.vital.reply.clients;
 
 import eu.vital.reply.ConfigReader;
 import eu.vital.reply.UnmarshalUtil;
+import eu.vital.reply.xmlpojos.PropertyList;
 import eu.vital.reply.xmlpojos.ServiceList;
+import eu.vital.reply.xmlpojos.ValueList;
+import eu.vital.reply.xmlpojos.ValueList.ValueItem;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -22,6 +25,7 @@ import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by a.martelli on 09/10/2014.
@@ -56,126 +60,134 @@ public class HiReplySvc
     public HiReplySvc()
     {
         config = ConfigReader.getInstance();
-        http   = HttpClients.createDefault();
+        http = HttpClients.createDefault();
         logger = LogManager.getLogger(HiReplySvc.class);
 
-        host                  = config.get(ConfigReader.HI_HOSTNAME);
-        port                  = Integer.parseInt(config.get(ConfigReader.HI_PORT));
-        getSnapshotPath       = config.get(ConfigReader.HI_GETSNAPSHOT_PATH);
-        getPropNamesPath      = config.get(ConfigReader.HI_GETPROPERTYNAMES_PATH);
-        getPropValuePath      = config.get(ConfigReader.HI_GETPROPERTYVALUE_PATH);
-        setPropValuePath      = config.get(ConfigReader.HI_SETPROPERTYVALUE_PATH);
-        getPropAttrPath       = config.get(ConfigReader.HI_GETPROPERTYATTRIBUTE_PATH);
+        host = config.get(ConfigReader.HI_HOSTNAME);
+        port = Integer.parseInt(config.get(ConfigReader.HI_PORT));
+        getSnapshotPath = config.get(ConfigReader.HI_GETSNAPSHOT_PATH);
+        getPropNamesPath = config.get(ConfigReader.HI_GETPROPERTYNAMES_PATH);
+        getPropValuePath = config.get(ConfigReader.HI_GETPROPERTYVALUE_PATH);
+        setPropValuePath = config.get(ConfigReader.HI_SETPROPERTYVALUE_PATH);
+        getPropAttrPath = config.get(ConfigReader.HI_GETPROPERTYATTRIBUTE_PATH);
         getPropHistValuesPath = config.get(ConfigReader.HI_GETPROPERTYHISTORICALVALUES_PATH);
-        isServiceRunningPath  = config.get(ConfigReader.HI_ISSERVICERUNNING_PATH);
+        isServiceRunningPath = config.get(ConfigReader.HI_ISSERVICERUNNING_PATH);
     }
 
-    public ServiceList getSnapshotFiltered(String filter) {
+    public ServiceList getSnapshotFiltered(String filter)
+    {
         String respString = "";
         URI uri = null;
-        try {
+        try
+        {
             uri = new URIBuilder()
                     .setScheme("http")
                     .setHost(host)
                     .setPort(port)
                     .setPath(getSnapshotPath)
                     .build();
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException e)
+        {
             this.logger.error("getSnapshot - URI syntax exception");
-            e.printStackTrace();
+            return null;
         }
 
-        if(filter != null && !filter.isEmpty())
+        if (filter != null && !filter.isEmpty())
         {
-            try {
+            try
+            {
                 uri = new URIBuilder(uri)
                         .addParameter("filter", filter)
                         .build();
-            } catch (URISyntaxException e) {
+            } catch (URISyntaxException e)
+            {
                 this.logger.error("getSnapshot - URI syntax exception");
-                e.printStackTrace();
+                return null;
             }
         }
 
         HttpGet get = new HttpGet(uri);
 
         HttpResponse resp = null;
-        try {
+        try
+        {
             resp = http.execute(get);
-        } catch (IOException e) {
-            this.logger.error("getSnapshot - HTTP IO exception");
-            e.printStackTrace();
-        }
-        try {
             respString = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
-        } catch (IOException e) {
-            this.logger.error("getSnapshot - HTTP Resp toString IO exception");
-            e.printStackTrace();
+        } catch (IOException e)
+        {
+            this.logger.error("getSnapshot - HTTP IO exception");
+            return null;
         }
 
         ServiceList serviceList = null;
 
-        try {
+        try
+        {
             serviceList = (ServiceList) UnmarshalUtil.getInstance().unmarshal(respString);
-        } catch (SAXException e) {
-            this.logger.error("getSnapshot - Unmarshal SaxException");
-            e.printStackTrace();
-        } catch (JAXBException e) {
-            this.logger.error("getSnapshotFiltered - Unmarshal JaxbException");
-            e.printStackTrace();
-        } catch (IOException e) {
-            this.logger.error("getSnapshotFiltered - Unmarshal IO Exception");
-            e.printStackTrace();
+        } catch(Exception e)
+        {
+            this.logger.error("getSnapshot - Unmarshalling exception: " + e.getMessage());
+            return null;
         }
 
-        // TODO: XML: ServiceList -> known services [0..*]
-        //return cleanOutput(respString);
         return serviceList;
     }
 
-    public ServiceList getSnapshot() {
+    public ServiceList getSnapshot()
+    {
         return getSnapshotFiltered(null);
     }
 
-    public String getPropertyNames(String serviceId) {
+    public PropertyList getPropertyNames(String serviceId)
+    {
         String respString = "";
         URI uri = null;
-        try {
+        try
+        {
             uri = new URIBuilder()
                     .setScheme("http")
                     .setHost(host)
                     .setPort(port)
                     .setPath("/" + serviceId + getPropNamesPath)
                     .build();
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException e)
+        {
             this.logger.error("getPropertyNames - Uri builder");
-            e.printStackTrace();
+            return null;
         }
 
         HttpGet get = new HttpGet(uri);
 
         HttpResponse resp = null;
-        try {
+        try
+        {
             resp = http.execute(get);
-        } catch (IOException e) {
-            this.logger.error("getPropertyNames - HTTP get IO Exception");
-            e.printStackTrace();
-        }
-        try {
             respString = EntityUtils.toString(resp.getEntity());
-        } catch (IOException e) {
-            this.logger.error("getPropertyNames - GET response IO Exception");
-            e.printStackTrace();
+        } catch (IOException e)
+        {
+            this.logger.error("getPropertyNames - HTTP get IO Exception");
+            return null;
         }
 
-        // TODO: XML: PropertyList -> Property [0..*]
-        return cleanOutput(respString);
+        PropertyList props = null;
+        try
+        {
+            props = (PropertyList) UnmarshalUtil.getInstance().unmarshal(respString);
+        } catch(Exception e)
+        {
+            this.logger.error("getPropertyNames - Unmarshalling exception: " + e.getMessage());
+            return null;
+        }
+
+        return props;
     }
 
-    public String getPropertyValue(String serviceId, String propertyName) {
+    public String getPropertyValue(String serviceId, String propertyName)
+    {
         String respString = "";
         URI uri = null;
-        try {
+        try
+        {
             uri = new URIBuilder()
                     .setScheme("http")
                     .setHost(host)
@@ -183,77 +195,70 @@ public class HiReplySvc
                     .setPath("/" + serviceId + getPropValuePath)
                     .addParameter("prop", propertyName)
                     .build();
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException e)
+        {
             this.logger.error("getPropertyValue - Uri builder");
-            e.printStackTrace();
+            return null;
         }
 
         HttpGet get = new HttpGet(uri);
 
         HttpResponse resp = null;
-        try {
+        try
+        {
             resp = http.execute(get);
-        } catch (IOException e) {
-            this.logger.error("getPropertyValue - HTTP get execute IO Exception");
-            e.printStackTrace();
-        }
-        try {
             respString = EntityUtils.toString(resp.getEntity());
-        } catch (IOException e) {
-            this.logger.error("getPropertyValue - ET response IO Exception");
-            e.printStackTrace();
+        } catch (IOException e)
+        {
+            this.logger.error("getPropertyValue - HTTP get execute IO Exception");
+            return null;
         }
 
         return cleanOutput(respString);
     }
 
-    public boolean setPropertyValue(String serviceId, String propertyName, String value) {
+    public boolean setPropertyValue(String serviceId, String propertyName, String value)
+    {
         String respString = "";
         URI uri = null;
-        try {
+        try
+        {
             uri = new URIBuilder()
                     .setScheme("http")
                     .setHost(host)
                     .setPort(port)
                     .setPath("/" + serviceId + setPropValuePath)
                     .addParameter("prop", propertyName)
-                    .addParameter("value", value)
+                    .addParameter("raw", value)
                     .build();
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException e)
+        {
             this.logger.error("setPropertyValue - Uri builder");
-            e.printStackTrace();
+            return false;
         }
 
         HttpGet get = new HttpGet(uri);
 
         HttpResponse resp = null;
-        try {
+        try
+        {
             resp = http.execute(get);
-        } catch (IOException e) {
-            this.logger.error("setPropertyValue - HTTP Get IO Exception");
-            e.printStackTrace();
-        }
-        try {
             respString = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
-        } catch (IOException e) {
-            this.logger.error("setPropertyValue - HTTP response IO Exception");
-            e.printStackTrace();
-        }
-
-        if (respString.contains("correctly")) {
-            return true;
-        } else {
+        } catch (IOException e)
+        {
+            this.logger.error("setPropertyValue - HTTP Get IO Exception");
             return false;
         }
 
-        // TODO: XML: manage response string OK/Error
-       // return cleanOutput(respString);
+        return respString.contains("correctly");
     }
 
-    public String getPropertyAttribute(String serviceId, String propertyName, String attributeName) {
+    public String getPropertyAttribute(String serviceId, String propertyName, String attributeName)
+    {
         String respString = "";
         URI uri = null;
-        try {
+        try
+        {
             uri = new URIBuilder()
                     .setScheme("http")
                     .setHost(host)
@@ -262,35 +267,35 @@ public class HiReplySvc
                     .addParameter("prop", propertyName)
                     .addParameter("attribute", attributeName)
                     .build();
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException e)
+        {
             this.logger.error("setPropertyAttribute - Uri builder");
-            e.printStackTrace();
+            return null;
         }
 
         HttpGet get = new HttpGet(uri);
 
         HttpResponse resp = null;
-        try {
+        try
+        {
             resp = http.execute(get);
-        } catch (IOException e) {
-            this.logger.error("setPropertyAttribute - HTTP Get IO Exception");
-            e.printStackTrace();
-        }
-        try {
             respString = EntityUtils.toString(resp.getEntity());
-        } catch (IOException e) {
-            this.logger.error("setPropertyAttribute - HTTP Response IO Exception");
-            e.printStackTrace();
+        } catch (IOException e)
+        {
+            this.logger.error("setPropertyAttribute - HTTP Get IO Exception");
+            return null;
         }
 
         return cleanOutput(respString);
     }
 
-    public String getPropertyHistoricalValues(String serviceId, String propertyName, Date startTime, Date endTime) {
+    public List<ValueItem> getPropertyHistoricalValues(String serviceId, String propertyName, Date startTime, Date endTime)
+    {
         String respString = "";
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         URI uri = null;
-        try {
+        try
+        {
             uri = new URIBuilder()
                     .setScheme("http")
                     .setHost(host)
@@ -300,42 +305,57 @@ public class HiReplySvc
                     .addParameter("starttime", df.format(startTime))
                     .addParameter("endtime", df.format(endTime))
                     .build();
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException e)
+        {
             this.logger.error("getPropertyHistoricalValues - Uri builder");
-            e.printStackTrace();
+            return null;
         }
 
         HttpGet get = new HttpGet(uri);
 
         HttpResponse resp = null;
-        try {
+        try
+        {
             resp = http.execute(get);
-        } catch (IOException e) {
-            this.logger.error("getPropertyHistoricalValues - HTTP Get IO Exception");
-            e.printStackTrace();
-        }
-        try {
             respString = EntityUtils.toString(resp.getEntity());
-        } catch (IOException e) {
-            this.logger.error("getPropertyHistoricalValues - HTTP Response Exception");
-            e.printStackTrace();
+        } catch (IOException e)
+        {
+            this.logger.error("getPropertyHistoricalValues - HTTP Get IO Exception");
+            return null;
         }
 
-        // TODO: XML: ValueList -> Value [0..*]
-        return cleanOutput(respString);
+        ValueList values = null;
+        List<ValueList.ValueItem> items = null;
+        respString = cleanOutput(respString);
+        try
+        {
+            values = (ValueList) UnmarshalUtil.getInstance().unmarshal(respString);
+        } catch (Exception e)
+        {
+            this.logger.error("getPropertyHistoricalValues - Unmarshalling exception: " + e.getMessage());
+            return null;
+        }
+
+        if (values != null)
+            items = values.getValueList();
+
+        return items;
     }
 
-    public String isServiceRunning(String serviceId) {
+    public String isServiceRunning(String serviceId)
+    {
         String respString = "";
         URI uri = null;
-        try {
+        try
+        {
             uri = new URIBuilder()
                     .setScheme("http")
                     .setHost(host)
                     .setPort(port)
                     .setPath("/" + serviceId + isServiceRunningPath)
                     .build();
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException e)
+        {
             this.logger.error("isServiceRunning - Uri builder");
             e.printStackTrace();
         }
@@ -343,15 +363,19 @@ public class HiReplySvc
         HttpGet get = new HttpGet(uri);
 
         HttpResponse resp = null;
-        try {
+        try
+        {
             resp = http.execute(get);
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             this.logger.error("isServiceRunning - HTTP Get Exception");
             e.printStackTrace();
         }
-        try {
+        try
+        {
             respString = EntityUtils.toString(resp.getEntity());
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             this.logger.error("isServiceRunning - HTTP Response Exception");
             e.printStackTrace();
         }
@@ -367,12 +391,12 @@ public class HiReplySvc
 
     public String concatFilters(ArrayList<String> filters, Operators operator)
     {
-        if(filters != null && !filters.isEmpty())
+        if (filters != null && !filters.isEmpty())
         {
             String res = filters.get(0);
-            if(filters.size() > 1)
+            if (filters.size() > 1)
             {
-                for(int i = 1; i < filters.size(); i++)
+                for (int i = 1; i < filters.size(); i++)
                 {
                     res += "_" + operator.toString() + "_" + filters.get(i);
                 }
@@ -387,7 +411,7 @@ public class HiReplySvc
         String tagBeg = "<string xmlns=\"http://schemas.microsoft.com/2003/10/Serialization/\">";
         String tagEnd = "</string>";
         int start = msXml.indexOf(tagBeg) + tagBeg.length();
-        int stop  = msXml.indexOf(tagEnd);
+        int stop = msXml.indexOf(tagEnd);
 
         return //"<?xml version=\"1.0\"?>\n" +
                 StringEscapeUtils.unescapeXml(msXml.substring(start, stop));

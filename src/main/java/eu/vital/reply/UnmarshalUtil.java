@@ -87,21 +87,13 @@ public class UnmarshalUtil
         public void startElement(String uri, String localName, String qName,
                                  Attributes attributes) throws SAXException
         {
-            //int colonIndex = qName.indexOf(':');
-            //if(colonIndex >= 0) {
-            //    qName = qName.substring(colonIndex + 1);
-            //}
-            Attributes attrs = new AttributesImpl();
-            super.startElement(uri, localName, qName, attrs);
+            super.startElement(uri, localName, qName, attributes);
         }
 
         @Override
         public void endElement(String uri, String localName, String qName)
-                throws SAXException {
-            //int colonIndex = qName.indexOf(':');
-            //if(colonIndex >= 0) {
-            //    qName = qName.substring(colonIndex + 1);
-            //}
+                throws SAXException
+        {
             super.endElement(uri, localName, qName);
         }
 

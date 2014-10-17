@@ -2,6 +2,7 @@ package eu.vital.reply;
 
 import eu.vital.reply.clients.HiReplySvc;
 import eu.vital.reply.xmlpojos.ServiceList;
+import eu.vital.reply.xmlpojos.ValueList;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -11,6 +12,10 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Main class.
