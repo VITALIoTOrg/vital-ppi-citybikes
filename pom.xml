@@ -67,6 +67,19 @@
             <version>4.9</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -114,6 +127,31 @@
                     <clearOutputDir>false</clearOutputDir>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.jsonschema2pojo</groupId>
+                <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+                <version>0.4.5</version>
+                <configuration>
+                    <sourceDirectory>${basedir}/src/main/JsonFile</sourceDirectory>
+                    <generateBuilders>true</generateBuilders>
+                    <includeHashcodeAndEquals>true</includeHashcodeAndEquals>
+                    <outputDirectory>${basedir}/src/main/java</outputDirectory>
+                    <sourceType>json</sourceType>
+                    <targetPackage>eu.vital.reply.jsonpojos</targetPackage>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+
+
         </plugins>
     </build>
 
