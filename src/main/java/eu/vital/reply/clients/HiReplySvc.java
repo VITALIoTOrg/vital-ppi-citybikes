@@ -1,6 +1,8 @@
 package eu.vital.reply.clients;
 
 import eu.vital.reply.ConfigReader;
+import eu.vital.reply.UnmarshalUtil;
+import eu.vital.reply.xmlpojos.ServiceList;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -10,7 +12,10 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xml.sax.SAXException;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.ws.Service;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -44,6 +49,8 @@ public class HiReplySvc
     private String getPropHistValuesPath;
     private String isServiceRunningPath;
 
+    private UnmarshalUtil unmarshaller;
+
     public enum Operators
     {
         AND,
@@ -65,6 +72,8 @@ public class HiReplySvc
         getPropAttrPath       = config.get(ConfigReader.HI_GETPROPERTYATTRIBUTE_PATH);
         getPropHistValuesPath = config.get(ConfigReader.HI_GETPROPERTYHISTORICALVALUES_PATH);
         isServiceRunningPath  = config.get(ConfigReader.HI_ISSERVICERUNNING_PATH);
+
+        unmarshaller = UnmarshalUtil.getInstance();
     }
 
     public String getSnapshotFiltered(String filter) throws URISyntaxException, IOException
@@ -87,10 +96,9 @@ public class HiReplySvc
         HttpGet get = new HttpGet(uri);
 
         HttpResponse resp = http.execute(get);
-        respString = EntityUtils.toString(resp.getEntity());
+        respString = cleanOutput(EntityUtils.toString(resp.getEntity()));
 
-        // TODO: XML: ServiceList -> known services [0..*]
-        return cleanOutput(respString);
+        return respString;
     }
 
     public String getSnapshot() throws IOException, URISyntaxException
