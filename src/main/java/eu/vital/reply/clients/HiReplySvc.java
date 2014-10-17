@@ -12,15 +12,13 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.ws.Service;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,8 +47,6 @@ public class HiReplySvc
     private String getPropHistValuesPath;
     private String isServiceRunningPath;
 
-    private UnmarshalUtil unmarshaller;
-
     public enum Operators
     {
         AND,
@@ -72,160 +68,293 @@ public class HiReplySvc
         getPropAttrPath       = config.get(ConfigReader.HI_GETPROPERTYATTRIBUTE_PATH);
         getPropHistValuesPath = config.get(ConfigReader.HI_GETPROPERTYHISTORICALVALUES_PATH);
         isServiceRunningPath  = config.get(ConfigReader.HI_ISSERVICERUNNING_PATH);
-
-        unmarshaller = UnmarshalUtil.getInstance();
     }
 
-    public String getSnapshotFiltered(String filter) throws URISyntaxException, IOException
-    {
-        String respString;
-        URI uri = new URIBuilder()
-                .setScheme("http")
-                .setHost(host)
-                .setPort(port)
-                .setPath(getSnapshotPath)
-                .build();
+    public ServiceList getSnapshotFiltered(String filter) {
+        String respString = "";
+        URI uri = null;
+        try {
+            uri = new URIBuilder()
+                    .setScheme("http")
+                    .setHost(host)
+                    .setPort(port)
+                    .setPath(getSnapshotPath)
+                    .build();
+        } catch (URISyntaxException e) {
+            this.logger.error("getSnapshot - URI syntax exception");
+            e.printStackTrace();
+        }
 
         if(filter != null && !filter.isEmpty())
         {
-            uri = new URIBuilder(uri)
-                    .addParameter("filter", filter)
-                    .build();
+            try {
+                uri = new URIBuilder(uri)
+                        .addParameter("filter", filter)
+                        .build();
+            } catch (URISyntaxException e) {
+                this.logger.error("getSnapshot - URI syntax exception");
+                e.printStackTrace();
+            }
         }
 
         HttpGet get = new HttpGet(uri);
 
-        HttpResponse resp = http.execute(get);
-        respString = cleanOutput(EntityUtils.toString(resp.getEntity()));
+        HttpResponse resp = null;
+        try {
+            resp = http.execute(get);
+        } catch (IOException e) {
+            this.logger.error("getSnapshot - HTTP IO exception");
+            e.printStackTrace();
+        }
+        try {
+            respString = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
+        } catch (IOException e) {
+            this.logger.error("getSnapshot - HTTP Resp toString IO exception");
+            e.printStackTrace();
+        }
 
-        return respString;
+        ServiceList serviceList = null;
+
+        try {
+            serviceList = (ServiceList) UnmarshalUtil.getInstance().unmarshal(respString);
+        } catch (SAXException e) {
+            this.logger.error("getSnapshot - Unmarshal SaxException");
+            e.printStackTrace();
+        } catch (JAXBException e) {
+            this.logger.error("getSnapshotFiltered - Unmarshal JaxbException");
+            e.printStackTrace();
+        } catch (IOException e) {
+            this.logger.error("getSnapshotFiltered - Unmarshal IO Exception");
+            e.printStackTrace();
+        }
+
+        // TODO: XML: ServiceList -> known services [0..*]
+        //return cleanOutput(respString);
+        return serviceList;
     }
 
-    public String getSnapshot() throws IOException, URISyntaxException
-    {
+    public ServiceList getSnapshot() {
         return getSnapshotFiltered(null);
     }
 
-    public String getPropertyNames(String serviceId) throws URISyntaxException, IOException
-    {
-        String respString;
-        URI uri = new URIBuilder()
-                .setScheme("http")
-                .setHost(host)
-                .setPort(port)
-                .setPath(serviceId + "/" + getPropNamesPath)
-                .build();
+    public String getPropertyNames(String serviceId) {
+        String respString = "";
+        URI uri = null;
+        try {
+            uri = new URIBuilder()
+                    .setScheme("http")
+                    .setHost(host)
+                    .setPort(port)
+                    .setPath("/" + serviceId + getPropNamesPath)
+                    .build();
+        } catch (URISyntaxException e) {
+            this.logger.error("getPropertyNames - Uri builder");
+            e.printStackTrace();
+        }
 
         HttpGet get = new HttpGet(uri);
 
-        HttpResponse resp = http.execute(get);
-        respString = EntityUtils.toString(resp.getEntity());
+        HttpResponse resp = null;
+        try {
+            resp = http.execute(get);
+        } catch (IOException e) {
+            this.logger.error("getPropertyNames - HTTP get IO Exception");
+            e.printStackTrace();
+        }
+        try {
+            respString = EntityUtils.toString(resp.getEntity());
+        } catch (IOException e) {
+            this.logger.error("getPropertyNames - GET response IO Exception");
+            e.printStackTrace();
+        }
 
         // TODO: XML: PropertyList -> Property [0..*]
         return cleanOutput(respString);
     }
 
-    public String getPropertyValue(String serviceId, String propertyName)
-            throws URISyntaxException, IOException
-    {
-        String respString;
-        URI uri = new URIBuilder()
-                .setScheme("http")
-                .setHost(host)
-                .setPort(port)
-                .setPath(serviceId + "/" + getPropValuePath)
-                .addParameter("prop", propertyName)
-                .build();
+    public String getPropertyValue(String serviceId, String propertyName) {
+        String respString = "";
+        URI uri = null;
+        try {
+            uri = new URIBuilder()
+                    .setScheme("http")
+                    .setHost(host)
+                    .setPort(port)
+                    .setPath("/" + serviceId + getPropValuePath)
+                    .addParameter("prop", propertyName)
+                    .build();
+        } catch (URISyntaxException e) {
+            this.logger.error("getPropertyValue - Uri builder");
+            e.printStackTrace();
+        }
 
         HttpGet get = new HttpGet(uri);
 
-        HttpResponse resp = http.execute(get);
-        respString = EntityUtils.toString(resp.getEntity());
+        HttpResponse resp = null;
+        try {
+            resp = http.execute(get);
+        } catch (IOException e) {
+            this.logger.error("getPropertyValue - HTTP get execute IO Exception");
+            e.printStackTrace();
+        }
+        try {
+            respString = EntityUtils.toString(resp.getEntity());
+        } catch (IOException e) {
+            this.logger.error("getPropertyValue - ET response IO Exception");
+            e.printStackTrace();
+        }
 
         return cleanOutput(respString);
     }
 
-    public String setPropertyValue(String serviceId, String propertyName, String value)
-            throws URISyntaxException, IOException
-    {
-        String respString;
-        URI uri = new URIBuilder()
-                .setScheme("http")
-                .setHost(host)
-                .setPort(port)
-                .setPath(serviceId + "/" + setPropValuePath)
-                .addParameter("prop", propertyName)
-                .addParameter("value", value)
-                .build();
+    public boolean setPropertyValue(String serviceId, String propertyName, String value) {
+        String respString = "";
+        URI uri = null;
+        try {
+            uri = new URIBuilder()
+                    .setScheme("http")
+                    .setHost(host)
+                    .setPort(port)
+                    .setPath("/" + serviceId + setPropValuePath)
+                    .addParameter("prop", propertyName)
+                    .addParameter("value", value)
+                    .build();
+        } catch (URISyntaxException e) {
+            this.logger.error("setPropertyValue - Uri builder");
+            e.printStackTrace();
+        }
 
         HttpGet get = new HttpGet(uri);
 
-        HttpResponse resp = http.execute(get);
-        respString = EntityUtils.toString(resp.getEntity());
+        HttpResponse resp = null;
+        try {
+            resp = http.execute(get);
+        } catch (IOException e) {
+            this.logger.error("setPropertyValue - HTTP Get IO Exception");
+            e.printStackTrace();
+        }
+        try {
+            respString = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
+        } catch (IOException e) {
+            this.logger.error("setPropertyValue - HTTP response IO Exception");
+            e.printStackTrace();
+        }
+
+        if (respString.contains("correctly")) {
+            return true;
+        } else {
+            return false;
+        }
 
         // TODO: XML: manage response string OK/Error
-        return cleanOutput(respString);
+       // return cleanOutput(respString);
     }
 
-    public String getPropertyAttribute(String serviceId, String propertyName, String attributeName)
-            throws URISyntaxException, IOException
-    {
-        String respString;
-        URI uri = new URIBuilder()
-                .setScheme("http")
-                .setHost(host)
-                .setPort(port)
-                .setPath(serviceId + "/" + getPropAttrPath)
-                .addParameter("prop", propertyName)
-                .addParameter("attribute", attributeName)
-                .build();
+    public String getPropertyAttribute(String serviceId, String propertyName, String attributeName) {
+        String respString = "";
+        URI uri = null;
+        try {
+            uri = new URIBuilder()
+                    .setScheme("http")
+                    .setHost(host)
+                    .setPort(port)
+                    .setPath("/" + serviceId + getPropAttrPath)
+                    .addParameter("prop", propertyName)
+                    .addParameter("attribute", attributeName)
+                    .build();
+        } catch (URISyntaxException e) {
+            this.logger.error("setPropertyAttribute - Uri builder");
+            e.printStackTrace();
+        }
 
         HttpGet get = new HttpGet(uri);
 
-        HttpResponse resp = http.execute(get);
-        respString = EntityUtils.toString(resp.getEntity());
+        HttpResponse resp = null;
+        try {
+            resp = http.execute(get);
+        } catch (IOException e) {
+            this.logger.error("setPropertyAttribute - HTTP Get IO Exception");
+            e.printStackTrace();
+        }
+        try {
+            respString = EntityUtils.toString(resp.getEntity());
+        } catch (IOException e) {
+            this.logger.error("setPropertyAttribute - HTTP Response IO Exception");
+            e.printStackTrace();
+        }
 
         return cleanOutput(respString);
     }
 
-    public String getPropertyHistoricalValues(String serviceId, String propertyName, Date startTime, Date endTime)
-            throws URISyntaxException, IOException
-    {
-        String respString;
+    public String getPropertyHistoricalValues(String serviceId, String propertyName, Date startTime, Date endTime) {
+        String respString = "";
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        URI uri = new URIBuilder()
-                .setScheme("http")
-                .setHost(host)
-                .setPort(port)
-                .setPath(serviceId + "/" + getPropHistValuesPath)
-                .addParameter("prop", propertyName)
-                .addParameter("starttime", df.format(startTime))
-                .addParameter("endtime", df.format(endTime))
-                .build();
+        URI uri = null;
+        try {
+            uri = new URIBuilder()
+                    .setScheme("http")
+                    .setHost(host)
+                    .setPort(port)
+                    .setPath("/" + serviceId + getPropHistValuesPath)
+                    .addParameter("prop", propertyName)
+                    .addParameter("starttime", df.format(startTime))
+                    .addParameter("endtime", df.format(endTime))
+                    .build();
+        } catch (URISyntaxException e) {
+            this.logger.error("getPropertyHistoricalValues - Uri builder");
+            e.printStackTrace();
+        }
 
         HttpGet get = new HttpGet(uri);
 
-        HttpResponse resp = http.execute(get);
-        respString = EntityUtils.toString(resp.getEntity());
+        HttpResponse resp = null;
+        try {
+            resp = http.execute(get);
+        } catch (IOException e) {
+            this.logger.error("getPropertyHistoricalValues - HTTP Get IO Exception");
+            e.printStackTrace();
+        }
+        try {
+            respString = EntityUtils.toString(resp.getEntity());
+        } catch (IOException e) {
+            this.logger.error("getPropertyHistoricalValues - HTTP Response Exception");
+            e.printStackTrace();
+        }
 
         // TODO: XML: ValueList -> Value [0..*]
         return cleanOutput(respString);
     }
 
-    public String isServiceRunning(String serviceId) throws URISyntaxException, IOException
-    {
-        String respString;
-        URI uri = new URIBuilder()
-                .setScheme("http")
-                .setHost(host)
-                .setPort(port)
-                .setPath(serviceId + "/" + isServiceRunningPath)
-                .build();
+    public String isServiceRunning(String serviceId) {
+        String respString = "";
+        URI uri = null;
+        try {
+            uri = new URIBuilder()
+                    .setScheme("http")
+                    .setHost(host)
+                    .setPort(port)
+                    .setPath("/" + serviceId + isServiceRunningPath)
+                    .build();
+        } catch (URISyntaxException e) {
+            this.logger.error("isServiceRunning - Uri builder");
+            e.printStackTrace();
+        }
 
         HttpGet get = new HttpGet(uri);
 
-        HttpResponse resp = http.execute(get);
-        respString = EntityUtils.toString(resp.getEntity());
+        HttpResponse resp = null;
+        try {
+            resp = http.execute(get);
+        } catch (IOException e) {
+            this.logger.error("isServiceRunning - HTTP Get Exception");
+            e.printStackTrace();
+        }
+        try {
+            respString = EntityUtils.toString(resp.getEntity());
+        } catch (IOException e) {
+            this.logger.error("isServiceRunning - HTTP Response Exception");
+            e.printStackTrace();
+        }
 
         // TODO: XML: returns timestamp of start time. turn to boolean?
         return cleanOutput(respString);

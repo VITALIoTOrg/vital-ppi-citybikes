@@ -1,10 +1,13 @@
 package eu.vital.reply.services;
 
+import eu.vital.reply.clients.HiReplySvc;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * Service resource (exposed at "/service" path)
@@ -15,9 +18,10 @@ import javax.ws.rs.core.MediaType;
 public class HiService
 {
     private Logger logger;
-
+    private HiReplySvc hiReplySvc;
     public HiService()
     {
+        hiReplySvc = new HiReplySvc();
         logger = LogManager.getLogger(HiService.class);
     }
 
@@ -32,7 +36,8 @@ public class HiService
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String isRunning(@PathParam("id") String id) {
-        return "System isRunning {" + id + "}";
+        //return "System isRunning {" + id + "}";
+        return this.hiReplySvc.isServiceRunning(id);
     }
 
     @Path("{id}/property/names")
@@ -52,9 +57,10 @@ public class HiService
     @Path("{id}/property/{name}/{value}")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public String setPropertyValue(@PathParam("id") String id, @PathParam("name") String name,
-                                   @PathParam("value") String value) {
-        return "System setPropertyValue {service:" + id + ", property:" + name + ", value: " + value + "}";
+    public boolean setPropertyValue(@PathParam("id") String id, @PathParam("name") String name,
+                                    @PathParam("value") String value) throws IOException, URISyntaxException {
+        //return "System setPropertyValue {service:" + id + ", property:" + name + ", value: " + value + "}";
+        return this.hiReplySvc.setPropertyValue(id,name,value);
     }
 
     @Path("{id}/property/{propid}/attribute/{attrid}")

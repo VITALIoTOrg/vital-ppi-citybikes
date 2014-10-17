@@ -1,6 +1,11 @@
 package eu.vital.reply.services;
 
+import eu.vital.reply.Utils.JsonUtils;
 import eu.vital.reply.clients.HiReplySvc;
+import eu.vital.reply.jsonpojos.IoTSystem;
+import eu.vital.reply.jsonpojos.MsmHasOperation;
+import eu.vital.reply.jsonpojos.ProvidesService;
+import eu.vital.reply.xmlpojos.ServiceList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,7 +15,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 /**
  * System resource (exposed at "/system" path)
@@ -28,6 +33,49 @@ public class HiSystem
         logger = LogManager.getLogger(HiSystem.class);
     }
 
+    @Path("info")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getInfo() {
+
+        ServiceList system = hiReplySvc.getSnapshot();
+
+        IoTSystem ioTSystem = new IoTSystem();
+        ProvidesService service = new ProvidesService();
+        MsmHasOperation operation = new MsmHasOperation();
+        ArrayList<ProvidesService> serviceList = new ArrayList<>();
+
+        ioTSystem.setContext("http://vital.iot.org/system.jsonld");
+        ioTSystem.setName(system.getIoTSystem().getID());
+        ioTSystem.setDescription(system.getIoTSystem().getDescription());
+        ioTSystem.setUri(system.getIoTSystem().getUri());
+        ioTSystem.setStatus(system.getIoTSystem().getStatus());
+        ioTSystem.setOperator(system.getIoTSystem().getOperator());
+        ioTSystem.setServiceArea(system.getIoTSystem().getServiceArea());
+
+        service.setType("System");
+        operation.setAdditionalProperty("type", "SystemInfo");
+        operation.setHrestHasAddress("http://vital.hireply/system/info");
+        operation.setHrestHasMethod("hrest:GET");
+
+        service.setMsmHasOperation(operation);
+
+        serviceList.add(service);
+
+        ioTSystem.setProvidesService(serviceList);
+
+        String out = "";
+
+        try {
+            out = JsonUtils.serializeJson(ioTSystem);
+        } catch (IOException e) {
+            this.logger.error("JSON UTILS IO EXCEPTION");
+            e.printStackTrace();
+        }
+
+        return out;
+    }
+
     /**
      *
      * @return
@@ -36,21 +84,7 @@ public class HiSystem
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String getSnapshot() {
-
-        try
-        {
-            return hiReplySvc.getSnapshot();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            return "Error: " + e.getMessage();
-        }
-        catch (URISyntaxException e)
-        {
-            e.printStackTrace();
-            return "Error: " + e.getMessage();
-        }
+        return hiReplySvc.getSnapshot().getIoTSystem().getID(); // test, deve resituire json
     }
 
     @Path("serviceClasses")

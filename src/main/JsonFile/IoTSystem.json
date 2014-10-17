@@ -1,0 +1,34 @@
+{
+"@context": "http://vital-iot.org/contexts/system.jsonld",
+"name": "Camden Reply System",
+"description": "This is a deployment of Reply H1 in Camden",
+"uri": "http://www.reply.com/camden",
+"status": "vital:Running",
+"operator": "http://www.ctu.com/",
+"serviceArea": "http://dbpedia.org/page/Camden_Town",
+"providesService": [
+{
+"type": "StreamManager",
+"msm:hasOperation": [
+{
+"type": "RegisterStream",
+"hrest:hasAddress": "http://www.ctu.com/vital/streamMng/",
+"hrest:hasMethod": "hrest:POST"
+},
+{
+"type": "DeregisterStream",
+"hrest:hasAddress":
+"http://www.ctu.com/vital/stream/{id}/deregister/",
+"hrest:hasMethod": "hrest:GET"
+}
+]
+},
+{
+"type": "IcoAccess",
+"msm:hasOperation": {
+"hrest:hasAddress": "http://www.ctu.com/vital/ico/{id}",
+"hrest:hasMethod": "hrest:GET"
+}
+}
+]
+}
