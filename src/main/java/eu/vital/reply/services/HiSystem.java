@@ -54,7 +54,7 @@ public class HiSystem
         ioTSystem.setServiceArea(system.getIoTSystem().getServiceArea());
 
         service.setType("System");
-
+        operation.setAdditionalProperty("type", "SystemInfo");
         operation.setHrestHasAddress("http://vital.hireply/system/info");
         operation.setHrestHasMethod("hrest:GET");
 
