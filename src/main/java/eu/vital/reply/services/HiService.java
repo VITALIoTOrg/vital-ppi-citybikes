@@ -2,9 +2,7 @@ package eu.vital.reply.services;
 
 import eu.vital.reply.Utils.JsonUtils;
 import eu.vital.reply.clients.HiReplySvc;
-import eu.vital.reply.jsonpojos.HasLastKnownLocation;
-import eu.vital.reply.jsonpojos.Sensor;
-import eu.vital.reply.jsonpojos.SsnObserf;
+import eu.vital.reply.jsonpojos.*;
 import eu.vital.reply.xmlpojos.ServiceList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,14 +32,120 @@ public class HiService
 
     ///service/{id}/property/{propertyname}
 
-    @Path("/{id}/property/{propertyname}")
+    @Path("{id}/property/{propertyname}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getPropertyValue(String id, String property) {
+    public String getPropertyValue(@PathParam("id") String id, @PathParam("propertyname") String propertyname) {
 
+        //TODO: da rendere generico per ogni tipo di sensore
 
+        String filter = hiReplySvc.createFilter("ID",id);
 
-        return "";
+        List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor();
+
+        ServiceList.TrafficSensor currentSensor = null;
+
+        try {
+            currentSensor = trafficSensors.get(0);
+        } catch (IndexOutOfBoundsException e) {
+            logger.error("ID: "+id+" not present.");
+            return "{\n" +
+                    "\"ERROR\": \"ID "+id+" not present.\"\n"+
+                    "}";
+        }
+
+        Measure m = new Measure();
+
+        m.setContext("http://vital-iot.org/contexts/measurement.jsonld");
+        m.setUri("http://host:port/service/"+id+"/obsvn/1");
+        m.setType("ssn:Observation");
+
+        SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
+        ssnObservationProperty.setType("http://lsm.deri.ie/OpenIoT/"+propertyname);
+
+        m.setSsnObservationProperty(ssnObservationProperty);
+
+        SsnObservationResultTime ssnObservationResultTime = new SsnObservationResultTime();
+        ssnObservationResultTime.setInXSDDateTime(currentSensor.getMeasureTime().toString());
+
+        m.setSsnObservationResultTime(ssnObservationResultTime);
+
+        DulHasLocation dulHasLocation = new DulHasLocation();
+        dulHasLocation.setType("geo:Point");
+        String[] splitted = currentSensor.getPhysicalLocation().split(";");
+        dulHasLocation.setGeoLat(splitted[0]);
+        dulHasLocation.setGeoLong(splitted[1]);
+        dulHasLocation.setGeoAlt("0.0");
+
+        m.setDulHasLocation(dulHasLocation);
+
+        SsnObservationQuality ssnObservationQuality = new SsnObservationQuality();
+        SsnHasMeasurementProperty ssnHasMeasurementProperty = new SsnHasMeasurementProperty();
+        ssnHasMeasurementProperty.setType("Reliability");
+        ssnHasMeasurementProperty.setHasValue("HighReliability");
+        ssnObservationQuality.setSsnHasMeasurementProperty(ssnHasMeasurementProperty);
+
+        SsnObservationResult ssnObservationResult = new SsnObservationResult();
+        ssnObservationResult.setType("ssn:SensorOutput");
+        SsnHasValue ssnHasValue = new SsnHasValue();
+        ssnHasValue.setType("ssn:ObservationValue");
+
+        float value=0;
+
+        if (currentSensor.getDirectionCount() == 1) {
+            if (propertyname.equals("Speed")) {
+                value = currentSensor.getSpeed();
+                ssnHasValue.setValue(""+value);
+                ssnHasValue.setQudtUnit("qudt:KmH");
+            } else if (propertyname.equals("Color")) {
+                value = currentSensor.getColor();
+                ssnHasValue.setValue(""+value);
+                ssnHasValue.setQudtUnit("qudt:Color");
+            } else {
+                return "{\n" +
+                        "\"ERROR\": \"ID "+id+" has no "+propertyname+" property.\"\n"+
+                        "}";
+            }
+        }
+
+        if (currentSensor.getDirectionCount() == 2) {
+            if (propertyname.equals("Speed")) {
+                value = currentSensor.getSpeed();
+                ssnHasValue.setValue(""+value);
+                ssnHasValue.setQudtUnit("qudt:KmH");
+            } else if (propertyname.equals("Color")) {
+                value = currentSensor.getColor();
+                ssnHasValue.setValue(""+value);
+                ssnHasValue.setQudtUnit("qudt:Color");
+            } else if (propertyname.equals("ReverseSpeed")) {
+                value = currentSensor.getReverseSpeed();
+                ssnHasValue.setValue(""+value);
+                ssnHasValue.setQudtUnit("qudt:KmH");
+            } else if (propertyname.equals("ReverseColor")) {
+                value = currentSensor.getReverseColor();
+                ssnHasValue.setValue(""+value);
+                ssnHasValue.setQudtUnit("qudt:Color");
+            } else {
+                return "{\n" +
+                        "\"ERROR\": \"ID "+id+" has no "+propertyname+" property.\"\n"+
+                        "}";
+            }
+        }
+
+        ssnObservationResult.setSsnHasValue(ssnHasValue);
+
+        m.setSsnObservationResult(ssnObservationResult);
+
+        String out = "";
+
+        try {
+            out = JsonUtils.serializeJson(m);
+        } catch (IOException e) {
+            logger.error("IO EXCEPTION Measure JSON serialize");
+            e.printStackTrace();
+        }
+
+        return out;
     }
 
 
@@ -128,6 +232,7 @@ public class HiService
         try {
             out = JsonUtils.serializeJson(sensors);
         } catch (IOException e) {
+            logger.error("IO EXCEPTION Sensor INFO JSON serialize");
             e.printStackTrace();
         }
 
@@ -152,7 +257,7 @@ public class HiService
         } catch (IndexOutOfBoundsException e) {
             logger.error("ID: "+id+" not present.");
             return "{\n" +
-                    "\"ERROR\": \"ID "+id+" not present.\"\n"+
+                    "\"ERROR\": \"ID "+id+" not present\"\n"+
                     "}";
         }
 

@@ -1,5 +1,6 @@
 package eu.vital.reply;
 
+import eu.vital.reply.clients.HiReplySvc;
 import eu.vital.reply.services.HiService;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -40,6 +41,10 @@ public class Main {
      */
     public static void main(String[] args) throws IOException, URISyntaxException, JAXBException, SAXException
     {
+        //HiService test = new HiService();
+
+        //System.out.println(test.getPropertyValue("cnc12145-I_TrS_4","Speed"));
+
         final HttpServer server = startServer();
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
