@@ -25,7 +25,7 @@ public class ProvidesService {
     @JsonProperty("type")
     private String type;
     @JsonProperty("msm:hasOperation")
-    private MsmHasOperation msmHasOperation;
+    private SystemOperation systemOperation;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -60,22 +60,22 @@ public class ProvidesService {
      *     The msmHasOperation
      */
     @JsonProperty("msm:hasOperation")
-    public MsmHasOperation getMsmHasOperation() {
-        return msmHasOperation;
+    public SystemOperation getSystemOperation() {
+        return systemOperation;
     }
 
     /**
      * 
-     * @param msmHasOperation
+     * @param systemOperation
      *     The msm:hasOperation
      */
     @JsonProperty("msm:hasOperation")
-    public void setMsmHasOperation(MsmHasOperation msmHasOperation) {
-        this.msmHasOperation = msmHasOperation;
+    public void setSystemOperation(SystemOperation systemOperation) {
+        this.systemOperation = systemOperation;
     }
 
-    public ProvidesService withMsmHasOperation(MsmHasOperation msmHasOperation) {
-        this.msmHasOperation = msmHasOperation;
+    public ProvidesService withMsmHasOperation(SystemOperation systemOperation) {
+        this.systemOperation = systemOperation;
         return this;
     }
 

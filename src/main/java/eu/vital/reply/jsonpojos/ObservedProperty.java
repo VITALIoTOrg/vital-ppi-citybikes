@@ -20,7 +20,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
     "type",
     "uri"
 })
-public class SsnObservation
+public class ObservedProperty
 {
 
     @JsonProperty("type")
@@ -50,7 +50,7 @@ public class SsnObservation
         this.type = type;
     }
 
-    public SsnObservation withType(String type) {
+    public ObservedProperty withType(String type) {
         this.type = type;
         return this;
     }
@@ -75,7 +75,7 @@ public class SsnObservation
         this.uri = uri;
     }
 
-    public SsnObservation withUri(String uri) {
+    public ObservedProperty withUri(String uri) {
         this.uri = uri;
         return this;
     }
@@ -105,7 +105,7 @@ public class SsnObservation
         this.additionalProperties.put(name, value);
     }
 
-    public SsnObservation withAdditionalProperty(String name, Object value) {
+    public ObservedProperty withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }

@@ -20,7 +20,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
     "hrest:hasAddress",
     "hrest:hasMethod"
 })
-public class MsmHasOperation {
+public class SystemOperation {
 
     @JsonProperty("hrest:hasAddress")
     private String hrestHasAddress;
@@ -49,7 +49,7 @@ public class MsmHasOperation {
         this.hrestHasAddress = hrestHasAddress;
     }
 
-    public MsmHasOperation withHrestHasAddress(String hrestHasAddress) {
+    public SystemOperation withHrestHasAddress(String hrestHasAddress) {
         this.hrestHasAddress = hrestHasAddress;
         return this;
     }
@@ -74,7 +74,7 @@ public class MsmHasOperation {
         this.hrestHasMethod = hrestHasMethod;
     }
 
-    public MsmHasOperation withHrestHasMethod(String hrestHasMethod) {
+    public SystemOperation withHrestHasMethod(String hrestHasMethod) {
         this.hrestHasMethod = hrestHasMethod;
         return this;
     }
@@ -104,7 +104,7 @@ public class MsmHasOperation {
         this.additionalProperties.put(name, value);
     }
 
-    public MsmHasOperation withAdditionalProperty(String name, Object value) {
+    public SystemOperation withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
