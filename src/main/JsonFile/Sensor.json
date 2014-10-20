@@ -1,0 +1,23 @@
+{  
+   "@context":"http://vital-iot.org/contexts/sensor.jsonld",
+   "name":"TemperatureSensor No.123",
+   "type":"VitalSensor",
+   "description":"This is an example sensor",
+   "uri":"http://www.example.com/vital/sensor/123",
+   "hasLastKnownLocation":{  
+      "type":"geo:Point",
+      "geo:lat":"53.2719",
+      "geo:long":"-9.0489"
+   },
+   "ssn:observes":[  
+      {  
+         "type":"http://lsm.deri.ie/OpenIoT/Light",
+         "uri":"http://www.example.com/vital/sensor/123/light"
+      },
+      {  
+         "type":"http://lsm.deri.ie/OpenIoT/Temperature",
+         "uri":"http://www.example.com/vital/sensor/123/temperature"
+      }
+   ],
+   "ssn:madeObservation":"http://www.example.com/vital/sensor/123/obsvn/1"
+}

@@ -54,12 +54,12 @@ public class HiService
         return "System getPropertyValue {" + id + "," + name + "}";
     }
 
-    @Path("{id}/property/{name}/{value}")
+    @Path("{id}/property/{name}/{raw}")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public boolean setPropertyValue(@PathParam("id") String id, @PathParam("name") String name,
-                                    @PathParam("value") String value) throws IOException, URISyntaxException {
-        //return "System setPropertyValue {service:" + id + ", property:" + name + ", value: " + value + "}";
+                                    @PathParam("raw") String value) throws IOException, URISyntaxException {
+        //return "System setPropertyValue {service:" + id + ", property:" + name + ", raw: " + raw + "}";
         return this.hiReplySvc.setPropertyValue(id,name,value);
     }
 
