@@ -41,9 +41,9 @@ public class Sensor {
     @JsonProperty("uri")
     private String uri;
     @JsonProperty("hasLastKnownLocation")
-    private Location location;
+    private HasLastKnownLocation hasLastKnownLocation;
     @JsonProperty("ssn:observes")
-    private List<ObservedProperty> ssnObserves = new ArrayList<ObservedProperty>();
+    private List<SsnObserf> ssnObserves = new ArrayList<SsnObserf>();
     @JsonProperty("ssn:madeObservation")
     private String ssnMadeObservation;
     @JsonIgnore
@@ -180,22 +180,22 @@ public class Sensor {
      *     The hasLastKnownLocation
      */
     @JsonProperty("hasLastKnownLocation")
-    public Location getLocation() {
-        return location;
+    public HasLastKnownLocation getHasLastKnownLocation() {
+        return hasLastKnownLocation;
     }
 
     /**
      * 
-     * @param location
+     * @param hasLastKnownLocation
      *     The hasLastKnownLocation
      */
     @JsonProperty("hasLastKnownLocation")
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setHasLastKnownLocation(HasLastKnownLocation hasLastKnownLocation) {
+        this.hasLastKnownLocation = hasLastKnownLocation;
     }
 
-    public Sensor withHasLastKnownLocation(Location location) {
-        this.location = location;
+    public Sensor withHasLastKnownLocation(HasLastKnownLocation hasLastKnownLocation) {
+        this.hasLastKnownLocation = hasLastKnownLocation;
         return this;
     }
 
@@ -205,7 +205,7 @@ public class Sensor {
      *     The ssnObserves
      */
     @JsonProperty("ssn:observes")
-    public List<ObservedProperty> getSsnObserves() {
+    public List<SsnObserf> getSsnObserves() {
         return ssnObserves;
     }
 
@@ -215,11 +215,11 @@ public class Sensor {
      *     The ssn:observes
      */
     @JsonProperty("ssn:observes")
-    public void setSsnObserves(List<ObservedProperty> ssnObserves) {
+    public void setSsnObserves(List<SsnObserf> ssnObserves) {
         this.ssnObserves = ssnObserves;
     }
 
-    public Sensor withSsnObserves(List<ObservedProperty> ssnObserves) {
+    public Sensor withSsnObserves(List<SsnObserf> ssnObserves) {
         this.ssnObserves = ssnObserves;
         return this;
     }

@@ -18,18 +18,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "type",
-    "geo:lat",
-    "geo:long"
+    "uri"
 })
-public class Location
-{
+public class SsnObserf {
 
     @JsonProperty("type")
     private String type;
-    @JsonProperty("geo:lat")
-    private String geoLat;
-    @JsonProperty("geo:long")
-    private String geoLong;
+    @JsonProperty("uri")
+    private String uri;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -53,7 +49,7 @@ public class Location
         this.type = type;
     }
 
-    public Location withType(String type) {
+    public SsnObserf withType(String type) {
         this.type = type;
         return this;
     }
@@ -61,50 +57,25 @@ public class Location
     /**
      * 
      * @return
-     *     The geoLat
+     *     The uri
      */
-    @JsonProperty("geo:lat")
-    public String getGeoLat() {
-        return geoLat;
+    @JsonProperty("uri")
+    public String getUri() {
+        return uri;
     }
 
     /**
      * 
-     * @param geoLat
-     *     The geo:lat
+     * @param uri
+     *     The uri
      */
-    @JsonProperty("geo:lat")
-    public void setGeoLat(String geoLat) {
-        this.geoLat = geoLat;
+    @JsonProperty("uri")
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
-    public Location withGeoLat(String geoLat) {
-        this.geoLat = geoLat;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The geoLong
-     */
-    @JsonProperty("geo:long")
-    public String getGeoLong() {
-        return geoLong;
-    }
-
-    /**
-     * 
-     * @param geoLong
-     *     The geo:long
-     */
-    @JsonProperty("geo:long")
-    public void setGeoLong(String geoLong) {
-        this.geoLong = geoLong;
-    }
-
-    public Location withGeoLong(String geoLong) {
-        this.geoLong = geoLong;
+    public SsnObserf withUri(String uri) {
+        this.uri = uri;
         return this;
     }
 
@@ -133,7 +104,7 @@ public class Location
         this.additionalProperties.put(name, value);
     }
 
-    public Location withAdditionalProperty(String name, Object value) {
+    public SsnObserf withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }

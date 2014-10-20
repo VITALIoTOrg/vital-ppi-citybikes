@@ -18,15 +18,17 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "type",
-    "uri"
+    "geo:lat",
+    "geo:long"
 })
-public class ObservedProperty
-{
+public class HasLastKnownLocation {
 
     @JsonProperty("type")
     private String type;
-    @JsonProperty("uri")
-    private String uri;
+    @JsonProperty("geo:lat")
+    private String geoLat;
+    @JsonProperty("geo:long")
+    private String geoLong;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -50,7 +52,7 @@ public class ObservedProperty
         this.type = type;
     }
 
-    public ObservedProperty withType(String type) {
+    public HasLastKnownLocation withType(String type) {
         this.type = type;
         return this;
     }
@@ -58,25 +60,50 @@ public class ObservedProperty
     /**
      * 
      * @return
-     *     The uri
+     *     The geoLat
      */
-    @JsonProperty("uri")
-    public String getUri() {
-        return uri;
+    @JsonProperty("geo:lat")
+    public String getGeoLat() {
+        return geoLat;
     }
 
     /**
      * 
-     * @param uri
-     *     The uri
+     * @param geoLat
+     *     The geo:lat
      */
-    @JsonProperty("uri")
-    public void setUri(String uri) {
-        this.uri = uri;
+    @JsonProperty("geo:lat")
+    public void setGeoLat(String geoLat) {
+        this.geoLat = geoLat;
     }
 
-    public ObservedProperty withUri(String uri) {
-        this.uri = uri;
+    public HasLastKnownLocation withGeoLat(String geoLat) {
+        this.geoLat = geoLat;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The geoLong
+     */
+    @JsonProperty("geo:long")
+    public String getGeoLong() {
+        return geoLong;
+    }
+
+    /**
+     * 
+     * @param geoLong
+     *     The geo:long
+     */
+    @JsonProperty("geo:long")
+    public void setGeoLong(String geoLong) {
+        this.geoLong = geoLong;
+    }
+
+    public HasLastKnownLocation withGeoLong(String geoLong) {
+        this.geoLong = geoLong;
         return this;
     }
 
@@ -105,7 +132,7 @@ public class ObservedProperty
         this.additionalProperties.put(name, value);
     }
 
-    public ObservedProperty withAdditionalProperty(String name, Object value) {
+    public HasLastKnownLocation withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }

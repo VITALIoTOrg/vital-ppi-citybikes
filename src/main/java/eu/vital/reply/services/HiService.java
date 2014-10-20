@@ -1,11 +1,10 @@
 package eu.vital.reply.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.vital.reply.Utils.JsonUtils;
 import eu.vital.reply.clients.HiReplySvc;
-import eu.vital.reply.jsonpojos.Location;
-import eu.vital.reply.jsonpojos.ObservedProperty;
+import eu.vital.reply.jsonpojos.HasLastKnownLocation;
 import eu.vital.reply.jsonpojos.Sensor;
+import eu.vital.reply.jsonpojos.SsnObserf;
 import eu.vital.reply.xmlpojos.ServiceList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,6 +31,19 @@ public class HiService
         hiReplySvc = new HiReplySvc();
         logger = LogManager.getLogger(HiService.class);
     }
+
+    ///service/{id}/property/{propertyname}
+
+    @Path("/{id}/property/{propertyname}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getPropertyValue(String id, String property) {
+
+
+
+        return "";
+    }
+
 
 
     @Path("all")
@@ -61,43 +73,43 @@ public class HiService
             sensor.setDescription(currentSensor.getDescription());
             sensor.setUri("http://uri.example");
 
-            Location location = new Location();
+            HasLastKnownLocation location = new HasLastKnownLocation();
             location.setType("geo:Point");
             String[] splitted = currentSensor.getPhysicalLocation().split(";");
             location.setGeoLat(splitted[0]);
             location.setGeoLong(splitted[1]);
 
-            sensor.setLocation(location);
+            sensor.setHasLastKnownLocation(location);
 
             int dirCount = currentSensor.getDirectionCount();
-            List<ObservedProperty> observedProperties = new ArrayList<>();
+            List<SsnObserf> observedProperties = new ArrayList<>();
 
             if (dirCount == 1) {
                 //speed e color
-                ObservedProperty speed = new ObservedProperty();
+                SsnObserf speed = new SsnObserf();
                 speed.setType("http://"+id+"/type.example.Speed");
-                speed.setUri("http://"+id+"/uri.example.speed");
-                ObservedProperty color = new ObservedProperty();
+                speed.setUri("http://host:port/service/"+id+"/property/Speed");
+                SsnObserf color = new SsnObserf();
                 color.setType("http://"+id+"/type.example.Color");
-                color.setUri("http://" + id + "/uri.example.color");
+                color.setUri("http://host:port/service/" + id + "/property/Color");
                 observedProperties.add(speed);
                 observedProperties.add(color);
             }
 
             if (dirCount == 2) {
                 //speed e color + reverse
-                ObservedProperty speed = new ObservedProperty();
+                SsnObserf speed = new SsnObserf();
                 speed.setType("http://reply.eu/Speed");
                 speed.setUri("http://host:port/service/"+id+"/property/Speed");
-                ObservedProperty color = new ObservedProperty();
+                SsnObserf color = new SsnObserf();
                 color.setType("http://reply.eu/Color");
                 color.setUri("http://host:port/service/" + id + "/property/Color");
                 observedProperties.add(speed);
                 observedProperties.add(color);
-                ObservedProperty revspeed = new ObservedProperty();
+                SsnObserf revspeed = new SsnObserf();
                 revspeed.setType("http://reply.eu/ReverseSpeed");
                 revspeed.setUri("http://host:port/service/" + id + "property/ReverseSpeed");
-                ObservedProperty revcolor = new ObservedProperty();
+                SsnObserf revcolor = new SsnObserf();
                 revcolor.setType("http://reply.eu/ReverseColor");
                 revcolor.setUri("http://host:port/service/" + id + "/property/ReverseColor");
                 observedProperties.add(revspeed);
@@ -152,43 +164,43 @@ public class HiService
         sensor.setDescription(currentSensor.getDescription());
         sensor.setUri("http://uri.example");
 
-        Location location = new Location();
+        HasLastKnownLocation location = new HasLastKnownLocation();
         location.setType("geo:Point");
         String[] splitted = currentSensor.getPhysicalLocation().split(";");
         location.setGeoLat(splitted[0]);
         location.setGeoLong(splitted[1]);
 
-        sensor.setLocation(location);
+        sensor.setHasLastKnownLocation(location);
 
         int dirCount = currentSensor.getDirectionCount();
-        List<ObservedProperty> observedProperties = new ArrayList<>();
+        List<SsnObserf> observedProperties = new ArrayList<>();
 
         if (dirCount == 1) {
             //speed e color
-            ObservedProperty speed = new ObservedProperty();
+            SsnObserf speed = new SsnObserf();
             speed.setType("http://"+id+"/type.example.Speed");
             speed.setUri("http://"+id+"/uri.example.speed");
-            ObservedProperty color = new ObservedProperty();
+            SsnObserf color = new SsnObserf();
             color.setType("http://"+id+"/type.example.Color");
-            color.setUri("http://" + id + "/uri.example.color");
+            color.setUri("http://host:port/service/" + id + "/property/Color");
             observedProperties.add(speed);
             observedProperties.add(color);
         }
 
         if (dirCount == 2) {
             //speed e color + reverse
-            ObservedProperty speed = new ObservedProperty();
+            SsnObserf speed = new SsnObserf();
             speed.setType("http://reply.eu/Speed");
-            speed.setUri("http://host:port/service/"+id+"/property/Speed");
-            ObservedProperty color = new ObservedProperty();
+            speed.setUri("http://host:port/service/" + id + "/property/Speed");
+            SsnObserf color = new SsnObserf();
             color.setType("http://reply.eu/Color");
             color.setUri("http://host:port/service/" + id + "/property/Color");
             observedProperties.add(speed);
             observedProperties.add(color);
-            ObservedProperty revspeed = new ObservedProperty();
+            SsnObserf revspeed = new SsnObserf();
             revspeed.setType("http://reply.eu/ReverseSpeed");
-            revspeed.setUri("http://host:port/service/" + id + "property/ReverseSpeed");
-            ObservedProperty revcolor = new ObservedProperty();
+            revspeed.setUri("http://host:port/service/" + id + "/property/ReverseSpeed");
+            SsnObserf revcolor = new SsnObserf();
             revcolor.setType("http://reply.eu/ReverseColor");
             revcolor.setUri("http://host:port/service/" + id + "/property/ReverseColor");
             observedProperties.add(revspeed);
@@ -231,13 +243,6 @@ public class HiService
     @Produces(MediaType.APPLICATION_JSON)
     public String getPropertyNames(@PathParam("id") String id) {
         return "System getPropertyNames {" + id + "}";
-    }
-
-    @Path("{id}/property/{name}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getPropertyValue(@PathParam("id") String id, @PathParam("name") String name) {
-        return "System getPropertyValue {" + id + "," + name + "}";
     }
 
     @Path("{id}/property/{name}/{raw}")

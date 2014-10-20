@@ -17,65 +17,65 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "type",
-    "msm:hasOperation"
+    "hrest:hasAddress",
+    "hrest:hasMethod"
 })
-public class ProvidesService {
+public class MsmHasOperation {
 
-    @JsonProperty("type")
-    private String type;
-    @JsonProperty("msm:hasOperation")
-    private MsmHasOperation msmHasOperation;
+    @JsonProperty("hrest:hasAddress")
+    private String hrestHasAddress;
+    @JsonProperty("hrest:hasMethod")
+    private String hrestHasMethod;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The type
+     *     The hrestHasAddress
      */
-    @JsonProperty("type")
-    public String getType() {
-        return type;
+    @JsonProperty("hrest:hasAddress")
+    public String getHrestHasAddress() {
+        return hrestHasAddress;
     }
 
     /**
      * 
-     * @param type
-     *     The type
+     * @param hrestHasAddress
+     *     The hrest:hasAddress
      */
-    @JsonProperty("type")
-    public void setType(String type) {
-        this.type = type;
+    @JsonProperty("hrest:hasAddress")
+    public void setHrestHasAddress(String hrestHasAddress) {
+        this.hrestHasAddress = hrestHasAddress;
     }
 
-    public ProvidesService withType(String type) {
-        this.type = type;
+    public MsmHasOperation withHrestHasAddress(String hrestHasAddress) {
+        this.hrestHasAddress = hrestHasAddress;
         return this;
     }
 
     /**
      * 
      * @return
-     *     The msmHasOperation
+     *     The hrestHasMethod
      */
-    @JsonProperty("msm:hasOperation")
-    public MsmHasOperation getMsmHasOperation() {
-        return msmHasOperation;
+    @JsonProperty("hrest:hasMethod")
+    public String getHrestHasMethod() {
+        return hrestHasMethod;
     }
 
     /**
      * 
-     * @param msmHasOperation
-     *     The msm:hasOperation
+     * @param hrestHasMethod
+     *     The hrest:hasMethod
      */
-    @JsonProperty("msm:hasOperation")
-    public void setMsmHasOperation(MsmHasOperation msmHasOperation) {
-        this.msmHasOperation = msmHasOperation;
+    @JsonProperty("hrest:hasMethod")
+    public void setHrestHasMethod(String hrestHasMethod) {
+        this.hrestHasMethod = hrestHasMethod;
     }
 
-    public ProvidesService withMsmHasOperation(MsmHasOperation msmHasOperation) {
-        this.msmHasOperation = msmHasOperation;
+    public MsmHasOperation withHrestHasMethod(String hrestHasMethod) {
+        this.hrestHasMethod = hrestHasMethod;
         return this;
     }
 
@@ -104,7 +104,7 @@ public class ProvidesService {
         this.additionalProperties.put(name, value);
     }
 
-    public ProvidesService withAdditionalProperty(String name, Object value) {
+    public MsmHasOperation withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }

@@ -10,3 +10,4 @@
 2014-10-20 14:57:00 [Grizzly-worker(8)] ERROR eu.vital.reply.services.HiService - ID: cnc12145-I_TrS_7 not present.
 2014-10-20 14:58:12 [Grizzly-worker(1)] ERROR eu.vital.reply.services.HiService - ID: cnc12145-I_TrS_7 not present.
 2014-10-20 14:58:50 [Grizzly-worker(1)] ERROR eu.vital.reply.services.HiService - ID: cnc12145-I_TrS_7 not present.
+2014-10-20 16:11:15 [Grizzly-worker(1)] ERROR eu.vital.reply.services.HiService - ID: cnc12145-I_TrS_5 not present.

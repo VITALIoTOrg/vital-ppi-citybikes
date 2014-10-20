@@ -3,6 +3,7 @@ package eu.vital.reply.services;
 import eu.vital.reply.Utils.JsonUtils;
 import eu.vital.reply.clients.HiReplySvc;
 import eu.vital.reply.jsonpojos.IoTSystem;
+import eu.vital.reply.jsonpojos.MsmHasOperation;
 import eu.vital.reply.jsonpojos.SystemOperation;
 import eu.vital.reply.jsonpojos.ProvidesService;
 import eu.vital.reply.xmlpojos.ServiceList;
@@ -42,7 +43,7 @@ public class HiSystem
 
         IoTSystem ioTSystem = new IoTSystem();
         ProvidesService service = new ProvidesService();
-        SystemOperation operation = new SystemOperation();
+        MsmHasOperation operation = new MsmHasOperation();
         ArrayList<ProvidesService> serviceList = new ArrayList<>();
 
         ioTSystem.setContext("http://vital.iot.org/system.jsonld");
@@ -58,7 +59,7 @@ public class HiSystem
         operation.setHrestHasAddress("http://vital.hireply/system/info");
         operation.setHrestHasMethod("hrest:GET");
 
-        service.setSystemOperation(operation);
+        service.setMsmHasOperation(operation);
 
         serviceList.add(service);
 
