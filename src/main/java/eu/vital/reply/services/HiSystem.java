@@ -63,6 +63,22 @@ public class HiSystem
 
         serviceList.add(service);
 
+        //start servizio 2
+
+        service = new ProvidesService();
+        operation = new MsmHasOperation();
+
+        service.setType("Service");
+        operation.setAdditionalProperty("type", "AllService");
+        operation.setHrestHasAddress("http://vital.hireply/service/all");
+        operation.setHrestHasMethod("hrest:GET");
+
+        service.setMsmHasOperation(operation);
+ 
+        serviceList.add(service);
+
+        //end servizio 2
+
         ioTSystem.setProvidesService(serviceList);
 
         String out = "";
