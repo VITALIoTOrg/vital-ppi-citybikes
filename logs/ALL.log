@@ -3,3 +3,10 @@
 2014-10-14 16:47:33 [Grizzly-worker(2)] ERROR eu.vital.reply.clients.HiReplySvc - isServiceRunning - HTTP Get Exception
 2014-10-14 17:41:44 [Grizzly-worker(4)] ERROR eu.vital.reply.clients.HiReplySvc - isServiceRunning - HTTP Get Exception
 2014-10-14 17:42:06 [Grizzly-worker(6)] ERROR eu.vital.reply.clients.HiReplySvc - isServiceRunning - HTTP Get Exception
+2014-10-20 14:28:19 [main] ERROR eu.vital.reply.services.HiService - ID: cnc12145-I_TrS_123 not present.
+2014-10-20 14:28:29 [Grizzly-worker(5)] ERROR eu.vital.reply.services.HiService - ID: cnc12145-I_TrS_7 not present.
+2014-10-20 14:29:09 [Grizzly-worker(1)] ERROR eu.vital.reply.services.HiService - ID: cnc12145-I_TrS_7 not present.
+2014-10-20 14:43:13 [Grizzly-worker(1)] ERROR eu.vital.reply.services.HiService - ID: cnc12145-I_TrS_7 not present.
+2014-10-20 14:57:00 [Grizzly-worker(8)] ERROR eu.vital.reply.services.HiService - ID: cnc12145-I_TrS_7 not present.
+2014-10-20 14:58:12 [Grizzly-worker(1)] ERROR eu.vital.reply.services.HiService - ID: cnc12145-I_TrS_7 not present.
+2014-10-20 14:58:50 [Grizzly-worker(1)] ERROR eu.vital.reply.services.HiService - ID: cnc12145-I_TrS_7 not present.
