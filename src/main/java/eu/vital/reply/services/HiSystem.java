@@ -84,6 +84,7 @@ public class HiSystem
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String getSnapshot() {
+
         return hiReplySvc.getSnapshot().getIoTSystem().getID(); // test, deve resituire json
     }
 
