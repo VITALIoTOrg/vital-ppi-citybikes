@@ -1,5 +1,6 @@
 package eu.vital.reply.services;
 
+import eu.vital.reply.utils.ConfigReader;
 import eu.vital.reply.utils.JsonUtils;
 import eu.vital.reply.clients.HiReplySvc;
 import eu.vital.reply.jsonpojos.*;
