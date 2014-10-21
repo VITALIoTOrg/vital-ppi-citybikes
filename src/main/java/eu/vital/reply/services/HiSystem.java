@@ -98,7 +98,7 @@ public class HiSystem
         operation = new MsmHasOperation();
 
         operation.setType("ServicePropertyValue");
-        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"vital.hireply/service/{id}/property/{name}");
+        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"/service/{id}/property/{name}");
         operation.setHrestHasMethod("hrest:GET");
 
         operations.add(operation);
