@@ -1,8 +1,6 @@
-package eu.vital.reply;
+package eu.vital.reply.utils;
 
-import eu.vital.reply.xmlpojos.ServiceList;
 import org.xml.sax.*;
-import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 import javax.xml.bind.JAXBContext;
