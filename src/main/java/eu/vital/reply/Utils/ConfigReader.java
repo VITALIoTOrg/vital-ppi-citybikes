@@ -1,4 +1,4 @@
-package eu.vital.reply;
+package eu.vital.reply.utils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

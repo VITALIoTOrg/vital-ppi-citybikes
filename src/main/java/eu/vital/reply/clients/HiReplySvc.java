@@ -1,7 +1,7 @@
 package eu.vital.reply.clients;
 
-import eu.vital.reply.ConfigReader;
-import eu.vital.reply.UnmarshalUtil;
+import eu.vital.reply.utils.ConfigReader;
+import eu.vital.reply.utils.UnmarshalUtil;
 import eu.vital.reply.xmlpojos.PropertyList;
 import eu.vital.reply.xmlpojos.ServiceList;
 import eu.vital.reply.xmlpojos.ValueList;
@@ -16,9 +16,6 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.xml.sax.SAXException;
-
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;

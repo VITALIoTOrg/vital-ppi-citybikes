@@ -1,4 +1,4 @@
-package eu.vital.reply.Utils;
+package eu.vital.reply.utils;
 
 
 import java.io.IOException; 

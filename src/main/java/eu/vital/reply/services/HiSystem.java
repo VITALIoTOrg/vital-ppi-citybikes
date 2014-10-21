@@ -1,11 +1,9 @@
 package eu.vital.reply.services;
 
-import eu.vital.reply.ConfigReader;
-import eu.vital.reply.Utils.JsonUtils;
+import eu.vital.reply.utils.JsonUtils;
 import eu.vital.reply.clients.HiReplySvc;
 import eu.vital.reply.jsonpojos.IoTSystem;
 import eu.vital.reply.jsonpojos.MsmHasOperation;
-import eu.vital.reply.jsonpojos.SystemOperation;
 import eu.vital.reply.jsonpojos.ProvidesService;
 import eu.vital.reply.xmlpojos.ServiceList;
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +16,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * System resource (exposed at "/system" path)
