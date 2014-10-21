@@ -1,5 +1,6 @@
 package eu.vital.reply.services;
 
+import eu.vital.reply.ConfigReader;
 import eu.vital.reply.Utils.JsonUtils;
 import eu.vital.reply.clients.HiReplySvc;
 import eu.vital.reply.jsonpojos.IoTSystem;
@@ -29,10 +30,18 @@ public class HiSystem
 
     private Logger logger;
 
+    private ConfigReader configReader;
+    private String hostName;
+    private String hostPort;
+
     public HiSystem()
     {
+        configReader = ConfigReader.getInstance();
         hiReplySvc = new HiReplySvc();
         logger = LogManager.getLogger(HiSystem.class);
+
+        hostName = configReader.get(ConfigReader.SERVER_HOSTNAME);
+        hostPort = configReader.get(ConfigReader.SERVER_PORT);
     }
 
     @Path("info")
@@ -58,7 +67,7 @@ public class HiSystem
 
         service.setType("System");
         operation.setType("SystemInfo");
-        operation.setHrestHasAddress("http://vital.hireply/system/info");
+        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"/system/info");
         operation.setHrestHasMethod("hrest:GET");
 
         operations.add(operation);
@@ -75,7 +84,7 @@ public class HiSystem
 
         service.setType("Service");
         operation.setType("AllService");
-        operation.setHrestHasAddress("http://vital.hireply/service/all");
+        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"/service/all");
         operation.setHrestHasMethod("hrest:GET");
 
         operations.add(operation);
@@ -83,7 +92,7 @@ public class HiSystem
         operation = new MsmHasOperation();
 
         operation.setType("ServiceInfo");
-        operation.setHrestHasAddress("http://vital.hireply/service/{id}/info");
+        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"/service/{id}/info");
         operation.setHrestHasMethod("hrest:GET");
 
         operations.add(operation);
@@ -91,7 +100,7 @@ public class HiSystem
         operation = new MsmHasOperation();
 
         operation.setType("ServicePropertyValue");
-        operation.setHrestHasAddress("http://vital.hireply/service/{id}/property/{name}");
+        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"vital.hireply/service/{id}/property/{name}");
         operation.setHrestHasMethod("hrest:GET");
 
         operations.add(operation);

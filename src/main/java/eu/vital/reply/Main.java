@@ -1,7 +1,5 @@
 package eu.vital.reply;
 
-import eu.vital.reply.clients.HiReplySvc;
-import eu.vital.reply.services.HiService;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -18,7 +16,7 @@ import java.net.URISyntaxException;
  */
 public class Main {
     // Base URI the Grizzly HTTP server will listen on
-    public static final String BASE_URI = "http://localhost:8080/";
+    public static String BASE_URI;
 
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
@@ -41,9 +39,13 @@ public class Main {
      */
     public static void main(String[] args) throws IOException, URISyntaxException, JAXBException, SAXException
     {
-        //HiService test = new HiService();
 
-        //System.out.println(test.getPropertyValue("cnc12145-I_TrS_4","Speed"));
+        ConfigReader configReader = ConfigReader.getInstance();
+
+        String hostName = configReader.get(ConfigReader.SERVER_HOSTNAME);
+        String hostPort = configReader.get(ConfigReader.SERVER_PORT);
+
+        BASE_URI = "http://"+hostName+":"+hostPort+"/";
 
         final HttpServer server = startServer();
         System.out.println(String.format("Jersey app started with WADL available at "

@@ -1,5 +1,6 @@
 package eu.vital.reply.services;
 
+import eu.vital.reply.ConfigReader;
 import eu.vital.reply.Utils.JsonUtils;
 import eu.vital.reply.clients.HiReplySvc;
 import eu.vital.reply.jsonpojos.*;
@@ -24,10 +25,20 @@ public class HiService
 {
     private Logger logger;
     private HiReplySvc hiReplySvc;
+    private ConfigReader configReader;
+
+    private String hostPort;
+    private String hostName;
+
+
     public HiService()
     {
+        configReader = ConfigReader.getInstance();
         hiReplySvc = new HiReplySvc();
         logger = LogManager.getLogger(HiService.class);
+
+        hostName = configReader.get(ConfigReader.SERVER_HOSTNAME);
+        hostPort = configReader.get(ConfigReader.SERVER_PORT);
     }
 
     @Path("{id}/property/{propertyname}")
@@ -55,7 +66,7 @@ public class HiService
         Measure m = new Measure();
 
         m.setContext("http://vital-iot.org/contexts/measurement.jsonld");
-        m.setUri("http://host:port/service/"+id+"/property/"+propertyname);
+        m.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/" + propertyname);
         m.setType("ssn:Observation");
 
         SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
@@ -173,7 +184,7 @@ public class HiService
             sensor.setName(currentSensor.getID());
             sensor.setType("Traffic");
             sensor.setDescription(currentSensor.getDescription());
-            sensor.setUri("http://host:port/service/"+id+"/info");
+            sensor.setUri("http://"+hostName+":"+hostPort+"/service/"+id+"/info");
 
             HasLastKnownLocation location = new HasLastKnownLocation();
             location.setType("geo:Point");
@@ -190,10 +201,10 @@ public class HiService
                 //speed e color
                 SsnObserf speed = new SsnObserf();
                 speed.setType("http://"+id+"/type.example.Speed");
-                speed.setUri("http://host:port/service/"+id+"/property/Speed");
+                speed.setUri("http://"+hostName+":"+hostPort+"/service/"+id+"/property/Speed");
                 SsnObserf color = new SsnObserf();
                 color.setType("http://"+id+"/type.example.Color");
-                color.setUri("http://host:port/service/" + id + "/property/Color");
+                color.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/Color");
                 observedProperties.add(speed);
                 observedProperties.add(color);
             }
@@ -202,24 +213,24 @@ public class HiService
                 //speed e color + reverse
                 SsnObserf speed = new SsnObserf();
                 speed.setType("http://reply.eu/Speed");
-                speed.setUri("http://host:port/service/"+id+"/property/Speed");
+                speed.setUri("http://"+hostName+":"+hostPort+"/service/"+id+"/property/Speed");
                 SsnObserf color = new SsnObserf();
                 color.setType("http://reply.eu/Color");
-                color.setUri("http://host:port/service/" + id + "/property/Color");
+                color.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/Color");
                 observedProperties.add(speed);
                 observedProperties.add(color);
                 SsnObserf revspeed = new SsnObserf();
                 revspeed.setType("http://reply.eu/ReverseSpeed");
-                revspeed.setUri("http://host:port/service/" + id + "property/ReverseSpeed");
+                revspeed.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "property/ReverseSpeed");
                 SsnObserf revcolor = new SsnObserf();
                 revcolor.setType("http://reply.eu/ReverseColor");
-                revcolor.setUri("http://host:port/service/" + id + "/property/ReverseColor");
+                revcolor.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/ReverseColor");
                 observedProperties.add(revspeed);
                 observedProperties.add(revcolor);
             }
 
             sensor.setSsnObserves(observedProperties);
-            sensor.setSsnMadeObservation("http://localhost:8080/service/"+id+"/info");
+            sensor.setSsnMadeObservation("http://"+hostName+":"+hostPort+"/service/"+id+"/info");
 
             sensors.add(sensor);
 
@@ -265,7 +276,7 @@ public class HiService
         sensor.setName(currentSensor.getID());
         sensor.setType("Traffic");
         sensor.setDescription(currentSensor.getDescription());
-        sensor.setUri("http://host:port/service/"+id+"/info");
+        sensor.setUri("http://"+hostName+":"+hostPort+"/service/"+id+"/info");
 
         HasLastKnownLocation location = new HasLastKnownLocation();
         location.setType("geo:Point");
@@ -282,10 +293,10 @@ public class HiService
             //speed e color
             SsnObserf speed = new SsnObserf();
             speed.setType("http://reply.eu/vital/Speed");
-            speed.setUri("http://host:port/service/" + id + "/property/Speed");
+            speed.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/Speed");
             SsnObserf color = new SsnObserf();
             color.setType("http://reply.eu/vital/Color");
-            color.setUri("http://host:port/service/" + id + "/property/Color");
+            color.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/Color");
             observedProperties.add(speed);
             observedProperties.add(color);
         }
@@ -294,24 +305,24 @@ public class HiService
             //speed e color + reverse
             SsnObserf speed = new SsnObserf();
             speed.setType("http://reply.eu/vital/Speed");
-            speed.setUri("http://host:port/service/" + id + "/property/Speed");
+            speed.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/Speed");
             SsnObserf color = new SsnObserf();
             color.setType("http://reply.eu/vital/Color");
-            color.setUri("http://host:port/service/" + id + "/property/Color");
+            color.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/Color");
             observedProperties.add(speed);
             observedProperties.add(color);
             SsnObserf revspeed = new SsnObserf();
             revspeed.setType("http://reply.eu/vital/ReverseSpeed");
-            revspeed.setUri("http://host:port/service/" + id + "/property/ReverseSpeed");
+            revspeed.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/ReverseSpeed");
             SsnObserf revcolor = new SsnObserf();
             revcolor.setType("http://reply.eu/vital/ReverseColor");
-            revcolor.setUri("http://host:port/service/" + id + "/property/ReverseColor");
+            revcolor.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/ReverseColor");
             observedProperties.add(revspeed);
             observedProperties.add(revcolor);
         }
 
         sensor.setSsnObserves(observedProperties);
-        sensor.setSsnMadeObservation("http://localhost:8080/service/"+id+"/info");
+        sensor.setSsnMadeObservation("http://"+hostName+":"+hostPort+"/service/"+id+"/info");
 
         String out = "";
 
