@@ -30,8 +30,6 @@ public class HiService
         logger = LogManager.getLogger(HiService.class);
     }
 
-    ///service/{id}/property/{propertyname}
-
     @Path("{id}/property/{propertyname}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -50,14 +48,14 @@ public class HiService
         } catch (IndexOutOfBoundsException e) {
             logger.error("ID: "+id+" not present.");
             return "{\n" +
-                    "\"ERROR\": \"ID "+id+" not present.\"\n"+
+                    "\"error\": \"ID "+id+" not present.\"\n"+
                     "}";
         }
 
         Measure m = new Measure();
 
         m.setContext("http://vital-iot.org/contexts/measurement.jsonld");
-        m.setUri("http://host:port/service/"+id+"/obsvn/1");
+        m.setUri("http://host:port/service/"+id+"/property/"+propertyname);
         m.setType("ssn:Observation");
 
         SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
@@ -103,7 +101,7 @@ public class HiService
                 ssnHasValue.setQudtUnit("qudt:Color");
             } else {
                 return "{\n" +
-                        "\"ERROR\": \"ID "+id+" has no "+propertyname+" property.\"\n"+
+                        "\"error\": \"ID "+id+" has no "+propertyname+" property.\"\n"+
                         "}";
             }
         }
@@ -127,7 +125,7 @@ public class HiService
                 ssnHasValue.setQudtUnit("qudt:Color");
             } else {
                 return "{\n" +
-                        "\"ERROR\": \"ID "+id+" has no "+propertyname+" property.\"\n"+
+                        "\"error\": \"ID "+id+" has no "+propertyname+" property.\"\n"+
                         "}";
             }
         }
@@ -175,7 +173,7 @@ public class HiService
             sensor.setName(currentSensor.getID());
             sensor.setType("Traffic");
             sensor.setDescription(currentSensor.getDescription());
-            sensor.setUri("http://uri.example");
+            sensor.setUri("http://host:port/service/"+id+"/info");
 
             HasLastKnownLocation location = new HasLastKnownLocation();
             location.setType("geo:Point");
@@ -221,7 +219,7 @@ public class HiService
             }
 
             sensor.setSsnObserves(observedProperties);
-            sensor.setSsnMadeObservation("http://host:port/service/"+id+"/obsvn/1");
+            sensor.setSsnMadeObservation("http://localhost:8080/service/"+id+"/info");
 
             sensors.add(sensor);
 
@@ -257,7 +255,7 @@ public class HiService
         } catch (IndexOutOfBoundsException e) {
             logger.error("ID: "+id+" not present.");
             return "{\n" +
-                    "\"ERROR\": \"ID "+id+" not present\"\n"+
+                    "\"error\": \"ID "+id+" not present\"\n"+
                     "}";
         }
 
@@ -267,7 +265,7 @@ public class HiService
         sensor.setName(currentSensor.getID());
         sensor.setType("Traffic");
         sensor.setDescription(currentSensor.getDescription());
-        sensor.setUri("http://uri.example");
+        sensor.setUri("http://host:port/service/"+id+"/info");
 
         HasLastKnownLocation location = new HasLastKnownLocation();
         location.setType("geo:Point");
@@ -283,10 +281,10 @@ public class HiService
         if (dirCount == 1) {
             //speed e color
             SsnObserf speed = new SsnObserf();
-            speed.setType("http://"+id+"/type.example.Speed");
-            speed.setUri("http://"+id+"/uri.example.speed");
+            speed.setType("http://reply.eu/vital/Speed");
+            speed.setUri("http://host:port/service/" + id + "/property/Speed");
             SsnObserf color = new SsnObserf();
-            color.setType("http://"+id+"/type.example.Color");
+            color.setType("http://reply.eu/vital/Color");
             color.setUri("http://host:port/service/" + id + "/property/Color");
             observedProperties.add(speed);
             observedProperties.add(color);
@@ -295,25 +293,25 @@ public class HiService
         if (dirCount == 2) {
             //speed e color + reverse
             SsnObserf speed = new SsnObserf();
-            speed.setType("http://reply.eu/Speed");
+            speed.setType("http://reply.eu/vital/Speed");
             speed.setUri("http://host:port/service/" + id + "/property/Speed");
             SsnObserf color = new SsnObserf();
-            color.setType("http://reply.eu/Color");
+            color.setType("http://reply.eu/vital/Color");
             color.setUri("http://host:port/service/" + id + "/property/Color");
             observedProperties.add(speed);
             observedProperties.add(color);
             SsnObserf revspeed = new SsnObserf();
-            revspeed.setType("http://reply.eu/ReverseSpeed");
+            revspeed.setType("http://reply.eu/vital/ReverseSpeed");
             revspeed.setUri("http://host:port/service/" + id + "/property/ReverseSpeed");
             SsnObserf revcolor = new SsnObserf();
-            revcolor.setType("http://reply.eu/ReverseColor");
+            revcolor.setType("http://reply.eu/vital/ReverseColor");
             revcolor.setUri("http://host:port/service/" + id + "/property/ReverseColor");
             observedProperties.add(revspeed);
             observedProperties.add(revcolor);
         }
 
         sensor.setSsnObserves(observedProperties);
-        sensor.setSsnMadeObservation("http://host:port/service/"+id+"/obsvn/1");
+        sensor.setSsnMadeObservation("http://localhost:8080/service/"+id+"/info");
 
         String out = "";
 

@@ -1,7 +1,9 @@
 
 package eu.vital.reply.jsonpojos;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -25,7 +27,7 @@ public class ProvidesService {
     @JsonProperty("type")
     private String type;
     @JsonProperty("msm:hasOperation")
-    private MsmHasOperation msmHasOperation;
+    private List<MsmHasOperation> msmHasOperation = new ArrayList<MsmHasOperation>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -60,7 +62,7 @@ public class ProvidesService {
      *     The msmHasOperation
      */
     @JsonProperty("msm:hasOperation")
-    public MsmHasOperation getMsmHasOperation() {
+    public List<MsmHasOperation> getMsmHasOperation() {
         return msmHasOperation;
     }
 
@@ -70,11 +72,11 @@ public class ProvidesService {
      *     The msm:hasOperation
      */
     @JsonProperty("msm:hasOperation")
-    public void setMsmHasOperation(MsmHasOperation msmHasOperation) {
+    public void setMsmHasOperation(List<MsmHasOperation> msmHasOperation) {
         this.msmHasOperation = msmHasOperation;
     }
 
-    public ProvidesService withMsmHasOperation(MsmHasOperation msmHasOperation) {
+    public ProvidesService withMsmHasOperation(List<MsmHasOperation> msmHasOperation) {
         this.msmHasOperation = msmHasOperation;
         return this;
     }

@@ -17,6 +17,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * System resource (exposed at "/system" path)
@@ -45,6 +46,7 @@ public class HiSystem
         ProvidesService service = new ProvidesService();
         MsmHasOperation operation = new MsmHasOperation();
         ArrayList<ProvidesService> serviceList = new ArrayList<>();
+        ArrayList<MsmHasOperation> operations = new ArrayList<>();
 
         ioTSystem.setContext("http://vital.iot.org/system.jsonld");
         ioTSystem.setName(system.getIoTSystem().getID());
@@ -55,11 +57,13 @@ public class HiSystem
         ioTSystem.setServiceArea(system.getIoTSystem().getServiceArea());
 
         service.setType("System");
-        operation.setAdditionalProperty("type", "SystemInfo");
+        operation.setType("SystemInfo");
         operation.setHrestHasAddress("http://vital.hireply/system/info");
         operation.setHrestHasMethod("hrest:GET");
 
-        service.setMsmHasOperation(operation);
+        operations.add(operation);
+
+        service.setMsmHasOperation(operations);
 
         serviceList.add(service);
 
@@ -67,14 +71,33 @@ public class HiSystem
 
         service = new ProvidesService();
         operation = new MsmHasOperation();
+        operations = new ArrayList<>();
 
         service.setType("Service");
-        operation.setAdditionalProperty("type", "AllService");
+        operation.setType("AllService");
         operation.setHrestHasAddress("http://vital.hireply/service/all");
         operation.setHrestHasMethod("hrest:GET");
 
-        service.setMsmHasOperation(operation);
- 
+        operations.add(operation);
+
+        operation = new MsmHasOperation();
+
+        operation.setType("ServiceInfo");
+        operation.setHrestHasAddress("http://vital.hireply/service/{id}/info");
+        operation.setHrestHasMethod("hrest:GET");
+
+        operations.add(operation);
+
+        operation = new MsmHasOperation();
+
+        operation.setType("ServicePropertyValue");
+        operation.setHrestHasAddress("http://vital.hireply/service/{id}/property/{name}");
+        operation.setHrestHasMethod("hrest:GET");
+
+        operations.add(operation);
+
+        service.setMsmHasOperation(operations);
+
         serviceList.add(service);
 
         //end servizio 2

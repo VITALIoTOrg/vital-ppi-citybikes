@@ -14,15 +14,24 @@
                "type":"RegisterStream",
                "hrest:hasAddress":"http://www.ctu.com/vital/streamMng/",
                "hrest:hasMethod":"hrest:POST"
+            },
+            {
+                "type": "DeregisterStream",
+                "hrest:hasAddress":
+                "http://www.ctu.com/vital/stream/{id}/deregister/",
+                "hrest:hasMethod": "hrest:GET"
             }
          ]
       },
       {  
          "type":"IcoAccess",
-         "msm:hasOperation":{  
-            "hrest:hasAddress":"http://www.ctu.com/vital/ico/{id}",
-            "hrest:hasMethod":"hrest:GET"
-         }
+         "msm:hasOperation":[
+             {
+                "type":"RegisterStream",
+                "hrest:hasAddress":"http://www.ctu.com/vital/ico/{id}",
+                "hrest:hasMethod":"hrest:GET"
+             }
+         ]
       }
    ]
 }

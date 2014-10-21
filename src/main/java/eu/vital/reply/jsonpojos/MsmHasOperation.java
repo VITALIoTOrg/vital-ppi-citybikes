@@ -17,17 +17,45 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
+    "type",
     "hrest:hasAddress",
     "hrest:hasMethod"
 })
 public class MsmHasOperation {
 
+    @JsonProperty("type")
+    private String type;
     @JsonProperty("hrest:hasAddress")
     private String hrestHasAddress;
     @JsonProperty("hrest:hasMethod")
     private String hrestHasMethod;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    /**
+     * 
+     * @return
+     *     The type
+     */
+    @JsonProperty("type")
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * 
+     * @param type
+     *     The type
+     */
+    @JsonProperty("type")
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public MsmHasOperation withType(String type) {
+        this.type = type;
+        return this;
+    }
 
     /**
      * 
