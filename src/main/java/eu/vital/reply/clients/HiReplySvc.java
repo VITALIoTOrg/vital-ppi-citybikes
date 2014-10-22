@@ -30,7 +30,9 @@ import java.util.List;
 
 /**
  * TODO: Mapping ServiceId con prefisso della macchina o no?
- * Es.: San11633-TrS_1 --> TrS_1 ??
+ * Es.: San11633-TrS_1 --> TrS_1 ?? --> TrS per rendere generico ogni metodo. riconosco dal prefisso il tipo di sensore
+ * TrS: Traffic Sensor
+ * Thermometer: Temperature Sensor
  */
 public class HiReplySvc
 {

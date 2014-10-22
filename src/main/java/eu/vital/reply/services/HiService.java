@@ -48,6 +48,22 @@ public class HiService
 
         //TODO: da rendere generico per ogni tipo di sensore
 
+        /*
+        per rendere generico il metodo, sfruttare il presso di ogni id:
+        - cnc12145-I_TrS_600 --> TrS: Sensore del traffico
+        - cnc12145-Thermometer1 --> Thermometer: Sensore di temperatura
+        [...]
+
+        if (id.contains("TrS")) {
+            buildTrafficSensor()
+        }
+        if (id.contains("Temperature") {
+            buildTempSensor()
+        }
+        [...]
+
+         */
+
         String filter = hiReplySvc.createFilter("ID",id);
 
         List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor();
@@ -99,16 +115,17 @@ public class HiService
         SsnHasValue ssnHasValue = new SsnHasValue();
         ssnHasValue.setType("ssn:ObservationValue");
 
-        float value=0;
+        float speedValue;
+        int colorValue;
 
         if (currentSensor.getDirectionCount() == 1) {
             if (propertyname.equals("Speed")) {
-                value = currentSensor.getSpeed();
-                ssnHasValue.setValue(""+value);
+                speedValue = currentSensor.getSpeed();
+                ssnHasValue.setValue(""+speedValue);
                 ssnHasValue.setQudtUnit("qudt:KmH");
             } else if (propertyname.equals("Color")) {
-                value = currentSensor.getColor();
-                ssnHasValue.setValue(""+value);
+                colorValue = currentSensor.getColor();
+                ssnHasValue.setValue(""+colorValue);
                 ssnHasValue.setQudtUnit("qudt:Color");
             } else {
                 return "{\n" +
@@ -119,20 +136,20 @@ public class HiService
 
         if (currentSensor.getDirectionCount() == 2) {
             if (propertyname.equals("Speed")) {
-                value = currentSensor.getSpeed();
-                ssnHasValue.setValue(""+value);
+                speedValue = currentSensor.getSpeed();
+                ssnHasValue.setValue(""+speedValue);
                 ssnHasValue.setQudtUnit("qudt:KmH");
             } else if (propertyname.equals("Color")) {
-                value = currentSensor.getColor();
-                ssnHasValue.setValue(""+value);
+                colorValue = currentSensor.getColor();
+                ssnHasValue.setValue(""+colorValue);
                 ssnHasValue.setQudtUnit("qudt:Color");
             } else if (propertyname.equals("ReverseSpeed")) {
-                value = currentSensor.getReverseSpeed();
-                ssnHasValue.setValue(""+value);
+                speedValue = currentSensor.getReverseSpeed();
+                ssnHasValue.setValue(""+speedValue);
                 ssnHasValue.setQudtUnit("qudt:KmH");
             } else if (propertyname.equals("ReverseColor")) {
-                value = currentSensor.getReverseColor();
-                ssnHasValue.setValue(""+value);
+                colorValue = currentSensor.getReverseColor();
+                ssnHasValue.setValue(""+colorValue);
                 ssnHasValue.setQudtUnit("qudt:Color");
             } else {
                 return "{\n" +
