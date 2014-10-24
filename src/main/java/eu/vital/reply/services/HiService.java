@@ -98,8 +98,8 @@ public class HiService
         DulHasLocation dulHasLocation = new DulHasLocation();
         dulHasLocation.setType("geo:Point");
         String[] splitted = currentSensor.getPhysicalLocation().split(";");
-        dulHasLocation.setGeoLat(splitted[0]);
-        dulHasLocation.setGeoLong(splitted[1]);
+        dulHasLocation.setGeoLat(splitted[1]);
+        dulHasLocation.setGeoLong(splitted[0]);
         dulHasLocation.setGeoAlt("0.0");
 
         m.setDulHasLocation(dulHasLocation);
@@ -203,11 +203,21 @@ public class HiService
             sensor.setDescription(currentSensor.getDescription());
             sensor.setUri("http://"+hostName+":"+hostPort+"/service/"+id+"/info");
 
+            int status = currentSensor.getStatus();
+            if (status==1) {
+                sensor.setStatus("Running");
+            } else if (status==0) {
+                sensor.setStatus("Unavailable");
+            } else {
+                sensor.setStatus("");
+            }
+
+
             HasLastKnownLocation location = new HasLastKnownLocation();
             location.setType("geo:Point");
             String[] splitted = currentSensor.getPhysicalLocation().split(";");
-            location.setGeoLat(splitted[0]);
-            location.setGeoLong(splitted[1]);
+            location.setGeoLat(splitted[1]);
+            location.setGeoLong(splitted[0]);
 
             sensor.setHasLastKnownLocation(location);
 
@@ -295,11 +305,20 @@ public class HiService
         sensor.setDescription(currentSensor.getDescription());
         sensor.setUri("http://"+hostName+":"+hostPort+"/service/"+id+"/info");
 
+        int status = currentSensor.getStatus();
+        if (status==1) {
+            sensor.setStatus("Running");
+        } else if (status==0) {
+            sensor.setStatus("Unavailable");
+        } else {
+            sensor.setStatus("");
+        }
+
         HasLastKnownLocation location = new HasLastKnownLocation();
         location.setType("geo:Point");
         String[] splitted = currentSensor.getPhysicalLocation().split(";");
-        location.setGeoLat(splitted[0]);
-        location.setGeoLong(splitted[1]);
+        location.setGeoLat(splitted[1]);
+        location.setGeoLong(splitted[0]);
 
         sensor.setHasLastKnownLocation(location);
 

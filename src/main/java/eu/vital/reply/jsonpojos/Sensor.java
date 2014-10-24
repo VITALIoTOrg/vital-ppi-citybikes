@@ -24,6 +24,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
     "type",
     "description",
     "uri",
+    "status",
     "hasLastKnownLocation",
     "ssn:observes",
     "ssn:madeObservation"
@@ -40,6 +41,8 @@ public class Sensor {
     private String description;
     @JsonProperty("uri")
     private String uri;
+    @JsonProperty("status")
+    private String status;
     @JsonProperty("hasLastKnownLocation")
     private HasLastKnownLocation hasLastKnownLocation;
     @JsonProperty("ssn:observes")
@@ -171,6 +174,31 @@ public class Sensor {
 
     public Sensor withUri(String uri) {
         this.uri = uri;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The status
+     */
+    @JsonProperty("status")
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * 
+     * @param status
+     *     The status
+     */
+    @JsonProperty("status")
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Sensor withStatus(String status) {
+        this.status = status;
         return this;
     }
 

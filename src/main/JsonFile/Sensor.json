@@ -4,6 +4,7 @@
    "type":"VitalSensor",
    "description":"This is an example sensor",
    "uri":"http://www.example.com/vital/sensor/123",
+   "status":"Running",
    "hasLastKnownLocation":{  
       "type":"geo:Point",
       "geo:lat":"53.2719",

@@ -58,6 +58,7 @@
                             <xs:element type="xs:string" name="DeviceModel"/>
                             <xs:element type="xs:string" name="DeviceState"/>
                             <xs:element type="xs:byte" name="DirectionCount"/>
+                            <xs:element type="xs:byte" name="Status"/>
                             <xs:element type="xs:dateTime" name="MeasureTime"/>
                             <xs:element name="Speed">
                                 <xs:simpleType>
