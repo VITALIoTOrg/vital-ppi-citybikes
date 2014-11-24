@@ -204,6 +204,7 @@ public class HiService
             sensor.setUri("http://"+hostName+":"+hostPort+"/service/"+id+"/info");
 
             int status = currentSensor.getStatus();
+
             if (status==1) {
                 sensor.setStatus("Running");
             } else if (status==0) {

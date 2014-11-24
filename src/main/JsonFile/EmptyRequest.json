@@ -1,0 +1,4 @@
+{
+  "@context": "http://vital-iot.org/contexts/query.jsonld",
+  "type": "vital:iotSystem"
+}
