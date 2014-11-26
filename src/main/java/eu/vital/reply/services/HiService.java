@@ -258,7 +258,6 @@ public class HiService
             }
 
             sensor.setSsnObserves(observedProperties);
-            sensor.setSsnMadeObservation("http://"+hostName+":"+hostPort+"/service/"+id+"/info");
 
             sensors.add(sensor);
 
@@ -359,7 +358,6 @@ public class HiService
         }
 
         sensor.setSsnObserves(observedProperties);
-        sensor.setSsnMadeObservation("http://"+hostName+":"+hostPort+"/service/"+id+"/info");
 
         String out = "";
 

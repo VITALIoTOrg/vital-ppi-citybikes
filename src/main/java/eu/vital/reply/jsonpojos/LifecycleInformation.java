@@ -1,9 +1,7 @@
 
 package eu.vital.reply.jsonpojos;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -20,17 +18,17 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "@context",
-    "type",
-    "msm:hasOperation"
+    "uri",
+    "status"
 })
-public class ProvidesService {
+public class LifecycleInformation {
 
     @JsonProperty("@context")
     private String Context;
-    @JsonProperty("type")
-    private String type;
-    @JsonProperty("msm:hasOperation")
-    private List<MsmHasOperation> msmHasOperation = new ArrayList<MsmHasOperation>();
+    @JsonProperty("uri")
+    private String uri;
+    @JsonProperty("status")
+    private String status;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -54,7 +52,7 @@ public class ProvidesService {
         this.Context = Context;
     }
 
-    public ProvidesService withContext(String Context) {
+    public LifecycleInformation withContext(String Context) {
         this.Context = Context;
         return this;
     }
@@ -62,50 +60,50 @@ public class ProvidesService {
     /**
      * 
      * @return
-     *     The type
+     *     The uri
      */
-    @JsonProperty("type")
-    public String getType() {
-        return type;
+    @JsonProperty("uri")
+    public String getUri() {
+        return uri;
     }
 
     /**
      * 
-     * @param type
-     *     The type
+     * @param uri
+     *     The uri
      */
-    @JsonProperty("type")
-    public void setType(String type) {
-        this.type = type;
+    @JsonProperty("uri")
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
-    public ProvidesService withType(String type) {
-        this.type = type;
+    public LifecycleInformation withUri(String uri) {
+        this.uri = uri;
         return this;
     }
 
     /**
      * 
      * @return
-     *     The msmHasOperation
+     *     The status
      */
-    @JsonProperty("msm:hasOperation")
-    public List<MsmHasOperation> getMsmHasOperation() {
-        return msmHasOperation;
+    @JsonProperty("status")
+    public String getStatus() {
+        return status;
     }
 
     /**
      * 
-     * @param msmHasOperation
-     *     The msm:hasOperation
+     * @param status
+     *     The status
      */
-    @JsonProperty("msm:hasOperation")
-    public void setMsmHasOperation(List<MsmHasOperation> msmHasOperation) {
-        this.msmHasOperation = msmHasOperation;
+    @JsonProperty("status")
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public ProvidesService withMsmHasOperation(List<MsmHasOperation> msmHasOperation) {
-        this.msmHasOperation = msmHasOperation;
+    public LifecycleInformation withStatus(String status) {
+        this.status = status;
         return this;
     }
 
@@ -134,7 +132,7 @@ public class ProvidesService {
         this.additionalProperties.put(name, value);
     }
 
-    public ProvidesService withAdditionalProperty(String name, Object value) {
+    public LifecycleInformation withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }

@@ -291,7 +291,11 @@ public class HiReplySvc
     public List<ValueItem> getPropertyHistoricalValues(String serviceId, String propertyName, Date startTime, Date endTime)
     {
         String respString = "";
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        String startDate = df.format(startTime);
+        String endDate = df.format(endTime);
+
         URI uri = null;
         try
         {
@@ -301,11 +305,10 @@ public class HiReplySvc
                     .setPort(port)
                     .setPath("/" + serviceId + getPropHistValuesPath)
                     .addParameter("prop", propertyName)
-                    .addParameter("starttime", df.format(startTime))
-                    .addParameter("endtime", df.format(endTime))
+                    .addParameter("starttime", startDate)
+                    .addParameter("endtime", endDate)
                     .build();
-        } catch (URISyntaxException e)
-        {
+        } catch (URISyntaxException e) {
             this.logger.error("getPropertyHistoricalValues - Uri builder");
             return null;
         }

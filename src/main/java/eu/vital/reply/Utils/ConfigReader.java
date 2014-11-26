@@ -17,6 +17,7 @@ public class ConfigReader
     private Properties config;
     private Logger logger;
 
+    public static final String SYMBOLIC_URI                        = "SYMBOLIC_URI";
     public static final String SERVER_HOSTNAME                     = "SERVER_HOSTNAME";
     public static final String SERVER_PORT                         = "SERVER_PORT";
     public static final String HI_HOSTNAME                         = "HI_HOSTNAME";
@@ -28,6 +29,7 @@ public class ConfigReader
     public static final String HI_GETPROPERTYATTRIBUTE_PATH        = "HI_GETPROPERTYATTRIBUTE_PATH";
     public static final String HI_GETPROPERTYHISTORICALVALUES_PATH = "HI_GETPROPERTYHISTORICALVALUES_PATH";
     public static final String HI_ISSERVICERUNNING_PATH            = "HI_ISSERVICERUNNING_PATH";
+    public static final String ONT_BASE_URI_PROPERTY               = "ONT_BASE_URI_PROPERTY";
 
     private ConfigReader()
     {

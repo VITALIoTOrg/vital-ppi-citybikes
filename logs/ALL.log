@@ -13,3 +13,4 @@
 2014-10-20 16:11:15 [Grizzly-worker(1)] ERROR eu.vital.reply.services.HiService - ID: cnc12145-I_TrS_5 not present.
 2014-10-20 17:36:56 [Grizzly-worker(2)] ERROR eu.vital.reply.services.HiService - ID: cnc12145-I_TrS_5 not present.
 2014-10-24 13:20:45 [Grizzly-worker(2)] ERROR eu.vital.reply.services.HiService - ID: cnc12145-I_TrS_2 not present.
+2014-11-26 17:07:58 [Grizzly-worker(1)] ERROR eu.vital.reply.clients.HiReplySvc - getPropertyHistoricalValues - Unmarshalling exception: unexpected element (uri:"", local:"ValueList"). Expected elements are <{}PropertyList>,<{}ServiceList>

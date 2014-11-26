@@ -1,9 +1,9 @@
 {  
    "@context":"http://vital-iot.org/contexts/sensor.jsonld",
+   "uri":"http://www.example.com/vital/sensor/123",
    "name":"TemperatureSensor No.123",
    "type":"VitalSensor",
    "description":"This is an example sensor",
-   "uri":"http://www.example.com/vital/sensor/123",
    "status":"Running",
    "hasLastKnownLocation":{  
       "type":"geo:Point",
@@ -19,6 +19,5 @@
          "type":"http://lsm.deri.ie/OpenIoT/Temperature",
          "uri":"http://www.example.com/vital/sensor/123/temperature"
       }
-   ],
-   "ssn:madeObservation":"http://www.example.com/vital/sensor/123/obsvn/1"
+   ]
 }

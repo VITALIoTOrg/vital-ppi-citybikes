@@ -20,30 +20,30 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "@context",
+    "uri",
     "name",
     "description",
-    "uri",
-    "status",
     "operator",
     "serviceArea",
+    "status",
     "providesService"
 })
 public class IoTSystem {
 
     @JsonProperty("@context")
     private String Context;
+    @JsonProperty("uri")
+    private String uri;
     @JsonProperty("name")
     private String name;
     @JsonProperty("description")
     private String description;
-    @JsonProperty("uri")
-    private String uri;
-    @JsonProperty("status")
-    private String status;
     @JsonProperty("operator")
     private String operator;
     @JsonProperty("serviceArea")
     private String serviceArea;
+    @JsonProperty("status")
+    private String status;
     @JsonProperty("providesService")
     private List<ProvidesService> providesService = new ArrayList<ProvidesService>();
     @JsonIgnore
@@ -71,6 +71,31 @@ public class IoTSystem {
 
     public IoTSystem withContext(String Context) {
         this.Context = Context;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The uri
+     */
+    @JsonProperty("uri")
+    public String getUri() {
+        return uri;
+    }
+
+    /**
+     * 
+     * @param uri
+     *     The uri
+     */
+    @JsonProperty("uri")
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public IoTSystem withUri(String uri) {
+        this.uri = uri;
         return this;
     }
 
@@ -127,56 +152,6 @@ public class IoTSystem {
     /**
      * 
      * @return
-     *     The uri
-     */
-    @JsonProperty("uri")
-    public String getUri() {
-        return uri;
-    }
-
-    /**
-     * 
-     * @param uri
-     *     The uri
-     */
-    @JsonProperty("uri")
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public IoTSystem withUri(String uri) {
-        this.uri = uri;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The status
-     */
-    @JsonProperty("status")
-    public String getStatus() {
-        return status;
-    }
-
-    /**
-     * 
-     * @param status
-     *     The status
-     */
-    @JsonProperty("status")
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public IoTSystem withStatus(String status) {
-        this.status = status;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
      *     The operator
      */
     @JsonProperty("operator")
@@ -221,6 +196,31 @@ public class IoTSystem {
 
     public IoTSystem withServiceArea(String serviceArea) {
         this.serviceArea = serviceArea;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The status
+     */
+    @JsonProperty("status")
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * 
+     * @param status
+     *     The status
+     */
+    @JsonProperty("status")
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public IoTSystem withStatus(String status) {
+        this.status = status;
         return this;
     }
 

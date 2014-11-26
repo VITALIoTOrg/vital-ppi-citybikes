@@ -20,35 +20,32 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "@context",
+    "uri",
     "name",
     "type",
     "description",
-    "uri",
     "status",
     "hasLastKnownLocation",
-    "ssn:observes",
-    "ssn:madeObservation"
+    "ssn:observes"
 })
 public class Sensor {
 
     @JsonProperty("@context")
     private String Context;
+    @JsonProperty("uri")
+    private String uri;
     @JsonProperty("name")
     private String name;
     @JsonProperty("type")
     private String type;
     @JsonProperty("description")
     private String description;
-    @JsonProperty("uri")
-    private String uri;
     @JsonProperty("status")
     private String status;
     @JsonProperty("hasLastKnownLocation")
     private HasLastKnownLocation hasLastKnownLocation;
     @JsonProperty("ssn:observes")
     private List<SsnObserf> ssnObserves = new ArrayList<SsnObserf>();
-    @JsonProperty("ssn:madeObservation")
-    private String ssnMadeObservation;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -74,6 +71,31 @@ public class Sensor {
 
     public Sensor withContext(String Context) {
         this.Context = Context;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The uri
+     */
+    @JsonProperty("uri")
+    public String getUri() {
+        return uri;
+    }
+
+    /**
+     * 
+     * @param uri
+     *     The uri
+     */
+    @JsonProperty("uri")
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public Sensor withUri(String uri) {
+        this.uri = uri;
         return this;
     }
 
@@ -155,31 +177,6 @@ public class Sensor {
     /**
      * 
      * @return
-     *     The uri
-     */
-    @JsonProperty("uri")
-    public String getUri() {
-        return uri;
-    }
-
-    /**
-     * 
-     * @param uri
-     *     The uri
-     */
-    @JsonProperty("uri")
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public Sensor withUri(String uri) {
-        this.uri = uri;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
      *     The status
      */
     @JsonProperty("status")
@@ -249,31 +246,6 @@ public class Sensor {
 
     public Sensor withSsnObserves(List<SsnObserf> ssnObserves) {
         this.ssnObserves = ssnObserves;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The ssnMadeObservation
-     */
-    @JsonProperty("ssn:madeObservation")
-    public String getSsnMadeObservation() {
-        return ssnMadeObservation;
-    }
-
-    /**
-     * 
-     * @param ssnMadeObservation
-     *     The ssn:madeObservation
-     */
-    @JsonProperty("ssn:madeObservation")
-    public void setSsnMadeObservation(String ssnMadeObservation) {
-        this.ssnMadeObservation = ssnMadeObservation;
-    }
-
-    public Sensor withSsnMadeObservation(String ssnMadeObservation) {
-        this.ssnMadeObservation = ssnMadeObservation;
         return this;
     }
 
