@@ -180,8 +180,10 @@ public class HiPPI {
         try {
             icoRequest = (ICORequest) JsonUtils.deserializeJson(bodyRequest, ICORequest.class);
         } catch (IOException e) {
-            // TODO --> LOG
-            e.printStackTrace();
+            this.logger.error("GET OBSERVATION - IOException parsing the json request");
+            return "{\n" +
+                    "\"error\": \"Malformed request body\"\n"+
+                    "}";
         }
         // TODO --> check sulla request, trattamento di eventuali filtri
 
@@ -190,7 +192,7 @@ public class HiPPI {
         try {
             requestedSensor = icoRequest.getIcos();
         } catch (NullPointerException e) {
-            // TODO --> LOG
+            this.logger.error("/ico/metadata IO Exception - Requested Sensor");
             e.printStackTrace();
         }
 
@@ -251,10 +253,11 @@ public class HiPPI {
         try {
             observationRequest = (ObservationRequest) JsonUtils.deserializeJson(bodyRequest, ObservationRequest.class);
         } catch (IOException e) {
-            // TODO --> LOG
-            e.printStackTrace();
+            this.logger.error("GET OBSERVATION - IOException parsing the json request");
+            return "{\n" +
+                    "\"error\": \"Malformed request body\"\n"+
+                    "}";
         }
-        // TODO --> check sulla request, trattamento di eventuali filtri
 
         String id = observationRequest.getIco().replaceAll(this.symbolicUri+"ico/", "");
 
@@ -272,7 +275,7 @@ public class HiPPI {
 
         if (!this.checkTrafficProperty(currentSensor, property)) {
             return "{\n" +
-                    "\"error\": \"Property "+property+" not present for the"+id+" sensor.\"\n"+
+                    "\"error\": \"Property "+property+" not present for "+id+" sensor.\"\n"+
                     "}";
         }
 
@@ -291,14 +294,20 @@ public class HiPPI {
                 fromDate = arrivedFormat.parse(observationRequest.getFrom());
                 toDate = arrivedFormat.parse(observationRequest.getTo());
             } catch (ParseException e) {
-                e.printStackTrace();
+                this.logger.error("GET OBSERVATION - Parse exception during parse date");
+                return "{\n" +
+                        "\"error\": \"Malformed date in the request body\"\n"+
+                        "}";
             }
 
             try {
                 fromDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(fromDate));
                 toDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(toDate));
             } catch (ParseException e) {
-                e.printStackTrace();
+                this.logger.error("GET OBSERVATION - Parse exception during parse date");
+                return "{\n" +
+                        "\"error\": \"Malformed date in the request body\"\n"+
+                        "}";
             }
 
             List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(hiReplySvc.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
@@ -311,11 +320,45 @@ public class HiPPI {
 
         } else if (observationRequest.getFrom() != null && observationRequest.getTo() == null) {
             //get tutti i valori da from
+
+            SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            SimpleDateFormat hiReplyFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+            Date fromDate = null;
+            Date toDate = new Date();
+            Date fromDateHiReply = null;
+            Date toDateHiReply = null;
+
+            try {
+                fromDate = arrivedFormat.parse(observationRequest.getFrom());
+            } catch (ParseException e) {
+                this.logger.error("GET OBSERVATION - Parse exception during parse date");
+                return "{\n" +
+                        "\"error\": \"Malformed date in the request body\"\n"+
+                        "}";
+            }
+
+            try {
+                fromDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(fromDate));
+                toDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(toDate));
+            } catch (ParseException e) {
+                this.logger.error("GET OBSERVATION - Parse exception during parse date");
+                return "{\n" +
+                        "\"error\": \"Malformed date in the request body\"\n"+
+                        "}";
+            }
+
+            List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(hiReplySvc.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
+
+            for (int i = 0; i < historyMeasures.size(); i++) {
+
+                measures.add(this.createMeasureFromHistoryMeasure(historyMeasures.get(i), currentSensor, property));
+
+            }
+
         } else if (observationRequest.getFrom() == null && observationRequest.getTo() == null) {
             //get ultimo valore
-
             measures.add(this.createMeasureFromSensor(currentSensor, property));
-
         }
 
         String out = "";
@@ -323,7 +366,7 @@ public class HiPPI {
         try {
             out = JsonUtils.serializeJson(measures);
         } catch (IOException e) {
-            //TODO --> add log
+            this.logger.error("GET OBSERVATION - serialize to json response IO Exception");
             e.printStackTrace();
         }
 
@@ -393,7 +436,7 @@ public class HiPPI {
         sensor.setName(id);
         sensor.setType("Traffic");
         sensor.setDescription(currentSensor.getDescription());
-        sensor.setUri("http://"+symbolicUri+"/ico/"+id);
+        sensor.setUri("http://"+symbolicUri+"ico/"+id);
 
         int status = currentSensor.getStatus();
 
@@ -538,10 +581,11 @@ public class HiPPI {
         return m;
     }
 
-
     private Measure createMeasureFromHistoryMeasure(HistoryMeasure historyMeasure, ServiceList.TrafficSensor currentSensor, String property) {
 
         Measure m = new Measure();
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
         m.setContext("http://vital-iot.org/contexts/measurement.jsonld");
         m.setUri("http://"+symbolicUri+"ico/" + currentSensor.getID() + "/observation");
@@ -553,7 +597,7 @@ public class HiPPI {
         m.setSsnObservationProperty(ssnObservationProperty);
 
         SsnObservationResultTime ssnObservationResultTime = new SsnObservationResultTime();
-        ssnObservationResultTime.setInXSDDateTime(historyMeasure.getDate().toString());
+        ssnObservationResultTime.setInXSDDateTime(df.format(historyMeasure.getDate()));
 
         m.setSsnObservationResultTime(ssnObservationResultTime);
 
