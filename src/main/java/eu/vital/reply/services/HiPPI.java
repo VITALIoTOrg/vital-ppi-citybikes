@@ -4,19 +4,18 @@ package eu.vital.reply.services;
  * Created by f.deceglia on 24/11/2014.
  */
 
-import com.sun.istack.internal.Nullable;
 import eu.vital.reply.utils.ConfigReader;
 import eu.vital.reply.utils.JsonUtils;
 import eu.vital.reply.clients.HiReplySvc;
 import eu.vital.reply.jsonpojos.*;
 import eu.vital.reply.xmlpojos.ServiceList;
+import eu.vital.reply.xmlpojos.ValueList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -247,6 +246,7 @@ public class HiPPI {
     public String getObservation(String bodyRequest) {
 
         ObservationRequest observationRequest = null;
+        ArrayList<Measure> measures = new ArrayList<>();
 
         try {
             observationRequest = (ObservationRequest) JsonUtils.deserializeJson(bodyRequest, ObservationRequest.class);
@@ -257,34 +257,132 @@ public class HiPPI {
         // TODO --> check sulla request, trattamento di eventuali filtri
 
         String id = observationRequest.getIco().replaceAll(this.symbolicUri+"ico/", "");
+
+        //controllo che il sensore richiesto (id) sia effettivamente presente sul virtualizzatore. in caso nn è presente genero un json di errore
+        ServiceList.TrafficSensor currentSensor = this.retrieveSensor(id);
+
+        if (currentSensor == null) {
+            return "{\n" +
+                    "\"error\": \"ID "+id+" not present.\"\n"+
+                    "}";
+        }
+
+        //controllo che la proprietà richiesta sia tra quelle possibili (Speed, Color, Reverse Speed, Reverse Color) del sensore
         String property = observationRequest.getProperty().replaceAll(this.ontBaseUri,"");
 
+        if (!this.checkTrafficProperty(currentSensor, property)) {
+            return "{\n" +
+                    "\"error\": \"Property "+property+" not present for the"+id+" sensor.\"\n"+
+                    "}";
+        }
 
-        SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        SimpleDateFormat hiReplyFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        if (observationRequest.getFrom() != null && observationRequest.getTo()!=null ) {
+            //get history range
 
-        Date fromDate = null;
-        Date toDate = null;
-        Date fromDateHiReply = null;
-        Date toDateHiReply = null;
+            SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            SimpleDateFormat hiReplyFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+            Date fromDate = null;
+            Date toDate = null;
+            Date fromDateHiReply = null;
+            Date toDateHiReply = null;
+
+            try {
+                fromDate = arrivedFormat.parse(observationRequest.getFrom());
+                toDate = arrivedFormat.parse(observationRequest.getTo());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                fromDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(fromDate));
+                toDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(toDate));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(hiReplySvc.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
+
+            for (int i = 0; i < historyMeasures.size(); i++) {
+
+                measures.add(this.createMeasureFromHistoryMeasure(historyMeasures.get(i), currentSensor, property));
+
+            }
+
+        } else if (observationRequest.getFrom() != null && observationRequest.getTo() == null) {
+            //get tutti i valori da from
+        } else if (observationRequest.getFrom() == null && observationRequest.getTo() == null) {
+            //get ultimo valore
+
+            measures.add(this.createMeasureFromSensor(currentSensor, property));
+
+        }
+
+        String out = "";
 
         try {
-            fromDate = arrivedFormat.parse(observationRequest.getFrom());
-            toDate = arrivedFormat.parse(observationRequest.getTo());
-        } catch (ParseException e) {
+            out = JsonUtils.serializeJson(measures);
+        } catch (IOException e) {
+            //TODO --> add log
             e.printStackTrace();
         }
 
-        try {
-            fromDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(fromDate));
-            toDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(toDate));
-        } catch (ParseException e) {
-            e.printStackTrace();
+        return out;
+    }
+
+    private class HistoryMeasure {
+
+        private float value;
+        private Date date;
+
+        public HistoryMeasure(float value, Date date) {
+            this.value = value;
+            this.date = date;
         }
 
-        hiReplySvc.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply);
+        public void setValue(float value) {
+            this.value = value;
+        }
 
-        return null;
+        public void setDate(Date date) {
+            this.date = date;
+        }
+
+        public float getValue() {
+            return this.value;
+        }
+
+        public Date getDate() {
+            return this.date;
+        }
+
+    }
+
+    private List<HistoryMeasure> getHistoryMeasures(ValueList valueList) {
+
+        ArrayList<HistoryMeasure> historyMeasures = new ArrayList<>();
+        List<String> values = valueList.getValue();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy HH:mm:ss");
+
+        for (int i = 0; i<values.size(); i++) {
+
+            String currentValue = values.get(i);
+            String[] splitted = currentValue.split(","); //splitted[0] = value --- splitted[1] data
+            float auxValue = Float.parseFloat(splitted[0]);
+            Date auxDate = new Date();
+
+            try {
+                auxDate = dateFormat.parse(splitted[1]);
+            } catch (ParseException e) {
+                // TODO --> add log
+                e.printStackTrace();
+            }
+
+            historyMeasures.add(new HistoryMeasure(auxValue, auxDate));
+
+        }
+
+        return historyMeasures;
     }
 
     private Sensor createSensorFromTraffic(ServiceList.TrafficSensor currentSensor) {
@@ -356,4 +454,202 @@ public class HiPPI {
         return sensor;
     }
 
+    private Measure createMeasureFromSensor(ServiceList.TrafficSensor currentSensor, String property) {
+        Measure m = new Measure();
+
+        m.setContext("http://vital-iot.org/contexts/measurement.jsonld");
+        m.setUri("http://"+symbolicUri+"ico/" + currentSensor.getID() + "/observation");
+        m.setType("ssn:Observation");
+
+        SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
+        ssnObservationProperty.setType("http://lsm.deri.ie/OpenIoT/"+property);
+
+        m.setSsnObservationProperty(ssnObservationProperty);
+
+        SsnObservationResultTime ssnObservationResultTime = new SsnObservationResultTime();
+        ssnObservationResultTime.setInXSDDateTime(currentSensor.getMeasureTime().toString());
+
+        m.setSsnObservationResultTime(ssnObservationResultTime);
+
+        DulHasLocation dulHasLocation = new DulHasLocation();
+        dulHasLocation.setType("geo:Point");
+        String[] splitted = currentSensor.getPhysicalLocation().split(";");
+        dulHasLocation.setGeoLat(splitted[1]);
+        dulHasLocation.setGeoLong(splitted[0]);
+        dulHasLocation.setGeoAlt("0.0");
+
+        m.setDulHasLocation(dulHasLocation);
+
+        SsnObservationQuality ssnObservationQuality = new SsnObservationQuality();
+        SsnHasMeasurementProperty ssnHasMeasurementProperty = new SsnHasMeasurementProperty();
+        ssnHasMeasurementProperty.setType("Reliability");
+        ssnHasMeasurementProperty.setHasValue("HighReliability");
+        ssnObservationQuality.setSsnHasMeasurementProperty(ssnHasMeasurementProperty);
+
+        SsnObservationResult ssnObservationResult = new SsnObservationResult();
+        ssnObservationResult.setType("ssn:SensorOutput");
+        SsnHasValue ssnHasValue = new SsnHasValue();
+        ssnHasValue.setType("ssn:ObservationValue");
+
+        float speedValue;
+        int colorValue;
+
+        if (currentSensor.getDirectionCount() == 1) {
+            if (property.equals("Speed")) {
+                speedValue = currentSensor.getSpeed();
+                ssnHasValue.setValue(""+speedValue);
+                ssnHasValue.setQudtUnit("qudt:KmH");
+            } else if (property.equals("Color")) {
+                colorValue = currentSensor.getColor();
+                ssnHasValue.setValue(""+colorValue);
+                ssnHasValue.setQudtUnit("qudt:Color");
+            } else {
+                return null;
+            }
+        }
+
+        if (currentSensor.getDirectionCount() == 2) {
+            if (property.equals("Speed")) {
+                speedValue = currentSensor.getSpeed();
+                ssnHasValue.setValue(""+speedValue);
+                ssnHasValue.setQudtUnit("qudt:KmH");
+            } else if (property.equals("Color")) {
+                colorValue = currentSensor.getColor();;
+                ssnHasValue.setValue(""+colorValue);
+                ssnHasValue.setQudtUnit("qudt:Color");
+            } else if (property.equals("ReverseSpeed")) {
+                speedValue = currentSensor.getSpeed();
+                ssnHasValue.setValue(""+speedValue);
+                ssnHasValue.setQudtUnit("qudt:KmH");
+            } else if (property.equals("ReverseColor")) {
+                colorValue = currentSensor.getColor();
+                ssnHasValue.setValue(""+colorValue);
+                ssnHasValue.setQudtUnit("qudt:Color");
+            } else {
+                return null;
+            }
+        }
+
+        ssnObservationResult.setSsnHasValue(ssnHasValue);
+
+        m.setSsnObservationResult(ssnObservationResult);
+
+
+        return m;
+    }
+
+
+    private Measure createMeasureFromHistoryMeasure(HistoryMeasure historyMeasure, ServiceList.TrafficSensor currentSensor, String property) {
+
+        Measure m = new Measure();
+
+        m.setContext("http://vital-iot.org/contexts/measurement.jsonld");
+        m.setUri("http://"+symbolicUri+"ico/" + currentSensor.getID() + "/observation");
+        m.setType("ssn:Observation");
+
+        SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
+        ssnObservationProperty.setType("http://lsm.deri.ie/OpenIoT/"+property);
+
+        m.setSsnObservationProperty(ssnObservationProperty);
+
+        SsnObservationResultTime ssnObservationResultTime = new SsnObservationResultTime();
+        ssnObservationResultTime.setInXSDDateTime(historyMeasure.getDate().toString());
+
+        m.setSsnObservationResultTime(ssnObservationResultTime);
+
+        DulHasLocation dulHasLocation = new DulHasLocation();
+        dulHasLocation.setType("geo:Point");
+        String[] splitted = currentSensor.getPhysicalLocation().split(";");
+        dulHasLocation.setGeoLat(splitted[1]);
+        dulHasLocation.setGeoLong(splitted[0]);
+        dulHasLocation.setGeoAlt("0.0");
+
+        m.setDulHasLocation(dulHasLocation);
+
+        SsnObservationQuality ssnObservationQuality = new SsnObservationQuality();
+        SsnHasMeasurementProperty ssnHasMeasurementProperty = new SsnHasMeasurementProperty();
+        ssnHasMeasurementProperty.setType("Reliability");
+        ssnHasMeasurementProperty.setHasValue("HighReliability");
+        ssnObservationQuality.setSsnHasMeasurementProperty(ssnHasMeasurementProperty);
+
+        SsnObservationResult ssnObservationResult = new SsnObservationResult();
+        ssnObservationResult.setType("ssn:SensorOutput");
+        SsnHasValue ssnHasValue = new SsnHasValue();
+        ssnHasValue.setType("ssn:ObservationValue");
+
+        float speedValue;
+        int colorValue;
+
+        if (currentSensor.getDirectionCount() == 1) {
+            if (property.equals("Speed")) {
+                speedValue = historyMeasure.getValue();
+                ssnHasValue.setValue(""+speedValue);
+                ssnHasValue.setQudtUnit("qudt:KmH");
+            } else if (property.equals("Color")) {
+                colorValue = Math.round(historyMeasure.getValue());
+                ssnHasValue.setValue(""+colorValue);
+                ssnHasValue.setQudtUnit("qudt:Color");
+            } else {
+                return null;
+            }
+        }
+
+        if (currentSensor.getDirectionCount() == 2) {
+            if (property.equals("Speed")) {
+                speedValue = historyMeasure.getValue();
+                ssnHasValue.setValue(""+speedValue);
+                ssnHasValue.setQudtUnit("qudt:KmH");
+            } else if (property.equals("Color")) {
+                colorValue = Math.round(historyMeasure.getValue());
+                ssnHasValue.setValue(""+colorValue);
+                ssnHasValue.setQudtUnit("qudt:Color");
+            } else if (property.equals("ReverseSpeed")) {
+                speedValue = historyMeasure.getValue();
+                ssnHasValue.setValue(""+speedValue);
+                ssnHasValue.setQudtUnit("qudt:KmH");
+            } else if (property.equals("ReverseColor")) {
+                colorValue = Math.round(historyMeasure.getValue());
+                ssnHasValue.setValue(""+colorValue);
+                ssnHasValue.setQudtUnit("qudt:Color");
+            } else {
+                return null;
+            }
+        }
+
+        ssnObservationResult.setSsnHasValue(ssnHasValue);
+
+        m.setSsnObservationResult(ssnObservationResult);
+
+        return m;
+    }
+
+    private ServiceList.TrafficSensor retrieveSensor(String id) {
+
+        String filter = hiReplySvc.createFilter("ID",id);
+
+        List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor();
+
+        ServiceList.TrafficSensor currentSensor = null;
+
+        try {
+            currentSensor = trafficSensors.get(0);
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+
+        return currentSensor;
+    }
+
+    private boolean checkTrafficProperty(ServiceList.TrafficSensor currentSensor, String property) {
+        if (currentSensor.getDirectionCount() == 1) {
+            if (!property.equals("Speed") && !property.equals("Color")) {
+                return false;
+            }
+        } else if (currentSensor.getDirectionCount() == 2) {
+            if (!property.equals("Speed") && !property.equals("Color") && !property.equals("ReverseSpeed") && !property.equals("ReverseColor")) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

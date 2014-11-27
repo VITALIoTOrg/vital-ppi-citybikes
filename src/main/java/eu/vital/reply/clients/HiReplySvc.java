@@ -5,7 +5,6 @@ import eu.vital.reply.utils.UnmarshalUtil;
 import eu.vital.reply.xmlpojos.PropertyList;
 import eu.vital.reply.xmlpojos.ServiceList;
 import eu.vital.reply.xmlpojos.ValueList;
-import eu.vital.reply.xmlpojos.ValueList.ValueItem;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -22,7 +21,6 @@ import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by a.martelli on 09/10/2014.
@@ -288,7 +286,7 @@ public class HiReplySvc
         return cleanOutput(respString);
     }
 
-    public List<ValueItem> getPropertyHistoricalValues(String serviceId, String propertyName, Date startTime, Date endTime)
+    public ValueList getPropertyHistoricalValues(String serviceId, String propertyName, Date startTime, Date endTime)
     {
         String respString = "";
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -315,7 +313,7 @@ public class HiReplySvc
 
         HttpGet get = new HttpGet(uri);
 
-        HttpResponse resp = null;
+        HttpResponse resp;
         try
         {
             resp = http.execute(get);
@@ -326,8 +324,8 @@ public class HiReplySvc
             return null;
         }
 
-        ValueList values = null;
-        List<ValueList.ValueItem> items = null;
+        ValueList values;
+
         respString = cleanOutput(respString);
         try
         {
@@ -338,10 +336,7 @@ public class HiReplySvc
             return null;
         }
 
-        if (values != null)
-            items = values.getValueList();
-
-        return items;
+        return values;
     }
 
     public String isServiceRunning(String serviceId)
