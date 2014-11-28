@@ -58,8 +58,10 @@ public class HiPPI {
         try {
             emptyRequest = (EmptyRequest) JsonUtils.deserializeJson(bodyRequest, EmptyRequest.class);
         } catch (IOException e) {
-            // TODO --> LOG
-            e.printStackTrace();
+            this.logger.error("/EXTERNAL/METADATA error parsing request header");
+            return "{\n" +
+                    "\"error\": \"Malformed request body\"\n"+
+                    "}";
         }
         // TODO --> check sulla request, trattamento di eventuali filtri
 
@@ -122,10 +124,9 @@ public class HiPPI {
         try {
             out = JsonUtils.serializeJson(ioTSystem);
         } catch (IOException e) {
-            this.logger.error("JSON UTILS IO EXCEPTION");
+            this.logger.error("JSON UTILS IO EXCEPTION - metadata information");
             e.printStackTrace();
         }
-        // TODO --> check sulla request, trattamento di eventuali filtri
 
         return out;
     }
@@ -141,8 +142,10 @@ public class HiPPI {
         try {
             emptyRequest = (EmptyRequest) JsonUtils.deserializeJson(bodyRequest, EmptyRequest.class);
         } catch (IOException e) {
-            // TODO --> LOG
-            e.printStackTrace();
+            this.logger.error("lifecycle information -  error parsing request header");
+            return "{\n" +
+                    "\"error\": \"Malformed request body\"\n"+
+                    "}";
         }
         // TODO --> check sulla request, trattamento di eventuali filtri
 
@@ -154,6 +157,8 @@ public class HiPPI {
 
         if (system.getIoTSystem().getStatus().equals("Running")) {
             lifecycleInformation.setStatus("vital:Running");
+        } else {
+            lifecycleInformation.setStatus("vital:Unavailable");
         }
 
         String out = "";
@@ -161,7 +166,7 @@ public class HiPPI {
         try {
             out = JsonUtils.serializeJson(lifecycleInformation);
         } catch (IOException e) {
-            this.logger.error("JSON UTILS IO EXCEPTION");
+            this.logger.error("JSON UTILS IO EXCEPTION - lifecycle information");
             e.printStackTrace();
         }
 
@@ -217,10 +222,8 @@ public class HiPPI {
                 try {
                     currentTrafficSensor = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor().get(0);;
                 } catch (IndexOutOfBoundsException e) {
-                    logger.error("ID: "+currentId+" not present.");
-                    return "{\n" +
-                            "\"error\": \"ID "+currentId+" not present\"\n"+
-                            "}";
+                    logger.error("getIcoMetadata ID: "+currentId+" not present.");
+                    //in caso di sensore nn presente, l'esecuzione continua per cercare gli altri
                 }
 
                 sensors.add(this.createSensorFromTraffic(currentTrafficSensor));
@@ -233,7 +236,7 @@ public class HiPPI {
         try {
             out = JsonUtils.serializeJson(sensors);
         } catch (IOException e) {
-            this.logger.error("JSON UTILS IO EXCEPTION");
+            this.logger.error("getIcoMetadata - Deserialize JSON UTILS IO EXCEPTION");
             e.printStackTrace();
         }
 
@@ -325,8 +328,8 @@ public class HiPPI {
 
             Date fromDate;
             Date toDate = new Date(); //hi reply ha cmq bisogno della data di fine, quindi imposto quella corrente
-            Date fromDateHiReply;
-            Date toDateHiReply;
+            Date fromDateHiReply = null;
+            Date toDateHiReply = null;
 
             try {
                 fromDate = arrivedFormat.parse(observationRequest.getFrom());
@@ -341,10 +344,8 @@ public class HiPPI {
                 fromDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(fromDate));
                 toDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(toDate));
             } catch (ParseException e) {
-                this.logger.error("GET OBSERVATION - Parse exception during parse date");
-                return "{\n" +
-                        "\"error\": \"Malformed date in the request body\"\n"+
-                        "}";
+                this.logger.error("GET OBSERVATION - Parse exception during parse date for hi reply format");
+                e.printStackTrace();
             }
 
             List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(hiReplySvc.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
@@ -416,7 +417,7 @@ public class HiPPI {
             try {
                 auxDate = dateFormat.parse(splitted[1]);
             } catch (ParseException e) {
-                // TODO --> add log
+                this.logger.error("ERROR PARSING DATE FROM HISTORY VALUE");
                 e.printStackTrace();
             }
 
