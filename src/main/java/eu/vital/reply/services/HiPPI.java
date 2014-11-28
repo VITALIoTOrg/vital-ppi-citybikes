@@ -15,12 +15,11 @@ import org.apache.logging.log4j.Logger;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @Path("")
@@ -285,10 +284,10 @@ public class HiPPI {
             SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             SimpleDateFormat hiReplyFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-            Date fromDate = null;
-            Date toDate = null;
-            Date fromDateHiReply = null;
-            Date toDateHiReply = null;
+            Date fromDate;
+            Date toDate;
+            Date fromDateHiReply;
+            Date toDateHiReply;
 
             try {
                 fromDate = arrivedFormat.parse(observationRequest.getFrom());
@@ -324,10 +323,10 @@ public class HiPPI {
             SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             SimpleDateFormat hiReplyFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-            Date fromDate = null;
-            Date toDate = new Date();
-            Date fromDateHiReply = null;
-            Date toDateHiReply = null;
+            Date fromDate;
+            Date toDate = new Date(); //hi reply ha cmq bisogno della data di fine, quindi imposto quella corrente
+            Date fromDateHiReply;
+            Date toDateHiReply;
 
             try {
                 fromDate = arrivedFormat.parse(observationRequest.getFrom());
@@ -500,6 +499,10 @@ public class HiPPI {
     private Measure createMeasureFromSensor(ServiceList.TrafficSensor currentSensor, String property) {
         Measure m = new Measure();
 
+        XMLGregorianCalendar measureTime = currentSensor.getMeasureTime();
+        Date convertedMeasureTime = measureTime.toGregorianCalendar().getTime();
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
         m.setContext("http://vital-iot.org/contexts/measurement.jsonld");
         m.setUri("http://"+symbolicUri+"ico/" + currentSensor.getID() + "/observation");
         m.setType("ssn:Observation");
@@ -510,7 +513,7 @@ public class HiPPI {
         m.setSsnObservationProperty(ssnObservationProperty);
 
         SsnObservationResultTime ssnObservationResultTime = new SsnObservationResultTime();
-        ssnObservationResultTime.setInXSDDateTime(currentSensor.getMeasureTime().toString());
+        ssnObservationResultTime.setInXSDDateTime(printedDateFormat.format(convertedMeasureTime));
 
         m.setSsnObservationResultTime(ssnObservationResultTime);
 
@@ -585,7 +588,7 @@ public class HiPPI {
 
         Measure m = new Measure();
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         m.setContext("http://vital-iot.org/contexts/measurement.jsonld");
         m.setUri("http://"+symbolicUri+"ico/" + currentSensor.getID() + "/observation");
@@ -597,7 +600,7 @@ public class HiPPI {
         m.setSsnObservationProperty(ssnObservationProperty);
 
         SsnObservationResultTime ssnObservationResultTime = new SsnObservationResultTime();
-        ssnObservationResultTime.setInXSDDateTime(df.format(historyMeasure.getDate()));
+        ssnObservationResultTime.setInXSDDateTime(printedDateFormat.format(historyMeasure.getDate()));
 
         m.setSsnObservationResultTime(ssnObservationResultTime);
 
