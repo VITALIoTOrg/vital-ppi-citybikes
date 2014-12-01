@@ -47,6 +47,7 @@ public class ConfigReader
         }
         catch (IOException e)
         {
+            this.logger.error("ConfigReader - IO EXCEPTION");
             e.printStackTrace();
         }
     }
