@@ -514,9 +514,17 @@ public class HiPPI {
     private Measure createMeasureFromSensor(ServiceList.TrafficSensor currentSensor, String property) {
         Measure m = new Measure();
 
-        XMLGregorianCalendar measureTime = currentSensor.getMeasureTime();
-        Date convertedMeasureTime = measureTime.toGregorianCalendar().getTime();
+        SimpleDateFormat timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+        String hiReplyTimestamp = this.hiReplySvc.getPropertyAttribute(currentSensor.getID(), property, "Timestamp");
+        Date timestamp = null;
+        try {
+            timestamp = timestampDateFormat.parse(hiReplyTimestamp);
+        } catch (ParseException e) {
+            this.logger.error("HiPPI - createMeasureFromSensor - ERROR PARSING DATE FROM HIREPLY TIMESTAMP");
+            e.printStackTrace();
+        }
 
         m.setContext("http://vital-iot.org/contexts/measurement.jsonld");
         m.setUri(this.transfProt+this.symbolicUri+"ico/" + currentSensor.getID() + "/observation");
@@ -528,7 +536,7 @@ public class HiPPI {
         m.setSsnObservationProperty(ssnObservationProperty);
 
         SsnObservationResultTime ssnObservationResultTime = new SsnObservationResultTime();
-        ssnObservationResultTime.setInXSDDateTime(printedDateFormat.format(convertedMeasureTime));
+        ssnObservationResultTime.setInXSDDateTime(printedDateFormat.format(timestamp));
 
         m.setSsnObservationResultTime(ssnObservationResultTime);
 
