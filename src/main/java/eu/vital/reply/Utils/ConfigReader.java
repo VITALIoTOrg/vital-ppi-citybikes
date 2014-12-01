@@ -30,6 +30,11 @@ public class ConfigReader
     public static final String HI_GETPROPERTYHISTORICALVALUES_PATH = "HI_GETPROPERTYHISTORICALVALUES_PATH";
     public static final String HI_ISSERVICERUNNING_PATH            = "HI_ISSERVICERUNNING_PATH";
     public static final String ONT_BASE_URI_PROPERTY               = "ONT_BASE_URI_PROPERTY";
+    public static final String TRANSF_PROTOCOL                     = "TRANSF_PROTOCOL";
+    public static final String SPEED_PROP                          = "SPEED_PROP";
+    public static final String COLOR_PROP                          = "COLOR_PROP";
+    public static final String REVERSE_SPEED_PROP                  = "REVERSE_SPEED_PROP";
+    public static final String REVERSE_COLOR_PROP                  = "REVERSE_COLOR_PROP";
 
     private ConfigReader()
     {

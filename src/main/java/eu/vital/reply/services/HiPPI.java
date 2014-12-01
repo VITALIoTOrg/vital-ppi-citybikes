@@ -34,6 +34,13 @@ public class HiPPI {
     private String symbolicUri;
     private String ontBaseUri;
 
+    private String transfProt;
+
+    private String speedProp;
+    private String colorProp;
+    private String reverseSpeedProp;
+    private String reverseColorProp;
+
     public HiPPI() {
 
         configReader = ConfigReader.getInstance();
@@ -44,6 +51,13 @@ public class HiPPI {
         hostPort = configReader.get(ConfigReader.SERVER_PORT);
         symbolicUri = configReader.get(ConfigReader.SYMBOLIC_URI);
         ontBaseUri = configReader.get(ConfigReader.ONT_BASE_URI_PROPERTY);
+
+        transfProt = configReader.get(ConfigReader.TRANSF_PROTOCOL);
+
+        speedProp = configReader.get(ConfigReader.SPEED_PROP);
+        colorProp = configReader.get(ConfigReader.COLOR_PROP);
+        reverseSpeedProp = configReader.get(ConfigReader.REVERSE_SPEED_PROP);
+        reverseColorProp = configReader.get(ConfigReader.REVERSE_COLOR_PROP);
 
     }
 
@@ -213,7 +227,7 @@ public class HiPPI {
         } else {
             //restituisci solo i sensori desirati
             for (int i = 0; i < requestedSensor.size(); i++) {
-                String currentId = requestedSensor.get(i).replaceAll(this.symbolicUri+"ico/","");
+                String currentId = requestedSensor.get(i).replaceAll(this.transfProt+this.symbolicUri+"ico/","");
 
                 String filter = hiReplySvc.createFilter("ID",currentId);
 
@@ -261,7 +275,7 @@ public class HiPPI {
                     "}";
         }
 
-        String id = observationRequest.getIco().replaceAll(this.symbolicUri+"ico/", "");
+        String id = observationRequest.getIco().replaceAll(this.transfProt+this.symbolicUri+"ico/", "");
 
         //controllo che il sensore richiesto (id) sia effettivamente presente sul virtualizzatore. in caso nn è presente genero un json di errore
         ServiceList.TrafficSensor currentSensor = this.retrieveSensor(id);
@@ -273,7 +287,7 @@ public class HiPPI {
         }
 
         //controllo che la proprietà richiesta sia tra quelle possibili (Speed, Color, Reverse Speed, Reverse Color) del sensore
-        String property = observationRequest.getProperty().replaceAll(this.ontBaseUri,"");
+        String property = observationRequest.getProperty().replaceAll(this.transfProt+this.ontBaseUri,"");
 
         if (!this.checkTrafficProperty(currentSensor, property)) {
             return "{\n" +
@@ -284,7 +298,7 @@ public class HiPPI {
         if (observationRequest.getFrom() != null && observationRequest.getTo()!=null ) {
             //get history range
 
-            SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
             SimpleDateFormat hiReplyFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
             Date fromDate;
@@ -436,7 +450,7 @@ public class HiPPI {
         sensor.setName(id);
         sensor.setType("Traffic");
         sensor.setDescription(currentSensor.getDescription());
-        sensor.setUri("http://"+symbolicUri+"ico/"+id);
+        sensor.setUri(this.transfProt+this.symbolicUri+"ico/"+id);
 
         int status = currentSensor.getStatus();
 
@@ -463,11 +477,11 @@ public class HiPPI {
         if (dirCount == 1) {
             //speed e color
             SsnObserf speed = new SsnObserf();
-            speed.setType("http://lsm.deri.ie/OpenIot/Speed");
-            speed.setUri("http://"+symbolicUri+"ico/"+id+"/Speed");
+            speed.setType(this.ontBaseUri+this.speedProp);
+            speed.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+this.speedProp);
             SsnObserf color = new SsnObserf();
-            color.setType("http://lsm.deri.ie/OpenIot/Color");
-            color.setUri("http://"+symbolicUri+"ico/" + id + "/Color");
+            color.setType(this.ontBaseUri+this.colorProp);
+            color.setUri(this.transfProt+this.symbolicUri+"ico/" + id + "/"+this.colorProp);
             observedProperties.add(speed);
             observedProperties.add(color);
         }
@@ -475,19 +489,19 @@ public class HiPPI {
         if (dirCount == 2) {
             //speed e color + reverse
             SsnObserf speed = new SsnObserf();
-            speed.setType("http://lsm.deri.ie/OpenIot/Speed");
-            speed.setUri("http://"+symbolicUri+"ico/"+id+"/Speed");
+            speed.setType(this.ontBaseUri+this.speedProp);
+            speed.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+this.speedProp);
             SsnObserf color = new SsnObserf();
-            color.setType("http://lsm.deri.ie/OpenIot/Color");
-            color.setUri("http://"+symbolicUri+"ico/" + id + "/Color");
+            color.setType(this.ontBaseUri+this.colorProp);
+            color.setUri(this.transfProt+this.symbolicUri+"ico/" + id + "/"+colorProp);
             observedProperties.add(speed);
             observedProperties.add(color);
             SsnObserf revspeed = new SsnObserf();
-            revspeed.setType("http://lsm.deri.ie/OpenIot/ReverseSpeed");
-            revspeed.setUri("http://"+symbolicUri+"ico/" + id + "/ReverseSpeed");
+            revspeed.setType(this.ontBaseUri+this.reverseSpeedProp);
+            revspeed.setUri(this.transfProt+this.symbolicUri+"ico/" + id + "/"+this.reverseSpeedProp);
             SsnObserf revcolor = new SsnObserf();
-            revcolor.setType("http://lsm.deri.ie/OpenIot/ReverseColor");
-            revcolor.setUri("http://"+symbolicUri+"ico/" + id + "/ReverseColor");
+            revcolor.setType(this.ontBaseUri+this.reverseColorProp);
+            revcolor.setUri(this.transfProt+this.symbolicUri+"ico/" + id + "/"+this.reverseColorProp);
             observedProperties.add(revspeed);
             observedProperties.add(revcolor);
         }
@@ -505,11 +519,11 @@ public class HiPPI {
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         m.setContext("http://vital-iot.org/contexts/measurement.jsonld");
-        m.setUri("http://"+symbolicUri+"ico/" + currentSensor.getID() + "/observation");
+        m.setUri(this.transfProt+this.symbolicUri+"ico/" + currentSensor.getID() + "/observation");
         m.setType("ssn:Observation");
 
         SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
-        ssnObservationProperty.setType("http://lsm.deri.ie/OpenIoT/"+property);
+        ssnObservationProperty.setType(this.transfProt+this.ontBaseUri+property);
 
         m.setSsnObservationProperty(ssnObservationProperty);
 
@@ -542,11 +556,11 @@ public class HiPPI {
         int colorValue;
 
         if (currentSensor.getDirectionCount() == 1) {
-            if (property.equals("Speed")) {
+            if (property.equals(this.speedProp)) {
                 speedValue = currentSensor.getSpeed();
                 ssnHasValue.setValue(""+speedValue);
                 ssnHasValue.setQudtUnit("qudt:KmH");
-            } else if (property.equals("Color")) {
+            } else if (property.equals(this.colorProp)) {
                 colorValue = currentSensor.getColor();
                 ssnHasValue.setValue(""+colorValue);
                 ssnHasValue.setQudtUnit("qudt:Color");
@@ -556,19 +570,19 @@ public class HiPPI {
         }
 
         if (currentSensor.getDirectionCount() == 2) {
-            if (property.equals("Speed")) {
+            if (property.equals(this.speedProp)) {
                 speedValue = currentSensor.getSpeed();
                 ssnHasValue.setValue(""+speedValue);
                 ssnHasValue.setQudtUnit("qudt:KmH");
-            } else if (property.equals("Color")) {
+            } else if (property.equals(this.colorProp)) {
                 colorValue = currentSensor.getColor();;
                 ssnHasValue.setValue(""+colorValue);
                 ssnHasValue.setQudtUnit("qudt:Color");
-            } else if (property.equals("ReverseSpeed")) {
+            } else if (property.equals(this.reverseSpeedProp)) {
                 speedValue = currentSensor.getSpeed();
                 ssnHasValue.setValue(""+speedValue);
                 ssnHasValue.setQudtUnit("qudt:KmH");
-            } else if (property.equals("ReverseColor")) {
+            } else if (property.equals(this.reverseColorProp)) {
                 colorValue = currentSensor.getColor();
                 ssnHasValue.setValue(""+colorValue);
                 ssnHasValue.setQudtUnit("qudt:Color");
@@ -592,11 +606,11 @@ public class HiPPI {
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         m.setContext("http://vital-iot.org/contexts/measurement.jsonld");
-        m.setUri("http://"+symbolicUri+"ico/" + currentSensor.getID() + "/observation");
+        m.setUri(this.transfProt+this.symbolicUri+"ico/" + currentSensor.getID() + "/observation");
         m.setType("ssn:Observation");
 
         SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
-        ssnObservationProperty.setType("http://lsm.deri.ie/OpenIoT/"+property);
+        ssnObservationProperty.setType(this.transfProt+this.ontBaseUri+property);
 
         m.setSsnObservationProperty(ssnObservationProperty);
 
@@ -629,11 +643,11 @@ public class HiPPI {
         int colorValue;
 
         if (currentSensor.getDirectionCount() == 1) {
-            if (property.equals("Speed")) {
+            if (property.equals(this.speedProp)) {
                 speedValue = historyMeasure.getValue();
                 ssnHasValue.setValue(""+speedValue);
                 ssnHasValue.setQudtUnit("qudt:KmH");
-            } else if (property.equals("Color")) {
+            } else if (property.equals(this.colorProp)) {
                 colorValue = Math.round(historyMeasure.getValue());
                 ssnHasValue.setValue(""+colorValue);
                 ssnHasValue.setQudtUnit("qudt:Color");
@@ -643,19 +657,19 @@ public class HiPPI {
         }
 
         if (currentSensor.getDirectionCount() == 2) {
-            if (property.equals("Speed")) {
+            if (property.equals(this.speedProp)) {
                 speedValue = historyMeasure.getValue();
                 ssnHasValue.setValue(""+speedValue);
                 ssnHasValue.setQudtUnit("qudt:KmH");
-            } else if (property.equals("Color")) {
+            } else if (property.equals(this.colorProp)) {
                 colorValue = Math.round(historyMeasure.getValue());
                 ssnHasValue.setValue(""+colorValue);
                 ssnHasValue.setQudtUnit("qudt:Color");
-            } else if (property.equals("ReverseSpeed")) {
+            } else if (property.equals(this.reverseSpeedProp)) {
                 speedValue = historyMeasure.getValue();
                 ssnHasValue.setValue(""+speedValue);
                 ssnHasValue.setQudtUnit("qudt:KmH");
-            } else if (property.equals("ReverseColor")) {
+            } else if (property.equals(this.reverseColorProp)) {
                 colorValue = Math.round(historyMeasure.getValue());
                 ssnHasValue.setValue(""+colorValue);
                 ssnHasValue.setQudtUnit("qudt:Color");
@@ -690,11 +704,11 @@ public class HiPPI {
 
     private boolean checkTrafficProperty(ServiceList.TrafficSensor currentSensor, String property) {
         if (currentSensor.getDirectionCount() == 1) {
-            if (!property.equals("Speed") && !property.equals("Color")) {
+            if (!property.equals(this.speedProp) && !property.equals(this.colorProp)) {
                 return false;
             }
         } else if (currentSensor.getDirectionCount() == 2) {
-            if (!property.equals("Speed") && !property.equals("Color") && !property.equals("ReverseSpeed") && !property.equals("ReverseColor")) {
+            if (!property.equals(this.speedProp) && !property.equals(this.colorProp) && !property.equals(this.reverseSpeedProp) && !property.equals(this.reverseColorProp)) {
                 return false;
             }
         }
