@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 /**
  * System resource (exposed at "/system" path)
+ * LEGACY CLASS, OLD PPI DEFINITION
  */
 @Path("system")
 public class HiSystem

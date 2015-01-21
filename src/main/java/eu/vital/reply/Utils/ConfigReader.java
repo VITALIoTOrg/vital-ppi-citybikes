@@ -36,6 +36,7 @@ public class ConfigReader
     public static final String REVERSE_SPEED_PROP                  = "REVERSE_SPEED_PROP";
     public static final String REVERSE_COLOR_PROP                  = "REVERSE_COLOR_PROP";
 
+
     private ConfigReader()
     {
         logger = LogManager.getLogger(ConfigReader.class);

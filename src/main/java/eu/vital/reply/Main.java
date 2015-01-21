@@ -12,15 +12,18 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * Main class.
+ * Main Class that will start a Grizzly HTTP server instance
+ * that exposes all the JAX-RS resource on a defined package.
  *
+ * @author <a href="mailto:f.deceglia@reply.it">Fabrizio de Ceglia</a>
+ * @version 1.0.0
  */
 public class Main {
     // Base URI the Grizzly HTTP server will listen on
     public static String BASE_URI;
 
     /**
-     * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
+     * Starts Grizzly HTTP server exposing JAX-RS resources defined in the ppi package.
      * @return Grizzly HTTP server.
      */
     public static HttpServer startServer() {
@@ -34,9 +37,9 @@ public class Main {
     }
 
     /**
-     * Main method.
+     * Main method. Starts the HTTP Server instance.
      * @param args
-     * @throws IOException
+     * @throws IOException, URISyntaxException, JAXBException, SAXException
      */
     public static void main(String[] args) throws IOException, URISyntaxException, JAXBException, SAXException
     {

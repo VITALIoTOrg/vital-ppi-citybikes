@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Service resource (exposed at "/service" path)
- *
+ *  LEGACY CLASS, OLD PPI DEFINITION
  * Created by a.martelli on 09/10/2014.
  */
 @Path("service")

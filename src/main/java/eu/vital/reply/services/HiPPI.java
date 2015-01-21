@@ -15,11 +15,18 @@ import org.apache.logging.log4j.Logger;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+
+/**
+ * HiPPI Class that provides all the REST API that a system attached to Vital will expose
+ *
+ * @author <a href="mailto:f.deceglia@reply.it">Fabrizio de Ceglia</a>
+ * @version 1.0.0
+ */
 
 
 @Path("")
@@ -44,8 +51,9 @@ public class HiPPI {
     public HiPPI() {
 
         configReader = ConfigReader.getInstance();
+
         hiReplySvc = new HiReplySvc();
-        logger = LogManager.getLogger(HiService.class);
+        logger = LogManager.getLogger(HiPPI.class);
 
         hostName = configReader.get(ConfigReader.SERVER_HOSTNAME);
         hostPort = configReader.get(ConfigReader.SERVER_PORT);
@@ -60,7 +68,16 @@ public class HiPPI {
         reverseColorProp = configReader.get(ConfigReader.REVERSE_COLOR_PROP);
 
     }
-
+    /**
+     * Method that returns the metadata of System. This method is mandatory.
+     * @param bodyRequest <br>
+     *            JSON-LD String with the body request <br>
+     *            { <br>
+     *               "@context": "http://vital-iot.org/contexts/query.jsonld", <br>
+     *               "type": "vital:iotSystem" <br>
+     *            } <br>
+     * @return Returns a string with the serialized JSON-LD IoTSystem.
+     */
     @Path("/external/metadata")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -145,6 +162,16 @@ public class HiPPI {
         return out;
     }
 
+    /**
+     * Method that returns the Lifecycle information of the system. This method is not mandatory.
+     * @param bodyRequest <br>
+     *            JSON-LD String with the body request <br>
+     *            { <br>
+     *              "@context": "http://vital-iot.org/contexts/query.jsonld", <br>
+     *              "type": "vital:iotSystem" <br>
+     *            } <br>
+     * @return Returns a string with the serialized JSON-LD Lifecycle information.
+     */
     @Path("/external/lifecycle_information")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -187,6 +214,22 @@ public class HiPPI {
         return out;
     }
 
+    /**
+     * Method that returns the metadata about the requested ICO/ICOs. This method is mandatory.
+     * @param bodyRequest <br>
+     *            JSON-LD String with the body request <br>
+     *            { <br>
+     *              "@context": "http://vital-iot.org/contexts/query.jsonld", <br>
+     *              "icos": <br>
+     *              [ <br>
+     *                  "http://www.example.com/ico/123/", <br>
+     *                  "http://www.example.com/ico/1234/", <br>
+     *                  "http://www.example.com/ico/12345/" <br>
+     *              ] <br>
+     *            } <br>
+     * If the ICOs field is omitted, all the ICOs are requested <br>
+     * @return Returns a serialized String with the list of the requested sensor. <br>
+     */
     @Path("/ico/metadata")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -257,6 +300,32 @@ public class HiPPI {
         return out;
     }
 
+
+
+    /**
+     * Method that returns the observation about the requested ICO/ICOs. This method is mandatory.
+     * @param bodyRequest <br>
+     *            JSON-LD String with the body request <br>
+     *            { <br>
+     *              "@context": "http://vital-iot.org/contexts/query.jsonld", <br>
+     *              "ico": "http://www.example.com/ico/123", <br>
+     *              "property": "http://lsm.deri.ie/OpenIot/Temperature", <br>
+     *              "from": "2014-11-17T09:00:00+02:00", <br>
+     *              "to": "2014-11-17T11:00:00+02:00" <br>
+     *            } <br>
+     * <b>from</b> and <b>to</b> determine the time interval, when the observations to return were taken.
+     * Both <b>to</b> and <b>from</b> are optional:
+     * <ul>
+     *     <li>
+     *     If to is omitted, then all observations taken after from are returned
+     *     </li>
+     *     <li>
+     *     If both from and to are omitted, then the last observation taken from the specified ICO for the specified property is returned
+     *     </li>
+     * </ul>
+     * <b>property</b> is the requested property
+     * @return Returns a serialized String with the list of the requested measure.
+     */
     @Path("observation")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -386,6 +455,12 @@ public class HiPPI {
 
         return out;
     }
+
+
+    /*
+        Private Class and Methods that adapt
+        HiReply structure with Vital structure
+    */
 
     private class HistoryMeasure {
 
