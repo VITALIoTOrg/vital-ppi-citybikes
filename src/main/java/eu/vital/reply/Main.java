@@ -1,5 +1,6 @@
 package eu.vital.reply;
 
+import eu.vital.reply.services.HiPPI;
 import eu.vital.reply.utils.ConfigReader;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;

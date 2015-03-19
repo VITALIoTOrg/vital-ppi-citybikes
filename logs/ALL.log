@@ -16,3 +16,4 @@
 2014-11-26 17:07:58 [Grizzly-worker(1)] ERROR eu.vital.reply.clients.HiReplySvc - getPropertyHistoricalValues - Unmarshalling exception: unexpected element (uri:"", local:"ValueList"). Expected elements are <{}PropertyList>,<{}ServiceList>
 2014-11-27 16:09:28 [Grizzly-worker(2)] ERROR eu.vital.reply.services.HiService - ID: vital2.replycloud.prv/cnc12145-I_TrS_2 not present.
 2014-11-27 16:09:50 [Grizzly-worker(5)] ERROR eu.vital.reply.services.HiService - ID: vital2.replycloud.prv/cnc12145-I_TrS_3 not present.
+2015-03-18 10:14:17 [Grizzly-worker(4)] ERROR eu.vital.reply.clients.HiReplySvc - getSnapshot - HTTP IO exception

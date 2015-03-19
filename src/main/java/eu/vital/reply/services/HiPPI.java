@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -68,6 +69,7 @@ public class HiPPI {
         reverseColorProp = configReader.get(ConfigReader.REVERSE_COLOR_PROP);
 
     }
+
     /**
      * Method that returns the metadata of System. This method is mandatory.
      * @param bodyRequest <br>
@@ -143,11 +145,42 @@ public class HiPPI {
         operations.add(operation);
 
         service.setMsmHasOperation(operations);
-
         serviceList.add(service);
-
         //end servizio 2
 
+        //start servizio 3, wp5
+
+        service = new ProvidesService();
+        operation = new MsmHasOperation();
+        operations = new ArrayList<>();
+
+        service.setType("ManagementServices");
+        service.setContext("http://vital-iot.org/contexts/service.jsonld");
+
+        operation.setType("GetPerformanceMetrics");
+        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"/performance");
+        operation.setHrestHasMethod("hrest:GET");
+        operations.add(operation);
+
+        operation = new MsmHasOperation();
+
+        operation.setType("GetConfigurationOption");
+        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"/configurationOptions");
+        operation.setHrestHasMethod("hrest:GET");
+        operations.add(operation);
+
+        operation = new MsmHasOperation();
+
+        operation.setType("SetConfigurationOptions");
+        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"/configurationOptions");
+        operation.setHrestHasMethod("hrest:POST");
+        operations.add(operation);
+
+        service.setMsmHasOperation(operations);
+
+        //end servizio 3
+
+        serviceList.add(service);
         ioTSystem.setProvidesService(serviceList);
 
         String out = "";
