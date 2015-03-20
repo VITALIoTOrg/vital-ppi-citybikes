@@ -16,7 +16,6 @@ import org.apache.logging.log4j.Logger;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -67,6 +66,36 @@ public class HiPPI {
         colorProp = configReader.get(ConfigReader.COLOR_PROP);
         reverseSpeedProp = configReader.get(ConfigReader.REVERSE_SPEED_PROP);
         reverseColorProp = configReader.get(ConfigReader.REVERSE_COLOR_PROP);
+
+    }
+
+
+    @Path("/performance")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getPerformanceMetrics() {
+
+        String out = "";
+
+        PerformaceMetricsMetadata performaceMetricsMetadata = new PerformaceMetricsMetadata();
+
+        List<SsnObserf> list = new ArrayList<>();
+        SsnObserf ssnObserf = new SsnObserf();
+
+        ssnObserf.setType(this.transfProt+this.ontBaseUri+"memUsed");
+        ssnObserf.setUri("http://"+hostName+":"+hostPort+"/iot/hireply/perf/memUsed");
+        list.add(ssnObserf);
+
+        performaceMetricsMetadata.setSsnObserves(list);
+
+        try {
+            out = JsonUtils.serializeJson(performaceMetricsMetadata);
+        } catch (IOException e) {
+            this.logger.error("JSON UTILS IO EXCEPTION - metadata information");
+            e.printStackTrace();
+        }
+
+        return out;
 
     }
 

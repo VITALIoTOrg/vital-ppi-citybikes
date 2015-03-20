@@ -15,7 +15,6 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 
@@ -73,12 +72,10 @@ public class HiPPIManagement {
         memUsed.setType("");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"MemUsage");
+        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"memUsed");
         memUsed.setSsnObservationProperty(ssnObservationProperty_);
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
-
-        // todo: update formato data vedi getobeservationvalue
 
         ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
         memUsed.setSsnObservationResultTime(ssnObservationResultTime_);

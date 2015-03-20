@@ -1,0 +1,12 @@
+{
+    "ssn:observes": [
+        {
+            "type": "<ontology definition URI>/upTime",
+            "uri": "http://www.example.com/iot/{id}/perf/upTime"
+        },
+        {
+            "type": "<ontology definition URI>/upTime",
+            "uri": "http://www.example.com/iot/{id}/perf/upTime"
+        }
+    ]
+}
