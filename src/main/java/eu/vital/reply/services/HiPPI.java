@@ -18,6 +18,8 @@ import org.apache.logging.log4j.Logger;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -105,6 +107,11 @@ public class HiPPI {
         ssnObserf.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/errors");
         list.add(ssnObserf);
 
+        ssnObserf = new SsnObserf();
+        ssnObserf.setType(this.transfProt+this.ontBaseUri+"upTime");
+        ssnObserf.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/upTime");
+        list.add(ssnObserf);
+
         performaceMetricsMetadata.setSsnObserves(list);
 
         try {
@@ -117,6 +124,77 @@ public class HiPPI {
 
         return out;
 
+    }
+
+    @Path("/load")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getSystemLoad() {
+        String out = "";
+
+        OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
+
+        double systemLoad = operatingSystemMXBean.getSystemLoadAverage();
+
+
+        return out;
+    }
+
+    @Path("/iot/hireply/perf/upTime")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getUpTime() throws Exception {
+        String out = "";
+
+        Date now = new Date();
+        Date startTime = StatCounter.getStartTime();
+
+        long span = now.getTime() - startTime.getTime();
+
+        Date date = new Date();
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+        PerformanceMetric sysUpTime = new PerformanceMetric();
+
+        sysUpTime.setContext("http://vital.iot.org/system.jsonld");
+        sysUpTime.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/upTime");
+        sysUpTime.setType("ssn:Observation");
+
+        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"servedRequest");
+
+        sysUpTime.setSsnObservationProperty(ssnObservationProperty_);
+
+        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+
+        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
+        sysUpTime.setSsnObservationResultTime(ssnObservationResultTime_);
+
+        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
+        ssnHasMeasurementProperty_.setType("Reliability");
+        ssnHasMeasurementProperty_.setHasValue("HighReliability");
+        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
+        sysUpTime.setSsnObservationQuality(ssnObservationQuality_);
+
+        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+        ssnObservationResult_.setType("upTime");
+        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+        ssnHasValue_.setType("ssn:ObservationValue");
+        ssnHasValue_.setValue(span+"");
+        ssnHasValue_.setQudtUnit("qudt:milliseconds");
+        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+        sysUpTime.setSsnObservationResult(ssnObservationResult_);
+
+        try {
+            out = JsonUtils.serializeJson(sysUpTime);
+        } catch (IOException e) {
+            this.logger.error("getIcoMetadata - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("getIcoMetadata - Deserialize JSON UTILS IO EXCEPTION");
+            //e.printStackTrace();
+        }
+
+        return out;
     }
 
     @Path("/iot/hireply/perf/servedRequest")

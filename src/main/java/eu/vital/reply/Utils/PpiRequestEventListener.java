@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 public class PpiRequestEventListener implements RequestEventListener {
 
     private volatile int count = 0;
+    private String aux = "";
 
     private Logger logger = LogManager.getLogger(PpiRequestEventListener.class);
 
@@ -27,6 +28,7 @@ public class PpiRequestEventListener implements RequestEventListener {
                         + requestEvent.getUriInfo().getMatchedResourceMethod()
                         .getHttpMethod()
                         + " started for request " + count);
+                aux = requestEvent.getUriInfo().getPath();
                 break;
             case RESOURCE_METHOD_FINISHED:
                 logger.info("Request " + requestEvent

@@ -4,6 +4,7 @@ import eu.vital.reply.services.HiPPI;
 import eu.vital.reply.utils.ConfigReader;
 import eu.vital.reply.utils.PpiApplicationEventListener;
 import eu.vital.reply.utils.PpiRequestEventListener;
+import eu.vital.reply.utils.StatCounter;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -13,6 +14,7 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 
 /**
  * Main Class that will start a Grizzly HTTP server instance
@@ -58,6 +60,7 @@ public class Main {
         final HttpServer server = startServer();
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
+        StatCounter.setStartTime(new Date());
         System.in.read();
         server.stop();
     }
