@@ -2,6 +2,8 @@ package eu.vital.reply;
 
 import eu.vital.reply.services.HiPPI;
 import eu.vital.reply.utils.ConfigReader;
+import eu.vital.reply.utils.PpiApplicationEventListener;
+import eu.vital.reply.utils.PpiRequestEventListener;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -30,7 +32,8 @@ public class Main {
     public static HttpServer startServer() {
         // create a resource config that scans for JAX-RS resources and providers
         // in eu.vital.reply package
-        final ResourceConfig rc = new ResourceConfig().packages("eu.vital.reply.services");
+        /*.packages("eu.vital.reply.services")*/
+        final ResourceConfig rc = new ResourceConfig(HiPPI.class, PpiApplicationEventListener.class).setApplicationName("HiReplyPPI");
 
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI

@@ -25,7 +25,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
     "ssn:observationQuality",
     "ssn:observationResult"
 })
-public class MemUsed {
+public class PerformanceMetric {
 
     @JsonProperty("@context")
     private String Context;
@@ -64,7 +64,7 @@ public class MemUsed {
         this.Context = Context;
     }
 
-    public MemUsed withContext(String Context) {
+    public PerformanceMetric withContext(String Context) {
         this.Context = Context;
         return this;
     }
@@ -89,7 +89,7 @@ public class MemUsed {
         this.uri = uri;
     }
 
-    public MemUsed withUri(String uri) {
+    public PerformanceMetric withUri(String uri) {
         this.uri = uri;
         return this;
     }
@@ -114,7 +114,7 @@ public class MemUsed {
         this.type = type;
     }
 
-    public MemUsed withType(String type) {
+    public PerformanceMetric withType(String type) {
         this.type = type;
         return this;
     }
@@ -139,7 +139,7 @@ public class MemUsed {
         this.ssnObservationProperty = ssnObservationProperty;
     }
 
-    public MemUsed withSsnObservationProperty(SsnObservationProperty_ ssnObservationProperty) {
+    public PerformanceMetric withSsnObservationProperty(SsnObservationProperty_ ssnObservationProperty) {
         this.ssnObservationProperty = ssnObservationProperty;
         return this;
     }
@@ -164,7 +164,7 @@ public class MemUsed {
         this.ssnObservationResultTime = ssnObservationResultTime;
     }
 
-    public MemUsed withSsnObservationResultTime(SsnObservationResultTime_ ssnObservationResultTime) {
+    public PerformanceMetric withSsnObservationResultTime(SsnObservationResultTime_ ssnObservationResultTime) {
         this.ssnObservationResultTime = ssnObservationResultTime;
         return this;
     }
@@ -189,7 +189,7 @@ public class MemUsed {
         this.ssnObservationQuality = ssnObservationQuality;
     }
 
-    public MemUsed withSsnObservationQuality(SsnObservationQuality_ ssnObservationQuality) {
+    public PerformanceMetric withSsnObservationQuality(SsnObservationQuality_ ssnObservationQuality) {
         this.ssnObservationQuality = ssnObservationQuality;
         return this;
     }
@@ -214,7 +214,7 @@ public class MemUsed {
         this.ssnObservationResult = ssnObservationResult;
     }
 
-    public MemUsed withSsnObservationResult(SsnObservationResult_ ssnObservationResult) {
+    public PerformanceMetric withSsnObservationResult(SsnObservationResult_ ssnObservationResult) {
         this.ssnObservationResult = ssnObservationResult;
         return this;
     }
@@ -244,7 +244,7 @@ public class MemUsed {
         this.additionalProperties.put(name, value);
     }
 
-    public MemUsed withAdditionalProperty(String name, Object value) {
+    public PerformanceMetric withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
