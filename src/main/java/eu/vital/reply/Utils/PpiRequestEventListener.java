@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 public class PpiRequestEventListener implements RequestEventListener {
 
     private volatile int count = 0;
-    private String aux = "";
+    private String eventPath = "";
 
     private Logger logger = LogManager.getLogger(PpiRequestEventListener.class);
 
@@ -28,12 +28,28 @@ public class PpiRequestEventListener implements RequestEventListener {
                         + requestEvent.getUriInfo().getMatchedResourceMethod()
                         .getHttpMethod()
                         + " started for request " + count);
-                aux = requestEvent.getUriInfo().getPath();
+                eventPath = requestEvent.getUriInfo().getPath();
+                /*
+                passo come indice il numero di count, che in questo caso corrisponde
+                al numero progressivo di ogni evento scatenato
+                 */
+                EventHelper eventHelper = new EventHelper(count,eventPath);
+                StatCounter.addEventHelper(eventHelper);
                 break;
-            case RESOURCE_METHOD_FINISHED:
+            /*case RESOURCE_METHOD_FINISHED:
+            eliminato xke non è qui che la richiesta è completamente terminata, ma nello stato FINISHED
                 logger.info("Request " + requestEvent
                         + " finished.");
                 StatCounter.setRequestedNumber(count);
+                EventHelper eventHelperF = new EventHelper(count,eventPath);
+                boolean esito = StatCounter.deleteEventHelper(eventHelperF);
+                break;*/
+            case FINISHED:
+                logger.info("Request " + requestEvent
+                        + " finished.");
+                StatCounter.setRequestedNumber(count);
+                EventHelper eventHelperF = new EventHelper(count,eventPath);
+                /*boolean esito = */StatCounter.deleteEventHelper(eventHelperF);
                 break;
             case ON_EXCEPTION:
                 logger.info("Request " + requestEvent + " has thrown an Exception");

@@ -18,8 +18,6 @@ import org.apache.logging.log4j.Logger;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -112,13 +110,18 @@ public class HiPPI {
         ssnObserf.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/upTime");
         list.add(ssnObserf);
 
+        ssnObserf = new SsnObserf();
+        ssnObserf.setType(this.transfProt+this.ontBaseUri+"upTime");
+        ssnObserf.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/pendingRequests");
+        list.add(ssnObserf);
+
         performaceMetricsMetadata.setSsnObserves(list);
 
         try {
             out = JsonUtils.serializeJson(performaceMetricsMetadata);
         } catch (IOException e) {
-            this.logger.error("JSON UTILS IO EXCEPTION - metadata information");
-            throw new Exception("JSON UTILS IO EXCEPTION - metadata information");
+            this.logger.error("JSON UTILS IO EXCEPTION - getPerformanceMetric information");
+            throw new Exception("JSON UTILS IO EXCEPTION - getPerformanceMetric information");
             //e.printStackTrace();
         }
 
@@ -126,16 +129,95 @@ public class HiPPI {
 
     }
 
-    @Path("/load")
+    /*
+    test services for:
+        - pending requests (/fool)
+        - error requests (/exc)
+
+    @Path("/fool")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getSystemLoad() {
+    public String getFool() throws InterruptedException {
+
+        Thread.sleep(60000);
+
+        return "{\n" +
+                "\"fooled\": \"fooled service\"\n"+
+                "}";
+
+    }
+
+    @Path("/exc")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getExc() throws Exception {
         String out = "";
 
-        OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
+        try {
+            int a = 1/0;
+        } catch (Exception e) {
+            throw new Exception("eccezione di test");
+        }
 
-        double systemLoad = operatingSystemMXBean.getSystemLoadAverage();
+        return out;
+    }
+    */
 
+    @Path("/iot/hireply/perf/pendingRequests")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getPendingRequest() throws Exception {
+        String out = "";
+
+        /*
+        Sottraggo 1 xke a questo punto la corrente resources è considerata in pending
+        dato che al momento della richiesta QUESTO metodo non è ancora andato in FINISH --> risulta tra i pending
+         */
+
+        int pendingRequest = StatCounter.getPendingRequest()-1;
+
+        Date date = new Date();
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+        PerformanceMetric pendingReq = new PerformanceMetric();
+
+        pendingReq.setContext("http://vital.iot.org/system.jsonld");
+        pendingReq.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/pendingRequests");
+        pendingReq.setType("ssn:Observation");
+
+        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"pendingRequests");
+
+        pendingReq.setSsnObservationProperty(ssnObservationProperty_);
+
+        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+
+        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
+        pendingReq.setSsnObservationResultTime(ssnObservationResultTime_);
+
+        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
+        ssnHasMeasurementProperty_.setType("Reliability");
+        ssnHasMeasurementProperty_.setHasValue("HighReliability");
+        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
+        pendingReq.setSsnObservationQuality(ssnObservationQuality_);
+
+        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+        ssnObservationResult_.setType("pendingRequests");
+        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+        ssnHasValue_.setType("ssn:ObservationValue");
+        ssnHasValue_.setValue(pendingRequest+"");
+        ssnHasValue_.setQudtUnit("qudt:number");
+        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+        pendingReq.setSsnObservationResult(ssnObservationResult_);
+
+        try {
+            out = JsonUtils.serializeJson(pendingReq);
+        } catch (IOException e) {
+            this.logger.error("pendingReq - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("pendingReq - Deserialize JSON UTILS IO EXCEPTION");
+            //e.printStackTrace();
+        }
 
         return out;
     }
@@ -189,8 +271,8 @@ public class HiPPI {
         try {
             out = JsonUtils.serializeJson(sysUpTime);
         } catch (IOException e) {
-            this.logger.error("getIcoMetadata - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("getIcoMetadata - Deserialize JSON UTILS IO EXCEPTION");
+            this.logger.error("upTime - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("upTime - Deserialize JSON UTILS IO EXCEPTION");
             //e.printStackTrace();
         }
 
@@ -250,8 +332,8 @@ public class HiPPI {
         try {
             out = JsonUtils.serializeJson(servedRequest);
         } catch (IOException e) {
-            this.logger.error("getIcoMetadata - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("getIcoMetadata - Deserialize JSON UTILS IO EXCEPTION");
+            this.logger.error("servedReq - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("servedReq - Deserialize JSON UTILS IO EXCEPTION");
             //e.printStackTrace();
         }
 
@@ -304,8 +386,8 @@ public class HiPPI {
         try {
             out = JsonUtils.serializeJson(servedRequest);
         } catch (IOException e) {
-            this.logger.error("getIcoMetadata - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("getIcoMetadata - Deserialize JSON UTILS IO EXCEPTION");
+            this.logger.error("errors - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("errors - Deserialize JSON UTILS IO EXCEPTION");
             //e.printStackTrace();
         }
 
@@ -360,8 +442,8 @@ public class HiPPI {
         try {
             out = JsonUtils.serializeJson(memUsed);
         } catch (IOException e) {
-            this.logger.error("getIcoMetadata - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("getIcoMetadata - Deserialize JSON UTILS IO EXCEPTION");
+            this.logger.error("memUsed - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("memUsed - Deserialize JSON UTILS IO EXCEPTION");
             //e.printStackTrace();
         }
 
