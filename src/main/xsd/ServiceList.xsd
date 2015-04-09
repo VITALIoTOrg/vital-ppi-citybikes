@@ -11,6 +11,11 @@
                             <xs:element type="xs:string" name="Visibility"/>
                             <xs:element type="xs:string" name="HostMode"/>
                             <xs:element type="xs:integer" name="MemoryConsumption"/>
+                            <xs:element type="xs:integer" name="AvailMemoryCounter"/>
+                            <xs:element type="xs:integer" name="ProcessMemoryCounter"/>
+                            <xs:element type="xs:float" name="CPUTotalCounter"/>
+                            <xs:element type="xs:string" name="FreeDiskSpace"/>
+                            <xs:element type="xs:dateTime" name="LastStartTime"/>
                             <xs:element type="xs:string" name="LogsServiceEndpoint"/>
                             <xs:element type="xs:string" name="LogsServiceDualBindings"/>
                             <xs:element type="xs:string" name="LogsPriorityLevel"/>

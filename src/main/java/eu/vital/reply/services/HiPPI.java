@@ -78,6 +78,131 @@ public class HiPPI {
 
     }
 
+    /**
+     * Method that returns the metadata of System. This method is mandatory.
+     * @param bodyRequest <br>
+     *            JSON-LD String with the body request <br>
+     *            { <br>
+     *               "@context": "http://vital-iot.org/contexts/query.jsonld", <br>
+     *               "type": "vital:iotSystem" <br>
+     *            } <br>
+     * @return Returns a string with the serialized JSON-LD IoTSystem.
+     */
+    @Path("/external/metadata")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getMetadata(String bodyRequest) throws Exception {
+
+        EmptyRequest emptyRequest = null;
+
+        try {
+            emptyRequest = (EmptyRequest) JsonUtils.deserializeJson(bodyRequest, EmptyRequest.class);
+        } catch (IOException e) {
+            this.logger.error("/EXTERNAL/METADATA error parsing request header");
+            return "{\n" +
+                    "\"error\": \"Malformed request body\"\n"+
+                    "}";
+        }
+        // TODO --> check sulla request, trattamento di eventuali filtri
+
+        ServiceList system = hiReplySvc.getSnapshot();
+
+        IoTSystem ioTSystem = new IoTSystem();
+        ProvidesService service = new ProvidesService();
+        MsmHasOperation operation = new MsmHasOperation();
+        ArrayList<ProvidesService> serviceList = new ArrayList<>();
+        ArrayList<MsmHasOperation> operations = new ArrayList<>();
+
+        ioTSystem.setContext("http://vital.iot.org/system.jsonld");
+        ioTSystem.setName(system.getIoTSystem().getID());
+        ioTSystem.setDescription(system.getIoTSystem().getDescription());
+        ioTSystem.setUri(system.getIoTSystem().getUri());
+
+        if (system.getIoTSystem().getStatus().equals("Running")) {
+            ioTSystem.setStatus("vital:Running");
+        }
+
+        ioTSystem.setOperator(system.getIoTSystem().getOperator());
+        ioTSystem.setServiceArea(system.getIoTSystem().getServiceArea());
+
+        service.setType("ICOManager");
+        service.setContext("http://vital-iot.org/contexts/service.jsonld");
+        operation.setType("GetMetadata");
+        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"/ico/metadata");
+        operation.setHrestHasMethod("hrest:POST");
+
+        operations.add(operation);
+
+        service.setMsmHasOperation(operations);
+
+        serviceList.add(service);
+
+        //start servizio 2
+
+        service = new ProvidesService();
+        operation = new MsmHasOperation();
+        operations = new ArrayList<>();
+
+        service.setType("ObservationManager");
+        service.setContext("http://vital-iot.org/contexts/service.jsonld");
+        operation.setType("GetObservation");
+        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"/observation");
+        operation.setHrestHasMethod("hrest:POST");
+
+        operations.add(operation);
+
+        service.setMsmHasOperation(operations);
+        serviceList.add(service);
+        //end servizio 2
+
+        //start servizio 3, wp5
+
+        service = new ProvidesService();
+        operation = new MsmHasOperation();
+        operations = new ArrayList<>();
+
+        service.setType("ManagementServices");
+        service.setContext("http://vital-iot.org/contexts/service.jsonld");
+
+        operation.setType("GetPerformanceMetrics");
+        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"/performance");
+        operation.setHrestHasMethod("hrest:GET");
+        operations.add(operation);
+
+        operation = new MsmHasOperation();
+
+        operation.setType("GetConfigurationOption");
+        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"/configurationOptions");
+        operation.setHrestHasMethod("hrest:GET");
+        operations.add(operation);
+
+        operation = new MsmHasOperation();
+
+        operation.setType("SetConfigurationOptions");
+        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"/configurationOptions");
+        operation.setHrestHasMethod("hrest:POST");
+        operations.add(operation);
+
+        service.setMsmHasOperation(operations);
+
+        //end servizio 3
+
+        serviceList.add(service);
+        ioTSystem.setProvidesService(serviceList);
+
+        String out = "";
+
+        try {
+            out = JsonUtils.serializeJson(ioTSystem);
+        } catch (IOException e) {
+            this.logger.error("JSON UTILS IO EXCEPTION - metadata information");
+            throw new Exception("JSON UTILS IO EXCEPTION - metadata information");
+            //e.printStackTrace();
+        }
+
+        return out;
+    }
 
     @Path("/performance")
     @GET
@@ -93,6 +218,21 @@ public class HiPPI {
         SsnObserf ssnObserf = new SsnObserf();
         ssnObserf.setType(this.transfProt+this.ontBaseUri+"memUsed");
         ssnObserf.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/memUsed");
+        list.add(ssnObserf);
+
+        ssnObserf = new SsnObserf();
+        ssnObserf.setType(this.transfProt+this.ontBaseUri+"memUsed");
+        ssnObserf.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/memAvailable");
+        list.add(ssnObserf);
+
+        ssnObserf = new SsnObserf();
+        ssnObserf.setType(this.transfProt+this.ontBaseUri+"memUsed");
+        ssnObserf.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/diskAvailable");
+        list.add(ssnObserf);
+
+        ssnObserf = new SsnObserf();
+        ssnObserf.setType(this.transfProt+this.ontBaseUri+"memUsed");
+        ssnObserf.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/cpuUsage");
         list.add(ssnObserf);
 
         ssnObserf = new SsnObserf();
@@ -451,126 +591,170 @@ public class HiPPI {
     }
 
 
-    /**
-     * Method that returns the metadata of System. This method is mandatory.
-     * @param bodyRequest <br>
-     *            JSON-LD String with the body request <br>
-     *            { <br>
-     *               "@context": "http://vital-iot.org/contexts/query.jsonld", <br>
-     *               "type": "vital:iotSystem" <br>
-     *            } <br>
-     * @return Returns a string with the serialized JSON-LD IoTSystem.
-     */
-    @Path("/external/metadata")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/iot/hireply/perf/memAvailable")
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getMetadata(String bodyRequest) throws Exception {
-
-        EmptyRequest emptyRequest = null;
-
-        try {
-            emptyRequest = (EmptyRequest) JsonUtils.deserializeJson(bodyRequest, EmptyRequest.class);
-        } catch (IOException e) {
-            this.logger.error("/EXTERNAL/METADATA error parsing request header");
-            return "{\n" +
-                    "\"error\": \"Malformed request body\"\n"+
-                    "}";
-        }
-        // TODO --> check sulla request, trattamento di eventuali filtri
-
-        ServiceList system = hiReplySvc.getSnapshot();
-
-        IoTSystem ioTSystem = new IoTSystem();
-        ProvidesService service = new ProvidesService();
-        MsmHasOperation operation = new MsmHasOperation();
-        ArrayList<ProvidesService> serviceList = new ArrayList<>();
-        ArrayList<MsmHasOperation> operations = new ArrayList<>();
-
-        ioTSystem.setContext("http://vital.iot.org/system.jsonld");
-        ioTSystem.setName(system.getIoTSystem().getID());
-        ioTSystem.setDescription(system.getIoTSystem().getDescription());
-        ioTSystem.setUri(system.getIoTSystem().getUri());
-
-        if (system.getIoTSystem().getStatus().equals("Running")) {
-            ioTSystem.setStatus("vital:Running");
-        }
-
-        ioTSystem.setOperator(system.getIoTSystem().getOperator());
-        ioTSystem.setServiceArea(system.getIoTSystem().getServiceArea());
-
-        service.setType("ICOManager");
-        service.setContext("http://vital-iot.org/contexts/service.jsonld");
-        operation.setType("GetMetadata");
-        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"/ico/metadata");
-        operation.setHrestHasMethod("hrest:POST");
-
-        operations.add(operation);
-
-        service.setMsmHasOperation(operations);
-
-        serviceList.add(service);
-
-        //start servizio 2
-
-        service = new ProvidesService();
-        operation = new MsmHasOperation();
-        operations = new ArrayList<>();
-
-        service.setType("ObservationManager");
-        service.setContext("http://vital-iot.org/contexts/service.jsonld");
-        operation.setType("GetObservation");
-        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"/observation");
-        operation.setHrestHasMethod("hrest:POST");
-
-        operations.add(operation);
-
-        service.setMsmHasOperation(operations);
-        serviceList.add(service);
-        //end servizio 2
-
-        //start servizio 3, wp5
-
-        service = new ProvidesService();
-        operation = new MsmHasOperation();
-        operations = new ArrayList<>();
-
-        service.setType("ManagementServices");
-        service.setContext("http://vital-iot.org/contexts/service.jsonld");
-
-        operation.setType("GetPerformanceMetrics");
-        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"/performance");
-        operation.setHrestHasMethod("hrest:GET");
-        operations.add(operation);
-
-        operation = new MsmHasOperation();
-
-        operation.setType("GetConfigurationOption");
-        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"/configurationOptions");
-        operation.setHrestHasMethod("hrest:GET");
-        operations.add(operation);
-
-        operation = new MsmHasOperation();
-
-        operation.setType("SetConfigurationOptions");
-        operation.setHrestHasAddress("http://"+hostName+":"+hostPort+"/configurationOptions");
-        operation.setHrestHasMethod("hrest:POST");
-        operations.add(operation);
-
-        service.setMsmHasOperation(operations);
-
-        //end servizio 3
-
-        serviceList.add(service);
-        ioTSystem.setProvidesService(serviceList);
+    public String getMemoryAvailable() throws Exception {
 
         String out = "";
 
+        ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
+
+        BigInteger memAvailable = tm.getAvailMemoryCounter();
+        Date date = new Date();
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+        PerformanceMetric memUsed = new PerformanceMetric();
+
+        memUsed.setContext("http://vital.iot.org/system.jsonld");
+        memUsed.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/memAvailable");
+        memUsed.setType("ssn:Observation");
+
+        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"memAvailable");
+        memUsed.setSsnObservationProperty(ssnObservationProperty_);
+
+        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+
+        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
+        memUsed.setSsnObservationResultTime(ssnObservationResultTime_);
+
+        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
+        ssnHasMeasurementProperty_.setType("Reliability");
+        ssnHasMeasurementProperty_.setHasValue("HighReliability");
+        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
+        memUsed.setSsnObservationQuality(ssnObservationQuality_);
+
+        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+        ssnObservationResult_.setType("memoryMetric");
+        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+        ssnHasValue_.setType("ssn:ObservationValue");
+        ssnHasValue_.setValue(memAvailable.toString());
+        ssnHasValue_.setQudtUnit("qudt:Byte");
+        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+        memUsed.setSsnObservationResult(ssnObservationResult_);
+
         try {
-            out = JsonUtils.serializeJson(ioTSystem);
+            out = JsonUtils.serializeJson(memUsed);
         } catch (IOException e) {
-            this.logger.error("JSON UTILS IO EXCEPTION - metadata information");
-            throw new Exception("JSON UTILS IO EXCEPTION - metadata information");
+            this.logger.error("memAvailable - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("memAvailable - Deserialize JSON UTILS IO EXCEPTION");
+            //e.printStackTrace();
+        }
+
+        return out;
+    }
+
+    @Path("/iot/hireply/perf/cpuUsage")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getCpuUsage() throws Exception {
+
+        String out = "";
+
+        ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
+
+        float cpuUsage = tm.getCPUTotalCounter();
+        Date date = new Date();
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+        PerformanceMetric memUsed = new PerformanceMetric();
+
+        memUsed.setContext("http://vital.iot.org/system.jsonld");
+        memUsed.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/cpuUsage");
+        memUsed.setType("ssn:Observation");
+
+        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"cpuUsage");
+        memUsed.setSsnObservationProperty(ssnObservationProperty_);
+
+        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+
+        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
+        memUsed.setSsnObservationResultTime(ssnObservationResultTime_);
+
+        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
+        ssnHasMeasurementProperty_.setType("Reliability");
+        ssnHasMeasurementProperty_.setHasValue("HighReliability");
+        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
+        memUsed.setSsnObservationQuality(ssnObservationQuality_);
+
+        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+        ssnObservationResult_.setType("memoryMetric");
+        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+        ssnHasValue_.setType("ssn:ObservationValue");
+        ssnHasValue_.setValue(cpuUsage+"");
+        ssnHasValue_.setQudtUnit("qudt:Percentage");
+        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+        memUsed.setSsnObservationResult(ssnObservationResult_);
+
+        try {
+            out = JsonUtils.serializeJson(memUsed);
+        } catch (IOException e) {
+            this.logger.error("cpuUsage - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("cpuUsage - Deserialize JSON UTILS IO EXCEPTION");
+            //e.printStackTrace();
+        }
+
+        return out;
+    }
+
+
+    @Path("/iot/hireply/perf/diskAvailable")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getDiskAvailable() throws Exception {
+
+        String out = "";
+
+        ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
+
+        String strDiskAvailable = tm.getFreeDiskSpace();
+
+        int bkSlashIndex = strDiskAvailable.indexOf("\\");
+        int freeDiskSpace = Integer.parseInt (strDiskAvailable.substring(bkSlashIndex+2).replaceAll("\\s+",""));
+
+        Date date = new Date();
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+        PerformanceMetric memUsed = new PerformanceMetric();
+
+        memUsed.setContext("http://vital.iot.org/system.jsonld");
+        memUsed.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/diskAvailable");
+        memUsed.setType("ssn:Observation");
+
+        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"diskAvailable");
+        memUsed.setSsnObservationProperty(ssnObservationProperty_);
+
+        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+
+        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
+        memUsed.setSsnObservationResultTime(ssnObservationResultTime_);
+
+        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
+        ssnHasMeasurementProperty_.setType("Reliability");
+        ssnHasMeasurementProperty_.setHasValue("HighReliability");
+        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
+        memUsed.setSsnObservationQuality(ssnObservationQuality_);
+
+        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+        ssnObservationResult_.setType("memoryMetric");
+        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+        ssnHasValue_.setType("ssn:ObservationValue");
+        ssnHasValue_.setValue(freeDiskSpace+"");
+        ssnHasValue_.setQudtUnit("qudt:Byte");
+        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+        memUsed.setSsnObservationResult(ssnObservationResult_);
+
+        try {
+            out = JsonUtils.serializeJson(memUsed);
+        } catch (IOException e) {
+            this.logger.error("diskAvailable - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("diskAvailable - Deserialize JSON UTILS IO EXCEPTION");
             //e.printStackTrace();
         }
 
@@ -749,8 +933,6 @@ public class HiPPI {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String getObservation(String bodyRequest) throws Exception {
-
-
 
         ObservationRequest observationRequest = null;
         ArrayList<Measure> measures = new ArrayList<>();
