@@ -1,4 +1,3 @@
-
 package eu.vital.reply.jsonpojos;
 
 import java.util.HashMap;
@@ -17,8 +16,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "name",
-    "value"
+        "name",
+        "value"
 })
 public class ConfigurationOption {
 
@@ -30,7 +29,7 @@ public class ConfigurationOption {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
-     * 
+     *
      * @return
      *     The name
      */
@@ -40,7 +39,7 @@ public class ConfigurationOption {
     }
 
     /**
-     * 
+     *
      * @param name
      *     The name
      */
@@ -55,7 +54,7 @@ public class ConfigurationOption {
     }
 
     /**
-     * 
+     *
      * @return
      *     The value
      */
@@ -65,7 +64,7 @@ public class ConfigurationOption {
     }
 
     /**
-     * 
+     *
      * @param value
      *     The value
      */

@@ -15,7 +15,6 @@ import eu.vital.reply.xmlpojos.ValueList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -54,6 +53,7 @@ public class HiPPI {
     private String reverseColorProp;
 
     private String logVerbosity;
+    private String hiLogVerbositySetting;
 
     private AtomicInteger requestCount;
     private AtomicInteger requestError;
@@ -78,6 +78,7 @@ public class HiPPI {
         reverseColorProp = configReader.get(ConfigReader.REVERSE_COLOR_PROP);
 
         logVerbosity = configReader.get(ConfigReader.LOG_VERBOSITY);
+        hiLogVerbositySetting = configReader.get(ConfigReader.HI_LOGS_VERBOSITITY_SETTING);
 
         requestCount = new AtomicInteger(0);
         requestError = new AtomicInteger(0);
@@ -313,22 +314,39 @@ public class HiPPI {
     @Path("/configurationOptions")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getConfigurationOptions() {
+    public String getConfigurationOptions() throws Exception {
+
         String out = "";
 
-        
+        ConfigurationOptionsGetBody response = new ConfigurationOptionsGetBody();
 
+        ConfigurationOption_ configurationOption = new ConfigurationOption_();
+        List<ConfigurationOption_> configurationOptions = new ArrayList<>();
 
+        configurationOption.setName("logVerbosity");
+        configurationOption.setValue(this.hiReplySvc.getSnapshot().getTaskManager().getLogsPriorityLevel());
+        configurationOption.setType(this.transfProt+this.ontBaseUri+"string");
+        configurationOption.setPermissions("rw");
+
+        configurationOptions.add(configurationOption);
+
+        response.setConfigurationOptions(configurationOptions);
+
+        try {
+            out = JsonUtils.serializeJson(response);
+        } catch (IOException e) {
+            this.logger.error("getConfigurationOptions - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("getConfigurationOptions - Deserialize JSON UTILS IO EXCEPTION");
+            //e.printStackTrace();
+        }
 
         return out;
     }
 
 
-
     @Path("/configurationOptions")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    //@Produces(MediaType.APPLICATION_JSON)
     public Response setConfigurationOptions(String bodyRequest) {
 
         ConfigurationOptionsReqBody configurationOptionsReqBody = null;
@@ -350,17 +368,14 @@ public class HiPPI {
             if (currentConfigurationOptions.equals(this.logVerbosity)) {
                 String logsPriorityValue = configList.get(i).getValue().toUpperCase();
                 try {
-                    this.hiReplySvc.setPropertyValue(taskManagerServiceId,"LogsPriorityValue",logsPriorityValue);
-                    esito = true;
+                    esito = this.hiReplySvc.setPropertyValue(taskManagerServiceId,hiLogVerbositySetting,logsPriorityValue);
                 } catch (Exception e) {
                     esito = false;
                 }
             }
         }
 
-        //build risposta
         if (esito) {
-            //risposta 200
             return Response.ok().build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();

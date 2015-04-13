@@ -1,3 +1,4 @@
+
 package eu.vital.reply.jsonpojos;
 
 import java.util.ArrayList;
@@ -18,36 +19,36 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-        "configurationOptions"
+    "configurationOptions"
 })
-public class ConfigurationOptionsReqBody {
+public class ConfigurationOptionsGetBody {
 
     @JsonProperty("configurationOptions")
-    private List<ConfigurationOption> configurationOptions = new ArrayList<ConfigurationOption>();
+    private List<ConfigurationOption_> configurationOptions = new ArrayList<ConfigurationOption_>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
-     *
+     * 
      * @return
      *     The configurationOptions
      */
     @JsonProperty("configurationOptions")
-    public List<ConfigurationOption> getConfigurationOptions() {
+    public List<ConfigurationOption_> getConfigurationOptions() {
         return configurationOptions;
     }
 
     /**
-     *
+     * 
      * @param configurationOptions
      *     The configurationOptions
      */
     @JsonProperty("configurationOptions")
-    public void setConfigurationOptions(List<ConfigurationOption> configurationOptions) {
+    public void setConfigurationOptions(List<ConfigurationOption_> configurationOptions) {
         this.configurationOptions = configurationOptions;
     }
 
-    public ConfigurationOptionsReqBody withConfigurationOptions(List<ConfigurationOption> configurationOptions) {
+    public ConfigurationOptionsGetBody withConfigurationOptions(List<ConfigurationOption_> configurationOptions) {
         this.configurationOptions = configurationOptions;
         return this;
     }
@@ -77,7 +78,7 @@ public class ConfigurationOptionsReqBody {
         this.additionalProperties.put(name, value);
     }
 
-    public ConfigurationOptionsReqBody withAdditionalProperty(String name, Object value) {
+    public ConfigurationOptionsGetBody withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
