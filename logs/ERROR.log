@@ -20,3 +20,6 @@
 2015-03-25 10:57:47 [Grizzly-worker(3)] ERROR eu.vital.reply.services.HiPPI - HO LANCIATO L'ECCEZIONE DI TEST
 2015-03-25 11:31:03 [Grizzly-worker(1)] ERROR eu.vital.reply.services.HiPPI - ECCEZIONE DI TEST
 2015-03-25 11:40:12 [Grizzly-worker(5)] ERROR eu.vital.reply.services.HiPPI - ECCEZIONE DI TEST
+2015-04-13 10:55:53 [Grizzly-worker(2)] ERROR eu.vital.reply.services.HiPPI - setConfigurationOptions -  error parsing request header
+2015-04-13 10:56:32 [Grizzly-worker(1)] ERROR eu.vital.reply.services.HiPPI - setConfigurationOptions -  error parsing request header
+2015-04-13 10:57:49 [Grizzly-worker(2)] ERROR eu.vital.reply.services.HiPPI - setConfigurationOptions -  error parsing request header

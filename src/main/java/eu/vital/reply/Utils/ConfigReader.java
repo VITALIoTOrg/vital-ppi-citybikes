@@ -35,6 +35,7 @@ public class ConfigReader
     public static final String COLOR_PROP                          = "COLOR_PROP";
     public static final String REVERSE_SPEED_PROP                  = "REVERSE_SPEED_PROP";
     public static final String REVERSE_COLOR_PROP                  = "REVERSE_COLOR_PROP";
+    public static final String LOG_VERBOSITY                       = "LOG_VERBOSITY";
 
 
     private ConfigReader()

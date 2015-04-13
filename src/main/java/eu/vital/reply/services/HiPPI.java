@@ -15,8 +15,10 @@ import eu.vital.reply.xmlpojos.ValueList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.ParseException;
@@ -51,6 +53,8 @@ public class HiPPI {
     private String reverseSpeedProp;
     private String reverseColorProp;
 
+    private String logVerbosity;
+
     private AtomicInteger requestCount;
     private AtomicInteger requestError;
 
@@ -72,6 +76,8 @@ public class HiPPI {
         colorProp = configReader.get(ConfigReader.COLOR_PROP);
         reverseSpeedProp = configReader.get(ConfigReader.REVERSE_SPEED_PROP);
         reverseColorProp = configReader.get(ConfigReader.REVERSE_COLOR_PROP);
+
+        logVerbosity = configReader.get(ConfigReader.LOG_VERBOSITY);
 
         requestCount = new AtomicInteger(0);
         requestError = new AtomicInteger(0);
@@ -302,6 +308,64 @@ public class HiPPI {
         return out;
     }
     */
+
+
+    @Path("/configurationOptions")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getConfigurationOptions() {
+        String out = "";
+
+        
+
+
+
+        return out;
+    }
+
+
+
+    @Path("/configurationOptions")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    //@Produces(MediaType.APPLICATION_JSON)
+    public Response setConfigurationOptions(String bodyRequest) {
+
+        ConfigurationOptionsReqBody configurationOptionsReqBody = null;
+        boolean esito = false;
+
+        try {
+            configurationOptionsReqBody = (ConfigurationOptionsReqBody) JsonUtils.deserializeJson(bodyRequest, ConfigurationOptionsReqBody.class);
+        } catch (IOException e) {
+            this.logger.error("setConfigurationOptions -  error parsing request header");
+            return Response.serverError().build();
+        }
+
+        String taskManagerServiceId = this.hiReplySvc.getSnapshot().getTaskManager().getID();
+
+        List<ConfigurationOption> configList = configurationOptionsReqBody.getConfigurationOptions();
+
+        for (int i = 0; i<configList.size(); i++) {
+            String currentConfigurationOptions = configList.get(i).getName();
+            if (currentConfigurationOptions.equals(this.logVerbosity)) {
+                String logsPriorityValue = configList.get(i).getValue().toUpperCase();
+                try {
+                    this.hiReplySvc.setPropertyValue(taskManagerServiceId,"LogsPriorityValue",logsPriorityValue);
+                    esito = true;
+                } catch (Exception e) {
+                    esito = false;
+                }
+            }
+        }
+
+        //build risposta
+        if (esito) {
+            //risposta 200
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
 
     @Path("/iot/hireply/perf/pendingRequests")
     @GET

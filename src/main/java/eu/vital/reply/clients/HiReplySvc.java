@@ -226,7 +226,7 @@ public class HiReplySvc
                     .setPort(port)
                     .setPath("/" + serviceId + setPropValuePath)
                     .addParameter("prop", propertyName)
-                    .addParameter("raw", value)
+                    .addParameter("value", value)
                     .build();
         } catch (URISyntaxException e)
         {

@@ -1,0 +1,12 @@
+{
+    "configurationOptions": [
+        {
+            "name": "c1",
+            "value": "new value v1"
+        },
+        {
+            "name": "c2",
+            "value": "new value v2"
+        }
+    ]
+}
