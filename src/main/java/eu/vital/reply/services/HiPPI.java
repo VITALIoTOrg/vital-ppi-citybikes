@@ -16,8 +16,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.ParseException;
@@ -57,6 +59,9 @@ public class HiPPI {
 
     private AtomicInteger requestCount;
     private AtomicInteger requestError;
+
+    @Context
+    private UriInfo uriInfo;
 
     public HiPPI() {
 
@@ -315,6 +320,8 @@ public class HiPPI {
     @Produces(MediaType.APPLICATION_JSON)
     public String getConfigurationOptions() throws Exception {
 
+        String info = uriInfo.getBaseUri().toString();
+
         String out = "";
 
         ConfigurationOptionsGetBody response = new ConfigurationOptionsGetBody();
@@ -324,7 +331,7 @@ public class HiPPI {
 
         configurationOption.setName("logVerbosity");
         configurationOption.setValue(this.hiReplySvc.getSnapshot().getTaskManager().getLogsPriorityLevel());
-        configurationOption.setType(this.transfProt+this.ontBaseUri+"string");
+        configurationOption.setType(this.transfProt + this.ontBaseUri + "string");
         configurationOption.setPermissions("rw");
 
         configurationOptions.add(configurationOption);
@@ -560,7 +567,7 @@ public class HiPPI {
 
     @Path("/iot/hireply/perf/errors")
     @GET
-    @Produces
+    @Produces(MediaType.APPLICATION_JSON)
     public String getErrors() throws Exception {
         String out = "";
 
