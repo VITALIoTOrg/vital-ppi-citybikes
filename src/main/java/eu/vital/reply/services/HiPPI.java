@@ -111,7 +111,6 @@ public class HiPPI {
                     "\"error\": \"Malformed request body\"\n"+
                     "}";
         }
-        // TODO --> check sulla request, trattamento di eventuali filtri
 
         ServiceList system = hiReplySvc.getSnapshot();
 
