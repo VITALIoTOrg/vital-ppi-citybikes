@@ -451,14 +451,15 @@ public class HiPPI {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getUpTime() throws Exception {
+
         String out = "";
 
         Date now = new Date();
-        Date startTime = StatCounter.getStartTime();
 
-        long span = now.getTime() - startTime.getTime();
+        Date hiReplyStartTime = this.hiReplySvc.getSnapshot().getTaskManager().getLastStartTime().toGregorianCalendar().getTime();
 
-        Date date = new Date();
+        long span = now.getTime() - hiReplyStartTime.getTime();
+
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         PerformanceMetric sysUpTime = new PerformanceMetric();
@@ -474,7 +475,7 @@ public class HiPPI {
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
 
-        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
+        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(now));
         sysUpTime.setSsnObservationResultTime(ssnObservationResultTime_);
 
         SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();

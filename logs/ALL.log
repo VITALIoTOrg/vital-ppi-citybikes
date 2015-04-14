@@ -836,3 +836,10 @@
 2015-04-13 16:12:51 [Grizzly-worker(7)] INFO  eu.vital.reply.utils.PpiRequestEventListener - Resource method GET started for request 7
 2015-04-13 16:12:51 [Grizzly-worker(7)] INFO  eu.vital.reply.utils.PpiRequestEventListener - Request org.glassfish.jersey.server.internal.monitoring.RequestEventImpl@5b201e2d finished.
 2015-04-13 16:12:56 [main] INFO  eu.vital.reply.utils.PpiApplicationEventListener - Application HiReplyPPI destroyed.
+2015-04-14 11:55:09 [main] INFO  eu.vital.reply.utils.PpiApplicationEventListener - Application HiReplyPPI was initialized.
+2015-04-14 11:55:12 [Grizzly-worker(1)] INFO  eu.vital.reply.utils.PpiApplicationEventListener - Request 1 started.
+2015-04-14 11:55:12 [Grizzly-worker(1)] INFO  eu.vital.reply.utils.PpiRequestEventListener - Resource method GET started for request 1
+2015-04-14 12:02:37 [main] INFO  eu.vital.reply.utils.PpiApplicationEventListener - Application HiReplyPPI was initialized.
+2015-04-14 12:02:40 [Grizzly-worker(2)] INFO  eu.vital.reply.utils.PpiApplicationEventListener - Request 1 started.
+2015-04-14 12:02:40 [Grizzly-worker(2)] INFO  eu.vital.reply.utils.PpiRequestEventListener - Resource method GET started for request 1
+2015-04-14 12:03:48 [Grizzly-worker(2)] INFO  eu.vital.reply.utils.PpiRequestEventListener - Request org.glassfish.jersey.server.internal.monitoring.RequestEventImpl@5b18e0fd finished.

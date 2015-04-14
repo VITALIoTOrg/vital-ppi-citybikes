@@ -13,7 +13,6 @@ public class StatCounter {
 
     private static AtomicInteger requestNumber = new AtomicInteger(0);
     private static AtomicInteger errorNumber = new AtomicInteger(0);
-    private static Date startTime = new Date();
     private static ArrayList<EventHelper> eventHelpers = new ArrayList<>();
 
 
@@ -33,14 +32,6 @@ public class StatCounter {
 
         int currentErrorNumber = errorNumber.get();
         errorNumber.set(currentErrorNumber+1);
-    }
-
-    public static synchronized void setStartTime(Date date) {
-        startTime = date;
-    }
-
-    public static synchronized Date getStartTime() {
-        return startTime;
     }
 
     public static synchronized void addEventHelper(EventHelper eventHelper) {
