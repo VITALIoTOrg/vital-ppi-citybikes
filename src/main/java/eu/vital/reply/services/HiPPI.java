@@ -738,7 +738,7 @@ public class HiPPI {
 
         PerformanceMetric pendingReq = new PerformanceMetric();
 
-        pendingReq.setContext("http://vital.iot.org/system.jsonld");
+        pendingReq.setContext("http://vital.iot.org/measurement.jsonld");
         pendingReq.setUri(this.transfProt+this.symbolicUri + "/iot/hireply/perf/pendingRequests");
         pendingReq.setType("ssn:Observation");
 
@@ -794,7 +794,7 @@ public class HiPPI {
 
         PerformanceMetric sysUpTime = new PerformanceMetric();
 
-        sysUpTime.setContext("http://vital.iot.org/system.jsonld");
+        sysUpTime.setContext("http://vital.iot.org/measurement.jsonld");
         sysUpTime.setUri(this.transfProt+this.symbolicUri + "/iot/hireply/perf/upTime");
         sysUpTime.setType("ssn:Observation");
 
@@ -853,7 +853,7 @@ public class HiPPI {
 
         PerformanceMetric servedRequest = new PerformanceMetric();
 
-        servedRequest.setContext("http://vital.iot.org/system.jsonld");
+        servedRequest.setContext("http://vital.iot.org/measurement.jsonld");
         servedRequest.setUri(this.transfProt+this.symbolicUri + "/iot/hireply/perf/servedRequest");
         servedRequest.setType("ssn:Observation");
 
@@ -905,7 +905,7 @@ public class HiPPI {
 
         PerformanceMetric servedRequest = new PerformanceMetric();
 
-        servedRequest.setContext("http://vital.iot.org/system.jsonld");
+        servedRequest.setContext("http://vital.iot.org/measurement.jsonld");
         servedRequest.setUri(this.transfProt+this.symbolicUri + "/iot/hireply/perf/errors");
         servedRequest.setType("ssn:Observation");
 
@@ -960,7 +960,7 @@ public class HiPPI {
 
         PerformanceMetric memUsed = new PerformanceMetric();
 
-        memUsed.setContext("http://vital.iot.org/system.jsonld");
+        memUsed.setContext("http://vital.iot.org/measurement.jsonld");
         memUsed.setUri(this.transfProt+this.symbolicUri + "/iot/hireply/perf/memUsed");
         memUsed.setType("ssn:Observation");
 
@@ -1013,7 +1013,7 @@ public class HiPPI {
 
         PerformanceMetric memUsed = new PerformanceMetric();
 
-        memUsed.setContext("http://vital.iot.org/system.jsonld");
+        memUsed.setContext("http://vital.iot.org/measurement.jsonld");
         memUsed.setUri(this.transfProt+this.symbolicUri + "/iot/hireply/perf/memAvailable");
         memUsed.setType("ssn:Observation");
 
@@ -1066,7 +1066,7 @@ public class HiPPI {
 
         PerformanceMetric memUsed = new PerformanceMetric();
 
-        memUsed.setContext("http://vital.iot.org/system.jsonld");
+        memUsed.setContext("http://vital.iot.org/measurement.jsonld");
         memUsed.setUri(this.transfProt+this.symbolicUri + "/iot/hireply/perf/cpuUsage");
         memUsed.setType("ssn:Observation");
 
@@ -1123,7 +1123,7 @@ public class HiPPI {
 
         PerformanceMetric memUsed = new PerformanceMetric();
 
-        memUsed.setContext("http://vital.iot.org/system.jsonld");
+        memUsed.setContext("http://vital.iot.org/measurement.jsonld");
         memUsed.setUri(this.transfProt+this.symbolicUri + "/iot/hireply/perf/diskAvailable");
         memUsed.setType("ssn:Observation");
 
