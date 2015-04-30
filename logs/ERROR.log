@@ -24,3 +24,15 @@
 2015-04-13 10:56:32 [Grizzly-worker(1)] ERROR eu.vital.reply.services.HiPPI - setConfigurationOptions -  error parsing request header
 2015-04-13 10:57:49 [Grizzly-worker(2)] ERROR eu.vital.reply.services.HiPPI - setConfigurationOptions -  error parsing request header
 2015-04-13 15:01:26 [Grizzly-worker(2)] ERROR eu.vital.reply.services.HiPPI - setConfigurationOptions -  error parsing request header
+2015-04-14 14:31:18 [Grizzly-worker(1)] ERROR eu.vital.reply.clients.HiReplySvc - getSnapshot - HTTP IO exception
+2015-04-14 14:31:26 [Grizzly-worker(2)] ERROR eu.vital.reply.clients.HiReplySvc - getSnapshot - HTTP IO exception
+2015-04-14 14:31:54 [Grizzly-worker(1)] ERROR eu.vital.reply.clients.HiReplySvc - getSnapshot - HTTP IO exception
+2015-04-14 14:42:43 [Grizzly-worker(2)] ERROR eu.vital.reply.services.HiPPI - GET OBSERVATION - IOException parsing the json request
+2015-04-29 17:35:51 [Grizzly-worker(3)] ERROR eu.vital.reply.services.HiPPI - GET OBSERVATION - IOException parsing the json request
+2015-04-29 17:36:11 [Grizzly-worker(5)] ERROR eu.vital.reply.services.HiPPI - getIcoMetadata ID: PerformanceIco not present.
+2015-04-29 17:36:53 [Grizzly-worker(1)] ERROR eu.vital.reply.services.HiPPI - getIcoMetadata ID: PerformanceIco not present.
+2015-04-29 17:38:04 [Grizzly-worker(2)] ERROR eu.vital.reply.services.HiPPI - getIcoMetadata ID: PerformanceIco not present.
+2015-04-29 17:38:46 [Grizzly-worker(1)] ERROR eu.vital.reply.services.HiPPI - getIcoMetadata ID: PerformanceIco not present.
+2015-04-29 17:39:09 [Grizzly-worker(4)] ERROR eu.vital.reply.services.HiPPI - getIcoMetadata ID: PerformanceIco not present.
+2015-04-30 10:18:36 [Grizzly-worker(3)] ERROR eu.vital.reply.services.HiPPI - getIcoMetadata ID: PerformanceIco not present.
+2015-04-30 10:25:58 [Grizzly-worker(6)] ERROR eu.vital.reply.services.HiPPI - GET OBSERVATION - IOException parsing the json request

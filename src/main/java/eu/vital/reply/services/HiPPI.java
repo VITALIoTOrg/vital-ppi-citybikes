@@ -228,42 +228,42 @@ public class HiPPI {
 
         SsnObserf ssnObserf = new SsnObserf();
         ssnObserf.setType(this.transfProt+this.ontBaseUri+"memUsed");
-        ssnObserf.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/memUsed");
+        ssnObserf.setUri(this.transfProt+this.symbolicUri+"ico/PerformanceIco/"+"memUsed");
         list.add(ssnObserf);
 
         ssnObserf = new SsnObserf();
-        ssnObserf.setType(this.transfProt+this.ontBaseUri+"memUsed");
-        ssnObserf.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/memAvailable");
+        ssnObserf.setType(this.transfProt+this.ontBaseUri+"memAvailable");
+        ssnObserf.setUri(this.transfProt+this.symbolicUri+"ico/PerformanceIco/"+"memAvailable");
         list.add(ssnObserf);
 
         ssnObserf = new SsnObserf();
-        ssnObserf.setType(this.transfProt+this.ontBaseUri+"memUsed");
-        ssnObserf.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/diskAvailable");
+        ssnObserf.setType(this.transfProt+this.ontBaseUri+"diskAvailable");
+        ssnObserf.setUri(this.transfProt+this.symbolicUri+"ico/PerformanceIco/"+"memAvailable");
         list.add(ssnObserf);
 
         ssnObserf = new SsnObserf();
-        ssnObserf.setType(this.transfProt+this.ontBaseUri+"memUsed");
-        ssnObserf.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/cpuUsage");
+        ssnObserf.setType(this.transfProt+this.ontBaseUri+"cpuUsage");
+        ssnObserf.setUri(this.transfProt+this.symbolicUri+"ico/PerformanceIco/"+"memAvailable");
         list.add(ssnObserf);
 
         ssnObserf = new SsnObserf();
         ssnObserf.setType(this.transfProt+this.ontBaseUri+"servedRequest");
-        ssnObserf.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/servedRequest");
+        ssnObserf.setUri(this.transfProt+this.symbolicUri+"ico/PerformanceIco/"+"memAvailable");
         list.add(ssnObserf);
 
         ssnObserf = new SsnObserf();
         ssnObserf.setType(this.transfProt+this.ontBaseUri+"errors");
-        ssnObserf.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/errors");
+        ssnObserf.setUri(this.transfProt+this.symbolicUri+"ico/PerformanceIco/"+"memAvailable");
         list.add(ssnObserf);
 
         ssnObserf = new SsnObserf();
         ssnObserf.setType(this.transfProt+this.ontBaseUri+"upTime");
-        ssnObserf.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/upTime");
+        ssnObserf.setUri(this.transfProt+this.symbolicUri+"ico/PerformanceIco/"+"memAvailable");
         list.add(ssnObserf);
 
         ssnObserf = new SsnObserf();
-        ssnObserf.setType(this.transfProt+this.ontBaseUri+"upTime");
-        ssnObserf.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/pendingRequests");
+        ssnObserf.setType(this.transfProt+this.ontBaseUri+"pendingRequests");
+        ssnObserf.setUri(this.transfProt+this.symbolicUri+"ico/PerformanceIco/"+"memAvailable");
         list.add(ssnObserf);
 
         performaceMetricsMetadata.setSsnObserves(list);
@@ -388,465 +388,6 @@ public class HiPPI {
         }
     }
 
-    @Path("/iot/hireply/perf/pendingRequests")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getPendingRequest() throws Exception {
-        String out = "";
-
-        /*
-        Sottraggo 1 xke a questo punto la corrente resources è considerata in pending
-        dato che al momento della richiesta QUESTO metodo non è ancora andato in FINISH --> risulta tra i pending
-         */
-
-        int pendingRequest = StatCounter.getPendingRequest()-1;
-
-        Date date = new Date();
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-        PerformanceMetric pendingReq = new PerformanceMetric();
-
-        pendingReq.setContext("http://vital.iot.org/system.jsonld");
-        pendingReq.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/pendingRequests");
-        pendingReq.setType("ssn:Observation");
-
-        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"pendingRequests");
-
-        pendingReq.setSsnObservationProperty(ssnObservationProperty_);
-
-        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
-
-        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
-        pendingReq.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
-        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
-        ssnHasMeasurementProperty_.setType("Reliability");
-        ssnHasMeasurementProperty_.setHasValue("HighReliability");
-        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        pendingReq.setSsnObservationQuality(ssnObservationQuality_);
-
-        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
-        ssnObservationResult_.setType("pendingRequests");
-        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
-        ssnHasValue_.setType("ssn:ObservationValue");
-        ssnHasValue_.setValue(pendingRequest+"");
-        ssnHasValue_.setQudtUnit("qudt:number");
-        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
-        pendingReq.setSsnObservationResult(ssnObservationResult_);
-
-        try {
-            out = JsonUtils.serializeJson(pendingReq);
-        } catch (IOException e) {
-            this.logger.error("pendingReq - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("pendingReq - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
-        }
-
-        return out;
-    }
-
-    @Path("/iot/hireply/perf/upTime")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getUpTime() throws Exception {
-
-        String out = "";
-
-        Date now = new Date();
-
-        Date hiReplyStartTime = this.hiReplySvc.getSnapshot().getTaskManager().getLastStartTime().toGregorianCalendar().getTime();
-
-        long span = now.getTime() - hiReplyStartTime.getTime();
-
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-        PerformanceMetric sysUpTime = new PerformanceMetric();
-
-        sysUpTime.setContext("http://vital.iot.org/system.jsonld");
-        sysUpTime.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/upTime");
-        sysUpTime.setType("ssn:Observation");
-
-        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"servedRequest");
-
-        sysUpTime.setSsnObservationProperty(ssnObservationProperty_);
-
-        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
-
-        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(now));
-        sysUpTime.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
-        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
-        ssnHasMeasurementProperty_.setType("Reliability");
-        ssnHasMeasurementProperty_.setHasValue("HighReliability");
-        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        sysUpTime.setSsnObservationQuality(ssnObservationQuality_);
-
-        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
-        ssnObservationResult_.setType("upTime");
-        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
-        ssnHasValue_.setType("ssn:ObservationValue");
-        ssnHasValue_.setValue(span+"");
-        ssnHasValue_.setQudtUnit("qudt:milliseconds");
-        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
-        sysUpTime.setSsnObservationResult(ssnObservationResult_);
-
-        try {
-            out = JsonUtils.serializeJson(sysUpTime);
-        } catch (IOException e) {
-            this.logger.error("upTime - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("upTime - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
-        }
-
-        return out;
-    }
-
-    @Path("/iot/hireply/perf/servedRequest")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getServedRequest() throws Exception {
-        String out = "";
-
-        /*aggiungo 1 al corrente. la callback aggiorna il numero solo
-          a fine metodo, quindi senza il +1 il dato non sarebbe consistente
-          mancando il conto dell'esecuzione corrente.
-         */
-
-        requestCount = StatCounter.getRequestNumber();
-        int auxCount = requestCount.get();
-        requestCount.set(auxCount+1);
-
-        Date date = new Date();
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-        PerformanceMetric servedRequest = new PerformanceMetric();
-
-        servedRequest.setContext("http://vital.iot.org/system.jsonld");
-        servedRequest.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/servedRequest");
-        servedRequest.setType("ssn:Observation");
-
-        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"servedRequest");
-
-        servedRequest.setSsnObservationProperty(ssnObservationProperty_);
-
-        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
-
-        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
-        servedRequest.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
-        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
-        ssnHasMeasurementProperty_.setType("Reliability");
-        ssnHasMeasurementProperty_.setHasValue("HighReliability");
-        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        servedRequest.setSsnObservationQuality(ssnObservationQuality_);
-
-        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
-        ssnObservationResult_.setType("servedRequest");
-        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
-        ssnHasValue_.setType("ssn:ObservationValue");
-        ssnHasValue_.setValue(requestCount.get()+"");
-        ssnHasValue_.setQudtUnit("qudt:Number");
-        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
-        servedRequest.setSsnObservationResult(ssnObservationResult_);
-
-        try {
-            out = JsonUtils.serializeJson(servedRequest);
-        } catch (IOException e) {
-            this.logger.error("servedReq - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("servedReq - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
-        }
-
-        return out;
-    }
-
-    @Path("/iot/hireply/perf/errors")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getErrors() throws Exception {
-        String out = "";
-
-        requestError = StatCounter.getErrorNumber();
-
-        Date date = new Date();
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-        PerformanceMetric servedRequest = new PerformanceMetric();
-
-        servedRequest.setContext("http://vital.iot.org/system.jsonld");
-        servedRequest.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/errors");
-        servedRequest.setType("ssn:Observation");
-
-        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"errors");
-
-        servedRequest.setSsnObservationProperty(ssnObservationProperty_);
-
-        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
-
-        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
-        servedRequest.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
-        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
-        ssnHasMeasurementProperty_.setType("Reliability");
-        ssnHasMeasurementProperty_.setHasValue("HighReliability");
-        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        servedRequest.setSsnObservationQuality(ssnObservationQuality_);
-
-        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
-        ssnObservationResult_.setType("servedRequest");
-        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
-        ssnHasValue_.setType("ssn:ObservationValue");
-        ssnHasValue_.setValue(requestError.get()+"");
-        ssnHasValue_.setQudtUnit("qudt:Number");
-        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
-        servedRequest.setSsnObservationResult(ssnObservationResult_);
-
-        try {
-            out = JsonUtils.serializeJson(servedRequest);
-        } catch (IOException e) {
-            this.logger.error("errors - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("errors - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
-        }
-
-        return out;
-    }
-
-    @Path("/iot/hireply/perf/memUsed")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getMemoryUsed() throws Exception {
-
-        String out = "";
-
-        ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
-
-        BigInteger memoryUsed = tm.getMemoryConsumption();
-        Date date = new Date();
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-
-        PerformanceMetric memUsed = new PerformanceMetric();
-
-        memUsed.setContext("http://vital.iot.org/system.jsonld");
-        memUsed.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/memUsed");
-        memUsed.setType("ssn:Observation");
-
-        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"memUsed");
-        memUsed.setSsnObservationProperty(ssnObservationProperty_);
-
-        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
-
-        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
-        memUsed.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
-        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
-        ssnHasMeasurementProperty_.setType("Reliability");
-        ssnHasMeasurementProperty_.setHasValue("HighReliability");
-        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        memUsed.setSsnObservationQuality(ssnObservationQuality_);
-
-        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
-        ssnObservationResult_.setType("memoryMetric");
-        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
-        ssnHasValue_.setType("ssn:ObservationValue");
-        ssnHasValue_.setValue(memoryUsed.toString());
-        ssnHasValue_.setQudtUnit("qudt:Byte");
-        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
-        memUsed.setSsnObservationResult(ssnObservationResult_);
-
-        try {
-            out = JsonUtils.serializeJson(memUsed);
-        } catch (IOException e) {
-            this.logger.error("memUsed - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("memUsed - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
-        }
-
-        return out;
-    }
-
-
-    @Path("/iot/hireply/perf/memAvailable")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getMemoryAvailable() throws Exception {
-
-        String out = "";
-
-        ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
-
-        BigInteger memAvailable = tm.getAvailMemoryCounter();
-        Date date = new Date();
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-        PerformanceMetric memUsed = new PerformanceMetric();
-
-        memUsed.setContext("http://vital.iot.org/system.jsonld");
-        memUsed.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/memAvailable");
-        memUsed.setType("ssn:Observation");
-
-        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"memAvailable");
-        memUsed.setSsnObservationProperty(ssnObservationProperty_);
-
-        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
-
-        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
-        memUsed.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
-        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
-        ssnHasMeasurementProperty_.setType("Reliability");
-        ssnHasMeasurementProperty_.setHasValue("HighReliability");
-        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        memUsed.setSsnObservationQuality(ssnObservationQuality_);
-
-        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
-        ssnObservationResult_.setType("memoryMetric");
-        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
-        ssnHasValue_.setType("ssn:ObservationValue");
-        ssnHasValue_.setValue(memAvailable.toString());
-        ssnHasValue_.setQudtUnit("qudt:Byte");
-        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
-        memUsed.setSsnObservationResult(ssnObservationResult_);
-
-        try {
-            out = JsonUtils.serializeJson(memUsed);
-        } catch (IOException e) {
-            this.logger.error("memAvailable - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("memAvailable - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
-        }
-
-        return out;
-    }
-
-    @Path("/iot/hireply/perf/cpuUsage")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getCpuUsage() throws Exception {
-
-        String out = "";
-
-        ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
-
-        float cpuUsage = tm.getCPUTotalCounter();
-        Date date = new Date();
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-        PerformanceMetric memUsed = new PerformanceMetric();
-
-        memUsed.setContext("http://vital.iot.org/system.jsonld");
-        memUsed.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/cpuUsage");
-        memUsed.setType("ssn:Observation");
-
-        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"cpuUsage");
-        memUsed.setSsnObservationProperty(ssnObservationProperty_);
-
-        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
-
-        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
-        memUsed.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
-        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
-        ssnHasMeasurementProperty_.setType("Reliability");
-        ssnHasMeasurementProperty_.setHasValue("HighReliability");
-        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        memUsed.setSsnObservationQuality(ssnObservationQuality_);
-
-        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
-        ssnObservationResult_.setType("memoryMetric");
-        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
-        ssnHasValue_.setType("ssn:ObservationValue");
-        ssnHasValue_.setValue(cpuUsage+"");
-        ssnHasValue_.setQudtUnit("qudt:Percentage");
-        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
-        memUsed.setSsnObservationResult(ssnObservationResult_);
-
-        try {
-            out = JsonUtils.serializeJson(memUsed);
-        } catch (IOException e) {
-            this.logger.error("cpuUsage - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("cpuUsage - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
-        }
-
-        return out;
-    }
-
-
-    @Path("/iot/hireply/perf/diskAvailable")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getDiskAvailable() throws Exception {
-
-        String out = "";
-
-        ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
-
-        String strDiskAvailable = tm.getFreeDiskSpace();
-
-        int bkSlashIndex = strDiskAvailable.indexOf("\\");
-        int freeDiskSpace = Integer.parseInt (strDiskAvailable.substring(bkSlashIndex+2).replaceAll("\\s+",""));
-
-        Date date = new Date();
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-        PerformanceMetric memUsed = new PerformanceMetric();
-
-        memUsed.setContext("http://vital.iot.org/system.jsonld");
-        memUsed.setUri("http://" + hostName + ":" + hostPort + "/iot/hireply/perf/diskAvailable");
-        memUsed.setType("ssn:Observation");
-
-        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"diskAvailable");
-        memUsed.setSsnObservationProperty(ssnObservationProperty_);
-
-        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
-
-        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
-        memUsed.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
-        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
-        ssnHasMeasurementProperty_.setType("Reliability");
-        ssnHasMeasurementProperty_.setHasValue("HighReliability");
-        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        memUsed.setSsnObservationQuality(ssnObservationQuality_);
-
-        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
-        ssnObservationResult_.setType("memoryMetric");
-        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
-        ssnHasValue_.setType("ssn:ObservationValue");
-        ssnHasValue_.setValue(freeDiskSpace+"");
-        ssnHasValue_.setQudtUnit("qudt:Byte");
-        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
-        memUsed.setSsnObservationResult(ssnObservationResult_);
-
-        try {
-            out = JsonUtils.serializeJson(memUsed);
-        } catch (IOException e) {
-            this.logger.error("diskAvailable - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("diskAvailable - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
-        }
-
-        return out;
-    }
-
     /**
      * Method that returns the Lifecycle information of the system. This method is not mandatory.
      * @param bodyRequest <br>
@@ -954,23 +495,27 @@ public class HiPPI {
             for (int i = 0; i < trafficSensors.size(); i++) {
                 sensors.add(this.createSensorFromTraffic(trafficSensors.get(i)));
             }
+            sensors.add(this.createPerformaceSensor());
         } else {
             //restituisci solo i sensori desirati
             for (int i = 0; i < requestedSensor.size(); i++) {
                 String currentId = requestedSensor.get(i).replaceAll(this.transfProt+this.symbolicUri+"ico/","");
 
-                String filter = hiReplySvc.createFilter("ID",currentId);
+                if (currentId.contains("PerformanceIco")) {
+                    sensors.add(this.createPerformaceSensor());
+                } else {
+                    String filter = hiReplySvc.createFilter("ID",currentId);
 
-                ServiceList.TrafficSensor currentTrafficSensor = null;
+                    ServiceList.TrafficSensor currentTrafficSensor = null;
 
-                try {
-                    currentTrafficSensor = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor().get(0);;
-                } catch (IndexOutOfBoundsException e) {
-                    logger.error("getIcoMetadata ID: "+currentId+" not present.");
-                    //in caso di sensore nn presente, l'esecuzione continua per cercare gli altri
+                    try {
+                        currentTrafficSensor = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor().get(0);
+                        sensors.add(this.createSensorFromTraffic(currentTrafficSensor));
+                    } catch (IndexOutOfBoundsException e) {
+                        logger.error("getIcoMetadata ID: " + currentId + " not present.");
+                        //in caso di sensore nn presente, l'esecuzione continua per cercare gli altri
+                    }
                 }
-
-                sensors.add(this.createSensorFromTraffic(currentTrafficSensor));
 
             }
         }
@@ -1034,118 +579,589 @@ public class HiPPI {
 
         String id = observationRequest.getIco().replaceAll(this.transfProt+this.symbolicUri+"ico/", "");
 
-        //controllo che il sensore richiesto (id) sia effettivamente presente sul virtualizzatore. in caso nn è presente genero un json di errore
-        ServiceList.TrafficSensor currentSensor = this.retrieveSensor(id);
+        //id per sensore performance ==> PerformanceIco
+        //http://vital2.cloud.reply.eu/ico/PerformanceIco
 
-        if (currentSensor == null) {
-            return "{\n" +
-                    "\"error\": \"ID "+id+" not present.\"\n"+
-                    "}";
-        }
+        if (id.contains("PerformanceIco")) {
+            //caso del sensore delle perfomance
 
-        //controllo che la proprietà richiesta sia tra quelle possibili (Speed, Color, Reverse Speed, Reverse Color) del sensore
-        String property = observationRequest.getProperty().replaceAll(this.transfProt+this.ontBaseUri,"");
-
-        if (!this.checkTrafficProperty(currentSensor, property)) {
-            return "{\n" +
-                    "\"error\": \"Property "+property+" not present for "+id+" sensor.\"\n"+
-                    "}";
-        }
-
-        if (observationRequest.getFrom() != null && observationRequest.getTo()!=null ) {
-            //get history range
-
-            SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-            SimpleDateFormat hiReplyFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
-            Date fromDate;
-            Date toDate;
-            Date fromDateHiReply;
-            Date toDateHiReply;
-
-            try {
-                fromDate = arrivedFormat.parse(observationRequest.getFrom());
-                toDate = arrivedFormat.parse(observationRequest.getTo());
-            } catch (ParseException e) {
-                this.logger.error("GET OBSERVATION - Parse exception during parse date");
+            //estrapolo la performance richiesta
+            String requestedPerformance = observationRequest.getProperty();/*.replaceAll(this.transfProt+this.ontBaseUri,"");*/
+            if (requestedPerformance.contains("memUsed")) {
+                return this.getMemoryUsed();
+            } else if (requestedPerformance.contains("memAvailable")) {
+                return this.getMemoryAvailable();
+            } else if (requestedPerformance.contains("diskAvailable")) {
+                return this.getDiskAvailable();
+            } else if (requestedPerformance.contains("cpuUsage")) {
+                return this.getCpuUsage();
+            } else if (requestedPerformance.contains("servedRequest")) {
+                return this.getServedRequest();
+            } else if (requestedPerformance.contains("errors")) {
+                return this.getErrors();
+            } else if (requestedPerformance.contains("upTime")) {
+                return this.getUpTime();
+            } else if (requestedPerformance.contains("pendingRequests")) {
+                return this.getPendingRequest();
+            } else {
                 return "{\n" +
-                        "\"error\": \"Malformed date in the request body\"\n"+
+                        "\"error\": \"Performance "+requestedPerformance+" not present.\"\n"+
+                        "}";
+            }
+        } else {
+            //caso del sensore del traffico
+            //controllo che il sensore richiesto (id) sia effettivamente presente sul virtualizzatore. in caso nn è presente genero un json di errore
+            ServiceList.TrafficSensor currentSensor = this.retrieveSensor(id);
+
+            if (currentSensor == null) {
+                return "{\n" +
+                        "\"error\": \"ID " + id + " not present.\"\n" +
                         "}";
             }
 
-            try {
-                fromDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(fromDate));
-                toDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(toDate));
-            } catch (ParseException e) {
-                this.logger.error("GET OBSERVATION - Parse exception during parse date");
+            //controllo che la proprietà richiesta sia tra quelle possibili (Speed, Color, Reverse Speed, Reverse Color) del sensore
+            String property = observationRequest.getProperty().replaceAll(this.transfProt + this.ontBaseUri, "");
+
+            if (!this.checkTrafficProperty(currentSensor, property)) {
                 return "{\n" +
-                        "\"error\": \"Malformed date in the request body\"\n"+
+                        "\"error\": \"Property " + property + " not present for " + id + " sensor.\"\n" +
                         "}";
             }
 
-            List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(hiReplySvc.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
+            if (observationRequest.getFrom() != null && observationRequest.getTo() != null) {
+                //get history range
 
-            for (int i = 0; i < historyMeasures.size(); i++) {
+                SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+                SimpleDateFormat hiReplyFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-                measures.add(this.createMeasureFromHistoryMeasure(historyMeasures.get(i), currentSensor, property));
+                Date fromDate;
+                Date toDate;
+                Date fromDateHiReply;
+                Date toDateHiReply;
 
+                try {
+                    fromDate = arrivedFormat.parse(observationRequest.getFrom());
+                    toDate = arrivedFormat.parse(observationRequest.getTo());
+                } catch (ParseException e) {
+                    this.logger.error("GET OBSERVATION - Parse exception during parse date");
+                    return "{\n" +
+                            "\"error\": \"Malformed date in the request body\"\n" +
+                            "}";
+                }
+
+                try {
+                    fromDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(fromDate));
+                    toDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(toDate));
+                } catch (ParseException e) {
+                    this.logger.error("GET OBSERVATION - Parse exception during parse date");
+                    return "{\n" +
+                            "\"error\": \"Malformed date in the request body\"\n" +
+                            "}";
+                }
+
+                List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(hiReplySvc.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
+
+                for (int i = 0; i < historyMeasures.size(); i++) {
+
+                    measures.add(this.createMeasureFromHistoryMeasure(historyMeasures.get(i), currentSensor, property));
+
+                }
+
+            } else if (observationRequest.getFrom() != null && observationRequest.getTo() == null) {
+                //get tutti i valori da from
+
+                SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                SimpleDateFormat hiReplyFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+                Date fromDate;
+                Date toDate = new Date(); //hi reply ha cmq bisogno della data di fine, quindi imposto quella corrente
+                Date fromDateHiReply = null;
+                Date toDateHiReply = null;
+
+                try {
+                    fromDate = arrivedFormat.parse(observationRequest.getFrom());
+                } catch (ParseException e) {
+                    this.logger.error("GET OBSERVATION - Parse exception during parse date");
+                    return "{\n" +
+                            "\"error\": \"Malformed date in the request body\"\n" +
+                            "}";
+                }
+
+                try {
+                    fromDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(fromDate));
+                    toDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(toDate));
+                } catch (ParseException e) {
+                    this.logger.error("GET OBSERVATION - Parse exception during parse date for hi reply format");
+                    throw new Exception("GET OBSERVATION - Parse exception during parse date for hi reply format");
+                    //e.printStackTrace();
+                }
+
+                List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(hiReplySvc.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
+
+                for (int i = 0; i < historyMeasures.size(); i++) {
+
+                    measures.add(this.createMeasureFromHistoryMeasure(historyMeasures.get(i), currentSensor, property));
+
+                }
+
+            } else if (observationRequest.getFrom() == null && observationRequest.getTo() == null) {
+                //get ultimo valore
+                measures.add(this.createMeasureFromSensor(currentSensor, property));
             }
 
-        } else if (observationRequest.getFrom() != null && observationRequest.getTo() == null) {
-            //get tutti i valori da from
-
-            SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            SimpleDateFormat hiReplyFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
-            Date fromDate;
-            Date toDate = new Date(); //hi reply ha cmq bisogno della data di fine, quindi imposto quella corrente
-            Date fromDateHiReply = null;
-            Date toDateHiReply = null;
+            String out = "";
 
             try {
-                fromDate = arrivedFormat.parse(observationRequest.getFrom());
-            } catch (ParseException e) {
-                this.logger.error("GET OBSERVATION - Parse exception during parse date");
-                return "{\n" +
-                        "\"error\": \"Malformed date in the request body\"\n"+
-                        "}";
-            }
-
-            try {
-                fromDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(fromDate));
-                toDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(toDate));
-            } catch (ParseException e) {
-                this.logger.error("GET OBSERVATION - Parse exception during parse date for hi reply format");
-                throw new Exception("GET OBSERVATION - Parse exception during parse date for hi reply format");
+                out = JsonUtils.serializeJson(measures);
+            } catch (IOException e) {
+                this.logger.error("GET OBSERVATION - serialize to json response IO Exception");
+                throw new Exception("GET OBSERVATION - serialize to json response IO Exception");
                 //e.printStackTrace();
             }
 
-            List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(hiReplySvc.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
-
-            for (int i = 0; i < historyMeasures.size(); i++) {
-
-                measures.add(this.createMeasureFromHistoryMeasure(historyMeasures.get(i), currentSensor, property));
-
-            }
-
-        } else if (observationRequest.getFrom() == null && observationRequest.getTo() == null) {
-            //get ultimo valore
-            measures.add(this.createMeasureFromSensor(currentSensor, property));
+            return out;
         }
+    }
 
+    private String getPendingRequest() throws Exception {
         String out = "";
 
+        /*
+        Sottraggo 1 xke a questo punto la corrente resources è considerata in pending
+        dato che al momento della richiesta QUESTO metodo non è ancora andato in FINISH --> risulta tra i pending
+         */
+
+        int pendingRequest = StatCounter.getPendingRequest()-1;
+
+        Date date = new Date();
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+        PerformanceMetric pendingReq = new PerformanceMetric();
+
+        pendingReq.setContext("http://vital.iot.org/system.jsonld");
+        pendingReq.setUri(this.transfProt+this.symbolicUri + "/iot/hireply/perf/pendingRequests");
+        pendingReq.setType("ssn:Observation");
+
+        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"pendingRequests");
+
+        pendingReq.setSsnObservationProperty(ssnObservationProperty_);
+
+        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+
+        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
+        pendingReq.setSsnObservationResultTime(ssnObservationResultTime_);
+
+        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
+        ssnHasMeasurementProperty_.setType("Reliability");
+        ssnHasMeasurementProperty_.setHasValue("HighReliability");
+        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
+        pendingReq.setSsnObservationQuality(ssnObservationQuality_);
+
+        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+        ssnObservationResult_.setType("pendingRequests");
+        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+        ssnHasValue_.setType("ssn:ObservationValue");
+        ssnHasValue_.setValue(pendingRequest+"");
+        ssnHasValue_.setQudtUnit("qudt:number");
+        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+        pendingReq.setSsnObservationResult(ssnObservationResult_);
+
         try {
-            out = JsonUtils.serializeJson(measures);
+            out = JsonUtils.serializeJson(pendingReq);
         } catch (IOException e) {
-            this.logger.error("GET OBSERVATION - serialize to json response IO Exception");
-            throw new Exception("GET OBSERVATION - serialize to json response IO Exception");
+            this.logger.error("pendingReq - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("pendingReq - Deserialize JSON UTILS IO EXCEPTION");
             //e.printStackTrace();
         }
 
         return out;
     }
 
+
+    private String getUpTime() throws Exception {
+
+        String out = "";
+
+        Date now = new Date();
+
+        Date hiReplyStartTime = this.hiReplySvc.getSnapshot().getTaskManager().getLastStartTime().toGregorianCalendar().getTime();
+
+        long span = now.getTime() - hiReplyStartTime.getTime();
+
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+        PerformanceMetric sysUpTime = new PerformanceMetric();
+
+        sysUpTime.setContext("http://vital.iot.org/system.jsonld");
+        sysUpTime.setUri(this.transfProt+this.symbolicUri + "/iot/hireply/perf/upTime");
+        sysUpTime.setType("ssn:Observation");
+
+        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"servedRequest");
+
+        sysUpTime.setSsnObservationProperty(ssnObservationProperty_);
+
+        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+
+        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(now));
+        sysUpTime.setSsnObservationResultTime(ssnObservationResultTime_);
+
+        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
+        ssnHasMeasurementProperty_.setType("Reliability");
+        ssnHasMeasurementProperty_.setHasValue("HighReliability");
+        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
+        sysUpTime.setSsnObservationQuality(ssnObservationQuality_);
+
+        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+        ssnObservationResult_.setType("upTime");
+        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+        ssnHasValue_.setType("ssn:ObservationValue");
+        ssnHasValue_.setValue(span+"");
+        ssnHasValue_.setQudtUnit("qudt:milliseconds");
+        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+        sysUpTime.setSsnObservationResult(ssnObservationResult_);
+
+        try {
+            out = JsonUtils.serializeJson(sysUpTime);
+        } catch (IOException e) {
+            this.logger.error("upTime - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("upTime - Deserialize JSON UTILS IO EXCEPTION");
+            //e.printStackTrace();
+        }
+
+        return out;
+    }
+
+
+    private String getServedRequest() throws Exception {
+        String out = "";
+
+        /*aggiungo 1 al corrente. la callback aggiorna il numero solo
+          a fine metodo, quindi senza il +1 il dato non sarebbe consistente
+          mancando il conto dell'esecuzione corrente.
+         */
+
+        requestCount = StatCounter.getRequestNumber();
+        int auxCount = requestCount.get();
+        requestCount.set(auxCount+1);
+
+        Date date = new Date();
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+        PerformanceMetric servedRequest = new PerformanceMetric();
+
+        servedRequest.setContext("http://vital.iot.org/system.jsonld");
+        servedRequest.setUri(this.transfProt+this.symbolicUri + "/iot/hireply/perf/servedRequest");
+        servedRequest.setType("ssn:Observation");
+
+        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"servedRequest");
+
+        servedRequest.setSsnObservationProperty(ssnObservationProperty_);
+
+        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+
+        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
+        servedRequest.setSsnObservationResultTime(ssnObservationResultTime_);
+
+        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
+        ssnHasMeasurementProperty_.setType("Reliability");
+        ssnHasMeasurementProperty_.setHasValue("HighReliability");
+        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
+        servedRequest.setSsnObservationQuality(ssnObservationQuality_);
+
+        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+        ssnObservationResult_.setType("servedRequest");
+        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+        ssnHasValue_.setType("ssn:ObservationValue");
+        ssnHasValue_.setValue(requestCount.get()+"");
+        ssnHasValue_.setQudtUnit("qudt:Number");
+        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+        servedRequest.setSsnObservationResult(ssnObservationResult_);
+
+        try {
+            out = JsonUtils.serializeJson(servedRequest);
+        } catch (IOException e) {
+            this.logger.error("servedReq - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("servedReq - Deserialize JSON UTILS IO EXCEPTION");
+            //e.printStackTrace();
+        }
+
+        return out;
+    }
+
+
+    private String getErrors() throws Exception {
+        String out = "";
+
+        requestError = StatCounter.getErrorNumber();
+
+        Date date = new Date();
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+        PerformanceMetric servedRequest = new PerformanceMetric();
+
+        servedRequest.setContext("http://vital.iot.org/system.jsonld");
+        servedRequest.setUri(this.transfProt+this.symbolicUri + "/iot/hireply/perf/errors");
+        servedRequest.setType("ssn:Observation");
+
+        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"errors");
+
+        servedRequest.setSsnObservationProperty(ssnObservationProperty_);
+
+        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+
+        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
+        servedRequest.setSsnObservationResultTime(ssnObservationResultTime_);
+
+        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
+        ssnHasMeasurementProperty_.setType("Reliability");
+        ssnHasMeasurementProperty_.setHasValue("HighReliability");
+        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
+        servedRequest.setSsnObservationQuality(ssnObservationQuality_);
+
+        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+        ssnObservationResult_.setType("servedRequest");
+        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+        ssnHasValue_.setType("ssn:ObservationValue");
+        ssnHasValue_.setValue(requestError.get()+"");
+        ssnHasValue_.setQudtUnit("qudt:Number");
+        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+        servedRequest.setSsnObservationResult(ssnObservationResult_);
+
+        try {
+            out = JsonUtils.serializeJson(servedRequest);
+        } catch (IOException e) {
+            this.logger.error("errors - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("errors - Deserialize JSON UTILS IO EXCEPTION");
+            //e.printStackTrace();
+        }
+
+        return out;
+    }
+
+
+    private String getMemoryUsed() throws Exception {
+
+        String out = "";
+
+        ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
+
+        BigInteger memoryUsed = tm.getMemoryConsumption();
+        Date date = new Date();
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+
+        PerformanceMetric memUsed = new PerformanceMetric();
+
+        memUsed.setContext("http://vital.iot.org/system.jsonld");
+        memUsed.setUri(this.transfProt+this.symbolicUri + "/iot/hireply/perf/memUsed");
+        memUsed.setType("ssn:Observation");
+
+        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"memUsed");
+        memUsed.setSsnObservationProperty(ssnObservationProperty_);
+
+        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+
+        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
+        memUsed.setSsnObservationResultTime(ssnObservationResultTime_);
+
+        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
+        ssnHasMeasurementProperty_.setType("Reliability");
+        ssnHasMeasurementProperty_.setHasValue("HighReliability");
+        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
+        memUsed.setSsnObservationQuality(ssnObservationQuality_);
+
+        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+        ssnObservationResult_.setType("memoryMetric");
+        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+        ssnHasValue_.setType("ssn:ObservationValue");
+        ssnHasValue_.setValue(memoryUsed.toString());
+        ssnHasValue_.setQudtUnit("qudt:Byte");
+        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+        memUsed.setSsnObservationResult(ssnObservationResult_);
+
+        try {
+            out = JsonUtils.serializeJson(memUsed);
+        } catch (IOException e) {
+            this.logger.error("memUsed - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("memUsed - Deserialize JSON UTILS IO EXCEPTION");
+            //e.printStackTrace();
+        }
+
+        return out;
+    }
+
+
+    private String getMemoryAvailable() throws Exception {
+
+        String out = "";
+
+        ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
+
+        BigInteger memAvailable = tm.getAvailMemoryCounter();
+        Date date = new Date();
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+        PerformanceMetric memUsed = new PerformanceMetric();
+
+        memUsed.setContext("http://vital.iot.org/system.jsonld");
+        memUsed.setUri(this.transfProt+this.symbolicUri + "/iot/hireply/perf/memAvailable");
+        memUsed.setType("ssn:Observation");
+
+        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"memAvailable");
+        memUsed.setSsnObservationProperty(ssnObservationProperty_);
+
+        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+
+        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
+        memUsed.setSsnObservationResultTime(ssnObservationResultTime_);
+
+        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
+        ssnHasMeasurementProperty_.setType("Reliability");
+        ssnHasMeasurementProperty_.setHasValue("HighReliability");
+        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
+        memUsed.setSsnObservationQuality(ssnObservationQuality_);
+
+        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+        ssnObservationResult_.setType("memoryMetric");
+        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+        ssnHasValue_.setType("ssn:ObservationValue");
+        ssnHasValue_.setValue(memAvailable.toString());
+        ssnHasValue_.setQudtUnit("qudt:Byte");
+        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+        memUsed.setSsnObservationResult(ssnObservationResult_);
+
+        try {
+            out = JsonUtils.serializeJson(memUsed);
+        } catch (IOException e) {
+            this.logger.error("memAvailable - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("memAvailable - Deserialize JSON UTILS IO EXCEPTION");
+            //e.printStackTrace();
+        }
+
+        return out;
+    }
+
+
+    private String getCpuUsage() throws Exception {
+
+        String out = "";
+
+        ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
+
+        float cpuUsage = tm.getCPUTotalCounter();
+        Date date = new Date();
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+        PerformanceMetric memUsed = new PerformanceMetric();
+
+        memUsed.setContext("http://vital.iot.org/system.jsonld");
+        memUsed.setUri(this.transfProt+this.symbolicUri + "/iot/hireply/perf/cpuUsage");
+        memUsed.setType("ssn:Observation");
+
+        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"cpuUsage");
+        memUsed.setSsnObservationProperty(ssnObservationProperty_);
+
+        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+
+        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
+        memUsed.setSsnObservationResultTime(ssnObservationResultTime_);
+
+        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
+        ssnHasMeasurementProperty_.setType("Reliability");
+        ssnHasMeasurementProperty_.setHasValue("HighReliability");
+        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
+        memUsed.setSsnObservationQuality(ssnObservationQuality_);
+
+        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+        ssnObservationResult_.setType("memoryMetric");
+        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+        ssnHasValue_.setType("ssn:ObservationValue");
+        ssnHasValue_.setValue(cpuUsage+"");
+        ssnHasValue_.setQudtUnit("qudt:Percentage");
+        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+        memUsed.setSsnObservationResult(ssnObservationResult_);
+
+        try {
+            out = JsonUtils.serializeJson(memUsed);
+        } catch (IOException e) {
+            this.logger.error("cpuUsage - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("cpuUsage - Deserialize JSON UTILS IO EXCEPTION");
+            //e.printStackTrace();
+        }
+
+        return out;
+    }
+
+
+    private String getDiskAvailable() throws Exception {
+
+        String out = "";
+
+        ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
+
+        String strDiskAvailable = tm.getFreeDiskSpace();
+
+        int bkSlashIndex = strDiskAvailable.indexOf("\\");
+        int freeDiskSpace = Integer.parseInt (strDiskAvailable.substring(bkSlashIndex+2).replaceAll("\\s+",""));
+
+        Date date = new Date();
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+        PerformanceMetric memUsed = new PerformanceMetric();
+
+        memUsed.setContext("http://vital.iot.org/system.jsonld");
+        memUsed.setUri(this.transfProt+this.symbolicUri + "/iot/hireply/perf/diskAvailable");
+        memUsed.setType("ssn:Observation");
+
+        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+        ssnObservationProperty_.setType(this.transfProt+this.ontBaseUri+"diskAvailable");
+        memUsed.setSsnObservationProperty(ssnObservationProperty_);
+
+        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+
+        ssnObservationResultTime_.setInXSDDateTime(printedDateFormat.format(date));
+        memUsed.setSsnObservationResultTime(ssnObservationResultTime_);
+
+        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
+        ssnHasMeasurementProperty_.setType("Reliability");
+        ssnHasMeasurementProperty_.setHasValue("HighReliability");
+        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
+        memUsed.setSsnObservationQuality(ssnObservationQuality_);
+
+        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+        ssnObservationResult_.setType("memoryMetric");
+        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+        ssnHasValue_.setType("ssn:ObservationValue");
+        ssnHasValue_.setValue(freeDiskSpace+"");
+        ssnHasValue_.setQudtUnit("qudt:Byte");
+        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+        memUsed.setSsnObservationResult(ssnObservationResult_);
+
+        try {
+            out = JsonUtils.serializeJson(memUsed);
+        } catch (IOException e) {
+            this.logger.error("diskAvailable - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("diskAvailable - Deserialize JSON UTILS IO EXCEPTION");
+            //e.printStackTrace();
+        }
+
+        return out;
+    }
 
     /*
         Private Class and Methods that adapt
@@ -1221,9 +1237,9 @@ public class HiPPI {
         int status = currentSensor.getStatus();
 
         if (status==1) {
-            sensor.setStatus("Running");
+            sensor.setStatus("vital:Running");
         } else if (status==0) {
-            sensor.setStatus("Unavailable");
+            sensor.setStatus("vital:unavailable");
         } else {
             sensor.setStatus("");
         }
@@ -1243,10 +1259,10 @@ public class HiPPI {
         if (dirCount == 1) {
             //speed e color
             SsnObserf speed = new SsnObserf();
-            speed.setType(this.ontBaseUri+this.speedProp);
+            speed.setType(this.transfProt+this.ontBaseUri+this.speedProp);
             speed.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+this.speedProp);
             SsnObserf color = new SsnObserf();
-            color.setType(this.ontBaseUri+this.colorProp);
+            color.setType(this.transfProt+this.ontBaseUri+this.colorProp);
             color.setUri(this.transfProt+this.symbolicUri+"ico/" + id + "/"+this.colorProp);
             observedProperties.add(speed);
             observedProperties.add(color);
@@ -1255,22 +1271,82 @@ public class HiPPI {
         if (dirCount == 2) {
             //speed e color + reverse
             SsnObserf speed = new SsnObserf();
-            speed.setType(this.ontBaseUri+this.speedProp);
+            speed.setType(this.transfProt+this.ontBaseUri+this.speedProp);
             speed.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+this.speedProp);
             SsnObserf color = new SsnObserf();
-            color.setType(this.ontBaseUri+this.colorProp);
+            color.setType(this.transfProt+this.ontBaseUri+this.colorProp);
             color.setUri(this.transfProt+this.symbolicUri+"ico/" + id + "/"+colorProp);
             observedProperties.add(speed);
             observedProperties.add(color);
             SsnObserf revspeed = new SsnObserf();
-            revspeed.setType(this.ontBaseUri+this.reverseSpeedProp);
+            revspeed.setType(this.transfProt+this.ontBaseUri+this.reverseSpeedProp);
             revspeed.setUri(this.transfProt+this.symbolicUri+"ico/" + id + "/"+this.reverseSpeedProp);
             SsnObserf revcolor = new SsnObserf();
-            revcolor.setType(this.ontBaseUri+this.reverseColorProp);
+            revcolor.setType(this.transfProt+this.ontBaseUri+this.reverseColorProp);
             revcolor.setUri(this.transfProt+this.symbolicUri+"ico/" + id + "/"+this.reverseColorProp);
             observedProperties.add(revspeed);
             observedProperties.add(revcolor);
         }
+
+        sensor.setSsnObserves(observedProperties);
+
+        return sensor;
+    }
+
+    private Sensor createPerformaceSensor() {
+        Sensor sensor = new Sensor();
+
+        String id = "PerformanceIco";
+
+        sensor.setContext("http://vital-iot.org/contexts/sensor.jsonld");
+        sensor.setName(id);
+        sensor.setType("Performance");
+        sensor.setDescription("HiReply Performance Ico");
+        sensor.setUri(this.transfProt+this.symbolicUri+"ico/"+id);
+
+        sensor.setStatus("vital:Running");
+
+        List<SsnObserf> observedProperties = new ArrayList<>();
+
+        SsnObserf observedProperty = new SsnObserf();
+        observedProperty.setType(this.transfProt+this.ontBaseUri+"memUsed");
+        observedProperty.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+"memUsed");
+        observedProperties.add(observedProperty);
+
+        observedProperty = new SsnObserf();
+        observedProperty.setType(this.transfProt+this.ontBaseUri+"memAvailable");
+        observedProperty.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+"memAvailable");
+        observedProperties.add(observedProperty);
+
+        observedProperty = new SsnObserf();
+        observedProperty.setType(this.transfProt+this.ontBaseUri+"diskAvailable");
+        observedProperty.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+"diskAvailable");
+        observedProperties.add(observedProperty);
+
+        observedProperty = new SsnObserf();
+        observedProperty.setType(this.transfProt+this.ontBaseUri+"cpuUsage");
+        observedProperty.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+"cpuUsage");
+        observedProperties.add(observedProperty);
+
+        observedProperty = new SsnObserf();
+        observedProperty.setType(this.transfProt+this.ontBaseUri+"servedRequest");
+        observedProperty.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+"servedRequest");
+        observedProperties.add(observedProperty);
+
+        observedProperty = new SsnObserf();
+        observedProperty.setType(this.transfProt+this.ontBaseUri+"errors");
+        observedProperty.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+"errors");
+        observedProperties.add(observedProperty);
+
+        observedProperty = new SsnObserf();
+        observedProperty.setType(this.transfProt+this.ontBaseUri+"upTime");
+        observedProperty.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+"upTime");
+        observedProperties.add(observedProperty);
+
+        observedProperty = new SsnObserf();
+        observedProperty.setType(this.transfProt+this.ontBaseUri+"pendingRequests");
+        observedProperty.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+"pendingRequests");
+        observedProperties.add(observedProperty);
 
         sensor.setSsnObserves(observedProperties);
 
@@ -1334,7 +1410,7 @@ public class HiPPI {
             if (property.equals(this.speedProp)) {
                 speedValue = currentSensor.getSpeed();
                 ssnHasValue.setValue(""+speedValue);
-                ssnHasValue.setQudtUnit("qudt:KmH");
+                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
             } else if (property.equals(this.colorProp)) {
                 colorValue = currentSensor.getColor();
                 ssnHasValue.setValue(""+colorValue);
@@ -1348,7 +1424,7 @@ public class HiPPI {
             if (property.equals(this.speedProp)) {
                 speedValue = currentSensor.getSpeed();
                 ssnHasValue.setValue(""+speedValue);
-                ssnHasValue.setQudtUnit("qudt:KmH");
+                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
             } else if (property.equals(this.colorProp)) {
                 colorValue = currentSensor.getColor();;
                 ssnHasValue.setValue(""+colorValue);
@@ -1356,7 +1432,7 @@ public class HiPPI {
             } else if (property.equals(this.reverseSpeedProp)) {
                 speedValue = currentSensor.getSpeed();
                 ssnHasValue.setValue(""+speedValue);
-                ssnHasValue.setQudtUnit("qudt:KmH");
+                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
             } else if (property.equals(this.reverseColorProp)) {
                 colorValue = currentSensor.getColor();
                 ssnHasValue.setValue(""+colorValue);
@@ -1421,7 +1497,7 @@ public class HiPPI {
             if (property.equals(this.speedProp)) {
                 speedValue = historyMeasure.getValue();
                 ssnHasValue.setValue(""+speedValue);
-                ssnHasValue.setQudtUnit("qudt:KmH");
+                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
             } else if (property.equals(this.colorProp)) {
                 colorValue = Math.round(historyMeasure.getValue());
                 ssnHasValue.setValue(""+colorValue);
@@ -1435,7 +1511,7 @@ public class HiPPI {
             if (property.equals(this.speedProp)) {
                 speedValue = historyMeasure.getValue();
                 ssnHasValue.setValue(""+speedValue);
-                ssnHasValue.setQudtUnit("qudt:KmH");
+                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
             } else if (property.equals(this.colorProp)) {
                 colorValue = Math.round(historyMeasure.getValue());
                 ssnHasValue.setValue(""+colorValue);
@@ -1443,7 +1519,7 @@ public class HiPPI {
             } else if (property.equals(this.reverseSpeedProp)) {
                 speedValue = historyMeasure.getValue();
                 ssnHasValue.setValue(""+speedValue);
-                ssnHasValue.setQudtUnit("qudt:KmH");
+                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
             } else if (property.equals(this.reverseColorProp)) {
                 colorValue = Math.round(historyMeasure.getValue());
                 ssnHasValue.setValue(""+colorValue);
