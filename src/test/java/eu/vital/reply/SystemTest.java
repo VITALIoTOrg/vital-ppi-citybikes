@@ -35,7 +35,7 @@ public class SystemTest
 
     @After
     public void tearDown() throws Exception {
-        server.stop();
+        //server.stop();
     }
 
     /**
