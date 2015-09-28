@@ -142,10 +142,9 @@ public class HiPPIv2 {
         ioTSystem.setSensors(sensors);
 
         // Adding services (describes in /service/metadata)
-        // TODO: create services IDs from configuration
-        services.add("http://vital2.cloud.reply.eu:8080/service/configuration");
-        services.add("http://vital2.cloud.reply.eu:8080/service/monitoring");
-        services.add("http://vital2.cloud.reply.eu:8080/service/observation");
+        services.add(this.transfProt + this.symbolicUri + "service/configuration");
+        services.add(this.transfProt + this.symbolicUri + "service/monitoring");
+        services.add(this.transfProt + this.symbolicUri + "service/observation");
 
         ioTSystem.setServices(services);
 
@@ -393,69 +392,71 @@ public class HiPPIv2 {
     }
 
     /**
-     * Method that returns the metadata about the requested ICO/ICOs. This method is mandatory.
+     * Method that returns the metadata about the requested sensor(s). This method is mandatory.
      * @param bodyRequest <br>
      *            JSON-LD String with the body request <br>
      *            { <br>
-     *              "@context": "http://vital-iot.org/contexts/query.jsonld", <br>
-     *              "icos": <br>
+     *              "id": <br>
      *              [ <br>
      *                  "http://www.example.com/ico/123/", <br>
      *                  "http://www.example.com/ico/1234/", <br>
      *                  "http://www.example.com/ico/12345/" <br>
+     *              ], <br>
+     *              "type": <br>
+     *              [ <br>
+     *                  "http://vital-iot.eu/ontology/ns/VitalSensor", <br>
+     *                  "http://vital-iot.eu/ontology/ns/MonitoringSensor" <br>
      *              ] <br>
      *            } <br>
-     * If the ICOs field is omitted, all the ICOs are requested <br>
-     * @return Returns a serialized String with the list of the requested sensor. <br>
+     * If the id and type fields are omitted, all the sensors are requested <br>
+     * @return Returns a serialized String with the list of the requested sensors. <br>
      */
-    @Path("/ico/metadata")
+    @Path("/sensor/metadata")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String getIcoMetadata(String bodyRequest) throws Exception {
 
-        ICORequest icoRequest = new ICORequest();
+        int i;
+        SensorRequest sensorRequest = new SensorRequest();
 
         try {
-            icoRequest = (ICORequest) JsonUtils.deserializeJson(bodyRequest, ICORequest.class);
+            sensorRequest = (SensorRequest) JsonUtils.deserializeJson(bodyRequest, SensorRequest.class);
         } catch (IOException e) {
             this.logger.error("GET OBSERVATION - IOException parsing the json request");
             return "{\n" +
                     "\"error\": \"Malformed request body\"\n"+
                     "}";
         }
-        // TODO --> check sulla request, trattamento di eventuali filtri
 
         List<String> requestedSensor = new ArrayList<>();
 
         try {
-            requestedSensor = icoRequest.getIcos();
+            requestedSensor = sensorRequest.getId();
         } catch (NullPointerException e) {
-            this.logger.error("/ico/metadata IO Exception - Requested Sensor");
-            throw new Exception("/ico/metadata IO Exception - Requested Sensor");
+            this.logger.error("/sensor/metadata IO Exception - Requested Sensor");
+            throw new Exception("/sensor/metadata IO Exception - Requested Sensor");
             //e.printStackTrace();
         }
 
-
-        List<Sensor> sensors = new ArrayList<>(); //lista da restituire in output
-
+        List<Sensor> sensors = new ArrayList<>(); // output list
 
         if (requestedSensor.size() == 0) {
-            //restituisci tutti i sensori
+            // then all the sensors must be returned
             List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshot().getTrafficSensor();
-            for (int i = 0; i < trafficSensors.size(); i++) {
+            for (i = 0; i < trafficSensors.size(); i++) {
                 sensors.add(this.createSensorFromTraffic(trafficSensors.get(i)));
             }
             sensors.add(this.createMonitoringSensor());
         } else {
-            //restituisci solo i sensori desirati
-            for (int i = 0; i < requestedSensor.size(); i++) {
-                String currentId = requestedSensor.get(i).replaceAll(this.transfProt+this.symbolicUri+"ico/","");
+            // return only some selected sensors
+            for (i = 0; i < requestedSensor.size(); i++) {
+                String currentId = requestedSensor.get(i).replaceAll(this.transfProt + this.symbolicUri + "sensor/", "");
 
-                if (currentId.contains("PerformanceIco")) {
+                if (currentId.contains("monitoring")) {
                     sensors.add(this.createMonitoringSensor());
                 } else {
-                    String filter = hiReplySvc.createFilter("ID",currentId);
+                    String filter = hiReplySvc.createFilter("ID", currentId);
 
                     ServiceList.TrafficSensor currentTrafficSensor = null;
 
@@ -463,8 +464,8 @@ public class HiPPIv2 {
                         currentTrafficSensor = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor().get(0);
                         sensors.add(this.createSensorFromTraffic(currentTrafficSensor));
                     } catch (IndexOutOfBoundsException e) {
-                        logger.error("getIcoMetadata ID: " + currentId + " not present.");
-                        //in caso di sensore nn presente, l'esecuzione continua per cercare gli altri
+                        logger.error("getSensorMetadata ID: " + currentId + " not present.");
+                        // if not present goes on looking for the other requested sensors
                     }
                 }
 
@@ -476,8 +477,8 @@ public class HiPPIv2 {
         try {
             out = JsonUtils.serializeJson(sensors);
         } catch (IOException e) {
-            this.logger.error("getIcoMetadata - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("getIcoMetadata - Deserialize JSON UTILS IO EXCEPTION");
+            this.logger.error("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
             //e.printStackTrace();
         }
 
@@ -1187,14 +1188,13 @@ public class HiPPIv2 {
 
         int status = currentSensor.getStatus();
 
-        if (status==1) {
+        if (status == 1) {
             sensor.setStatus("vital:Running");
-        } else if (status==0) {
+        } else if (status == 0) {
             sensor.setStatus("vital:unavailable");
         } else {
             sensor.setStatus("");
         }
-
 
         HasLastKnownLocation location = new HasLastKnownLocation();
         location.setType("geo:Point");
@@ -1210,11 +1210,11 @@ public class HiPPIv2 {
         if (dirCount == 1) {
             //speed e color
             SsnObserf_ speed = new SsnObserf_();
-            speed.setType(this.transfProt+this.ontBaseUri+this.speedProp);
-            speed.setId(this.transfProt + this.symbolicUri + "ico/" + id + "/" + this.speedProp);
+            speed.setType("vital:" + this.speedProp);
+            speed.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + this.speedProp);
             SsnObserf_ color = new SsnObserf_();
-            color.setType(this.transfProt+this.ontBaseUri+this.colorProp);
-            color.setId(this.transfProt + this.symbolicUri + "ico/" + id + "/" + this.colorProp);
+            color.setType("vital:" + this.colorProp);
+            color.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + this.colorProp);
             observedProperties.add(speed);
             observedProperties.add(color);
         }
@@ -1222,19 +1222,19 @@ public class HiPPIv2 {
         if (dirCount == 2) {
             //speed e color + reverse
             SsnObserf_ speed = new SsnObserf_();
-            speed.setType(this.transfProt+this.ontBaseUri+this.speedProp);
-            speed.setId(this.transfProt + this.symbolicUri + "ico/" + id + "/" + this.speedProp);
+            speed.setType("vital:" + this.speedProp);
+            speed.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + this.speedProp);
             SsnObserf_ color = new SsnObserf_();
-            color.setType(this.transfProt+this.ontBaseUri+this.colorProp);
-            color.setId(this.transfProt + this.symbolicUri + "ico/" + id + "/" +colorProp);
+            color.setType("vital:" + this.colorProp);
+            color.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" +colorProp);
             observedProperties.add(speed);
             observedProperties.add(color);
             SsnObserf_ revspeed = new SsnObserf_();
-            revspeed.setType(this.transfProt+this.ontBaseUri+this.reverseSpeedProp);
-            revspeed.setId(this.transfProt + this.symbolicUri + "ico/" + id + "/" + this.reverseSpeedProp);
+            revspeed.setType("vital:" + this.reverseSpeedProp);
+            revspeed.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + this.reverseSpeedProp);
             SsnObserf_ revcolor = new SsnObserf_();
-            revcolor.setType(this.transfProt+this.ontBaseUri+this.reverseColorProp);
-            revcolor.setId(this.transfProt + this.symbolicUri + "ico/" + id + "/" + this.reverseColorProp);
+            revcolor.setType("vital:" + this.reverseColorProp);
+            revcolor.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + this.reverseColorProp);
             observedProperties.add(revspeed);
             observedProperties.add(revcolor);
         }
@@ -1253,50 +1253,50 @@ public class HiPPIv2 {
         sensor.setName(id);
         sensor.setType("vital:MonitoringSensor");
         sensor.setDescription("HiReply Monitoring Sensor");
-        sensor.setId(this.transfProt + this.symbolicUri + "sensor/"+id);
+        sensor.setId(this.transfProt + this.symbolicUri + "sensor/" + id);
 
         sensor.setStatus("vital:Running");
 
         List<SsnObserf_> observedProperties = new ArrayList<>();
 
         SsnObserf_ observedProperty = new SsnObserf_();
-        observedProperty.setType(this.transfProt+this.ontBaseUri+"memUsed");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "ico/" + id + "/" +"memUsed");
+        observedProperty.setType("vital:MemUsed");
+        observedProperty.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" +"memUsed");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf_();
-        observedProperty.setType(this.transfProt+this.ontBaseUri+"memAvailable");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "ico/" + id + "/" + "memAvailable");
+        observedProperty.setType("vital:MemAvailable");
+        observedProperty.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + "memAvailable");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf_();
-        observedProperty.setType(this.transfProt+this.ontBaseUri+"diskAvailable");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "ico/" + id + "/" + "diskAvailable");
+        observedProperty.setType("vital:DiskAvailable");
+        observedProperty.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + "diskAvailable");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf_();
-        observedProperty.setType(this.transfProt+this.ontBaseUri+"cpuUsage");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "ico/" + id + "/" + "cpuUsage");
+        observedProperty.setType("vital:SysLoad");
+        observedProperty.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + "sysLoad");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf_();
-        observedProperty.setType(this.transfProt+this.ontBaseUri+"servedRequest");
-        observedProperty.setId(this.transfProt+this.symbolicUri+"ico/"+id+"/"+"servedRequest");
+        observedProperty.setType("vital:ServedRequest");
+        observedProperty.setId(this.transfProt + this.symbolicUri + "sensor/" +id+ "/" + "servedRequest");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf_();
-        observedProperty.setType(this.transfProt+this.ontBaseUri+"errors");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "ico/" + id + "/"+"errors");
+        observedProperty.setType("vital:Errors");
+        observedProperty.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + "errors");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf_();
-        observedProperty.setType(this.transfProt+this.ontBaseUri+"upTime");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "ico/" + id + "/"+"upTime");
+        observedProperty.setType("vital:SysUpTime");
+        observedProperty.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + "sysUptime");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf_();
-        observedProperty.setType(this.transfProt+this.ontBaseUri+"pendingRequests");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "ico/" + id + "/" + "pendingRequests");
+        observedProperty.setType("vital:PendingRequests");
+        observedProperty.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + "pendingRequests");
         observedProperties.add(observedProperty);
 
         sensor.setSsnObserves(observedProperties);

@@ -19,65 +19,65 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "@context",
-    "icos"
+    "id",
+    "type"
 })
-public class ICORequest {
+public class SensorRequest {
 
-    @JsonProperty("@context")
-    private String Context;
-    @JsonProperty("icos")
-    private List<String> icos = new ArrayList<String>();
+    @JsonProperty("id")
+    private List<String> id = new ArrayList<String>();
+    @JsonProperty("type")
+    private List<String> type = new ArrayList<String>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The Context
+     *     The id
      */
-    @JsonProperty("@context")
-    public String getContext() {
-        return Context;
+    @JsonProperty("id")
+    public List<String> getId() {
+        return id;
     }
 
     /**
      * 
-     * @param Context
-     *     The @context
+     * @param id
+     *     The id
      */
-    @JsonProperty("@context")
-    public void setContext(String Context) {
-        this.Context = Context;
+    @JsonProperty("id")
+    public void setId(List<String> id) {
+        this.id = id;
     }
 
-    public ICORequest withContext(String Context) {
-        this.Context = Context;
+    public SensorRequest withId(List<String> id) {
+        this.id = id;
         return this;
     }
 
     /**
      * 
      * @return
-     *     The icos
+     *     The type
      */
-    @JsonProperty("icos")
-    public List<String> getIcos() {
-        return icos;
+    @JsonProperty("type")
+    public List<String> getType() {
+        return type;
     }
 
     /**
      * 
-     * @param icos
-     *     The icos
+     * @param type
+     *     The type
      */
-    @JsonProperty("icos")
-    public void setIcos(List<String> icos) {
-        this.icos = icos;
+    @JsonProperty("type")
+    public void setType(List<String> type) {
+        this.type = type;
     }
 
-    public ICORequest withIcos(List<String> icos) {
-        this.icos = icos;
+    public SensorRequest withType(List<String> type) {
+        this.type = type;
         return this;
     }
 
@@ -106,7 +106,7 @@ public class ICORequest {
         this.additionalProperties.put(name, value);
     }
 
-    public ICORequest withAdditionalProperty(String name, Object value) {
+    public SensorRequest withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
