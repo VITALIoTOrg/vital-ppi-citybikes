@@ -6,7 +6,7 @@
     <groupId>eu.vital.reply</groupId>
     <artifactId>ppi</artifactId>
     <packaging>jar</packaging>
-    <version>2.0-DEV</version>
+    <version>2.0-dev</version>
     <name>ppi</name>
 
     <dependencyManagement>
