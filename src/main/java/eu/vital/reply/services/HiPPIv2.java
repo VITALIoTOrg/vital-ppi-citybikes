@@ -417,7 +417,7 @@ public class HiPPIv2 {
     @Produces(MediaType.APPLICATION_JSON)
     public String getIcoMetadata(String bodyRequest) throws Exception {
 
-        int i;
+        int i, j;
         SensorRequest sensorRequest = new SensorRequest();
 
         try {
@@ -430,6 +430,7 @@ public class HiPPIv2 {
         }
 
         List<String> requestedSensor = new ArrayList<>();
+        List<String> requestedType = new ArrayList<>();
 
         try {
             requestedSensor = sensorRequest.getId();
@@ -449,12 +450,35 @@ public class HiPPIv2 {
             }
             sensors.add(this.createMonitoringSensor());
         } else {
+            String currentType;
+            Sensor tmpSensor;
+            for (i = 0; i < requestedType.size(); i++) {
+                currentType = requestedSensor.get(i).replaceAll("http://vital-iot.eu/ontology/ns/", "");
+                if (currentType.contains("MonitoringSensor")) {
+                    tmpSensor = this.createMonitoringSensor();
+                    if(!sensors.contains(tmpSensor)) {
+                        sensors.add(tmpSensor);
+                    }
+                } else {
+                    List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshot().getTrafficSensor();
+                    for(j = 0; j < trafficSensors.size(); j++) {
+                        tmpSensor = this.createSensorFromTraffic(trafficSensors.get(j));
+                        if(!sensors.contains(tmpSensor)) {
+                            sensors.add(tmpSensor);
+                        }
+                    }
+                }
+            }
             // return only some selected sensors
+            String currentId;
             for (i = 0; i < requestedSensor.size(); i++) {
-                String currentId = requestedSensor.get(i).replaceAll(this.transfProt + this.symbolicUri + "sensor/", "");
+                currentId = requestedSensor.get(i).replaceAll(this.transfProt + this.symbolicUri + "sensor/", "");
 
                 if (currentId.contains("monitoring")) {
-                    sensors.add(this.createMonitoringSensor());
+                    tmpSensor = this.createMonitoringSensor();
+                    if(!sensors.contains(tmpSensor)) {
+                        sensors.add(tmpSensor);
+                    }
                 } else {
                     String filter = hiReplySvc.createFilter("ID", currentId);
 
@@ -462,7 +486,10 @@ public class HiPPIv2 {
 
                     try {
                         currentTrafficSensor = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor().get(0);
-                        sensors.add(this.createSensorFromTraffic(currentTrafficSensor));
+                        tmpSensor = this.createSensorFromTraffic(currentTrafficSensor);
+                        if(!sensors.contains(tmpSensor)) {
+                            sensors.add(tmpSensor);
+                        }
                     } catch (IndexOutOfBoundsException e) {
                         logger.error("getSensorMetadata ID: " + currentId + " not present.");
                         // if not present goes on looking for the other requested sensors
@@ -730,7 +757,6 @@ public class HiPPIv2 {
 
         return out;
     }
-
 
     private String getUpTime() throws Exception {
 
