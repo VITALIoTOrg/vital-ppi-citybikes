@@ -1,11 +1,11 @@
 package eu.vital.reply.services;
 
 /**
- * Created by f.deceglia on 24/11/2014.
+ * Created by l.bracco on 28/09/2015.
  */
 
 import eu.vital.reply.clients.HiReplySvc;
-import eu.vital.reply.jsonpojos.*;
+import eu.vital.reply.jsonpojosv2.*;
 import eu.vital.reply.utils.ConfigReader;
 import eu.vital.reply.utils.JsonUtils;
 import eu.vital.reply.utils.StatCounter;
@@ -30,10 +30,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
- * HiPPI Class that provides all the REST API that a system attached to Vital will expose
+ * HiPPIv2 Class that provides all the REST API that a system attached to Vital will expose
  *
  * @author <a href="mailto:f.deceglia@reply.it">Fabrizio de Ceglia</a>
- * @version 1.0.0
+ * @author <a href="mailto:l.bracco@reply.it">Lorenzo Bracco</a>
+ * @version 2.0.0
  */
 
 @Path("/v2")
@@ -101,7 +102,7 @@ public class HiPPIv2 {
      *            } <br>
      * @return Returns a string with the serialized JSON-LD IoTSystem.
      */
-    @Path("/external/metadata")
+    @Path("/metadata")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)

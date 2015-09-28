@@ -161,6 +161,27 @@
                 </executions>
             </plugin>
 
+            <plugin>
+                <groupId>org.jsonschema2pojo</groupId>
+                <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+                <version>0.4.5</version>
+                <configuration>
+                    <sourceDirectory>${basedir}/src/main/JsonFilev2</sourceDirectory>
+                    <generateBuilders>true</generateBuilders>
+                    <includeHashcodeAndEquals>true</includeHashcodeAndEquals>
+                    <outputDirectory>${basedir}/src/main/java</outputDirectory>
+                    <sourceType>json</sourceType>
+                    <targetPackage>eu.vital.reply.jsonpojosv2</targetPackage>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Maven JAR plugin -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
