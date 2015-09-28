@@ -24,7 +24,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class ConfigurationOptionsGetBody {
 
     @JsonProperty("configurationOptions")
-    private List<ConfigurationOption_> configurationOptions = new ArrayList<ConfigurationOption_>();
+    private List<ConfigurationOption> configurationOptions = new ArrayList<ConfigurationOption>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -34,7 +34,7 @@ public class ConfigurationOptionsGetBody {
      *     The configurationOptions
      */
     @JsonProperty("configurationOptions")
-    public List<ConfigurationOption_> getConfigurationOptions() {
+    public List<ConfigurationOption> getConfigurationOptions() {
         return configurationOptions;
     }
 
@@ -44,11 +44,11 @@ public class ConfigurationOptionsGetBody {
      *     The configurationOptions
      */
     @JsonProperty("configurationOptions")
-    public void setConfigurationOptions(List<ConfigurationOption_> configurationOptions) {
+    public void setConfigurationOptions(List<ConfigurationOption> configurationOptions) {
         this.configurationOptions = configurationOptions;
     }
 
-    public ConfigurationOptionsGetBody withConfigurationOptions(List<ConfigurationOption_> configurationOptions) {
+    public ConfigurationOptionsGetBody withConfigurationOptions(List<ConfigurationOption> configurationOptions) {
         this.configurationOptions = configurationOptions;
         return this;
     }

@@ -1,3 +1,4 @@
+
 package eu.vital.reply.jsonpojos;
 
 import java.util.ArrayList;
@@ -18,14 +19,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-        "@context",
-        "uri",
-        "name",
-        "type",
-        "description",
-        "status",
-        "hasLastKnownLocation",
-        "ssn:observes"
+    "@context",
+    "uri",
+    "name",
+    "type",
+    "description",
+    "status",
+    "hasLastKnownLocation",
+    "ssn:observes"
 })
 public class Sensor {
 
@@ -44,12 +45,12 @@ public class Sensor {
     @JsonProperty("hasLastKnownLocation")
     private HasLastKnownLocation hasLastKnownLocation;
     @JsonProperty("ssn:observes")
-    private List<SsnObserf> ssnObserves = new ArrayList<SsnObserf>();
+    private List<SsnObserf_> ssnObserves = new ArrayList<SsnObserf_>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
-     *
+     * 
      * @return
      *     The Context
      */
@@ -59,7 +60,7 @@ public class Sensor {
     }
 
     /**
-     *
+     * 
      * @param Context
      *     The @context
      */
@@ -74,7 +75,7 @@ public class Sensor {
     }
 
     /**
-     *
+     * 
      * @return
      *     The uri
      */
@@ -84,7 +85,7 @@ public class Sensor {
     }
 
     /**
-     *
+     * 
      * @param uri
      *     The uri
      */
@@ -99,7 +100,7 @@ public class Sensor {
     }
 
     /**
-     *
+     * 
      * @return
      *     The name
      */
@@ -109,7 +110,7 @@ public class Sensor {
     }
 
     /**
-     *
+     * 
      * @param name
      *     The name
      */
@@ -124,7 +125,7 @@ public class Sensor {
     }
 
     /**
-     *
+     * 
      * @return
      *     The type
      */
@@ -134,7 +135,7 @@ public class Sensor {
     }
 
     /**
-     *
+     * 
      * @param type
      *     The type
      */
@@ -149,7 +150,7 @@ public class Sensor {
     }
 
     /**
-     *
+     * 
      * @return
      *     The description
      */
@@ -159,7 +160,7 @@ public class Sensor {
     }
 
     /**
-     *
+     * 
      * @param description
      *     The description
      */
@@ -174,7 +175,7 @@ public class Sensor {
     }
 
     /**
-     *
+     * 
      * @return
      *     The status
      */
@@ -184,7 +185,7 @@ public class Sensor {
     }
 
     /**
-     *
+     * 
      * @param status
      *     The status
      */
@@ -199,7 +200,7 @@ public class Sensor {
     }
 
     /**
-     *
+     * 
      * @return
      *     The hasLastKnownLocation
      */
@@ -209,7 +210,7 @@ public class Sensor {
     }
 
     /**
-     *
+     * 
      * @param hasLastKnownLocation
      *     The hasLastKnownLocation
      */
@@ -224,26 +225,26 @@ public class Sensor {
     }
 
     /**
-     *
+     * 
      * @return
      *     The ssnObserves
      */
     @JsonProperty("ssn:observes")
-    public List<SsnObserf> getSsnObserves() {
+    public List<SsnObserf_> getSsnObserves() {
         return ssnObserves;
     }
 
     /**
-     *
+     * 
      * @param ssnObserves
      *     The ssn:observes
      */
     @JsonProperty("ssn:observes")
-    public void setSsnObserves(List<SsnObserf> ssnObserves) {
+    public void setSsnObserves(List<SsnObserf_> ssnObserves) {
         this.ssnObserves = ssnObserves;
     }
 
-    public Sensor withSsnObserves(List<SsnObserf> ssnObserves) {
+    public Sensor withSsnObserves(List<SsnObserf_> ssnObserves) {
         this.ssnObserves = ssnObserves;
         return this;
     }

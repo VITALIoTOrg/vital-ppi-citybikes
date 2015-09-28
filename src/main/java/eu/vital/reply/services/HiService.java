@@ -223,14 +223,14 @@ public class HiService
             sensor.setHasLastKnownLocation(location);
 
             int dirCount = currentSensor.getDirectionCount();
-            List<SsnObserf> observedProperties = new ArrayList<>();
+            List<SsnObserf_> observedProperties = new ArrayList<>();
 
             if (dirCount == 1) {
                 //speed e color
-                SsnObserf speed = new SsnObserf();
+                SsnObserf_ speed = new SsnObserf_();
                 speed.setType("http://"+id+"/type.example.Speed");
                 speed.setUri("http://"+hostName+":"+hostPort+"/service/"+id+"/property/Speed");
-                SsnObserf color = new SsnObserf();
+                SsnObserf_ color = new SsnObserf_();
                 color.setType("http://"+id+"/type.example.Color");
                 color.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/Color");
                 observedProperties.add(speed);
@@ -239,18 +239,18 @@ public class HiService
 
             if (dirCount == 2) {
                 //speed e color + reverse
-                SsnObserf speed = new SsnObserf();
+                SsnObserf_ speed = new SsnObserf_();
                 speed.setType("http://reply.eu/Speed");
                 speed.setUri("http://"+hostName+":"+hostPort+"/service/"+id+"/property/Speed");
-                SsnObserf color = new SsnObserf();
+                SsnObserf_ color = new SsnObserf_();
                 color.setType("http://reply.eu/Color");
                 color.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/Color");
                 observedProperties.add(speed);
                 observedProperties.add(color);
-                SsnObserf revspeed = new SsnObserf();
+                SsnObserf_ revspeed = new SsnObserf_();
                 revspeed.setType("http://reply.eu/ReverseSpeed");
                 revspeed.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "property/ReverseSpeed");
-                SsnObserf revcolor = new SsnObserf();
+                SsnObserf_ revcolor = new SsnObserf_();
                 revcolor.setType("http://reply.eu/ReverseColor");
                 revcolor.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/ReverseColor");
                 observedProperties.add(revspeed);
@@ -323,14 +323,14 @@ public class HiService
         sensor.setHasLastKnownLocation(location);
 
         int dirCount = currentSensor.getDirectionCount();
-        List<SsnObserf> observedProperties = new ArrayList<>();
+        List<SsnObserf_> observedProperties = new ArrayList<>();
 
         if (dirCount == 1) {
             //speed e color
-            SsnObserf speed = new SsnObserf();
+            SsnObserf_ speed = new SsnObserf_();
             speed.setType("http://reply.eu/vital/Speed");
             speed.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/Speed");
-            SsnObserf color = new SsnObserf();
+            SsnObserf_ color = new SsnObserf_();
             color.setType("http://reply.eu/vital/Color");
             color.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/Color");
             observedProperties.add(speed);
@@ -339,18 +339,18 @@ public class HiService
 
         if (dirCount == 2) {
             //speed e color + reverse
-            SsnObserf speed = new SsnObserf();
+            SsnObserf_ speed = new SsnObserf_();
             speed.setType("http://reply.eu/vital/Speed");
             speed.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/Speed");
-            SsnObserf color = new SsnObserf();
+            SsnObserf_ color = new SsnObserf_();
             color.setType("http://reply.eu/vital/Color");
             color.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/Color");
             observedProperties.add(speed);
             observedProperties.add(color);
-            SsnObserf revspeed = new SsnObserf();
+            SsnObserf_ revspeed = new SsnObserf_();
             revspeed.setType("http://reply.eu/vital/ReverseSpeed");
             revspeed.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/ReverseSpeed");
-            SsnObserf revcolor = new SsnObserf();
+            SsnObserf_ revcolor = new SsnObserf_();
             revcolor.setType("http://reply.eu/vital/ReverseColor");
             revcolor.setUri("http://"+hostName+":"+hostPort+"/service/" + id + "/property/ReverseColor");
             observedProperties.add(revspeed);

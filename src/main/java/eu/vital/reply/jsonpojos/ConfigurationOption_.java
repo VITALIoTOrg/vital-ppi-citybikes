@@ -17,10 +17,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-        "name",
-        "value",
-        "type",
-        "permissions"
+    "name",
+    "value"
 })
 public class ConfigurationOption_ {
 
@@ -28,17 +26,13 @@ public class ConfigurationOption_ {
     private String name;
     @JsonProperty("value")
     private String value;
-    @JsonProperty("type")
-    private String type;
-    @JsonProperty("permissions")
-    private String permissions;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
-     *
+     * 
      * @return
-     * The name
+     *     The name
      */
     @JsonProperty("name")
     public String getName() {
@@ -46,9 +40,9 @@ public class ConfigurationOption_ {
     }
 
     /**
-     *
+     * 
      * @param name
-     * The name
+     *     The name
      */
     @JsonProperty("name")
     public void setName(String name) {
@@ -61,9 +55,9 @@ public class ConfigurationOption_ {
     }
 
     /**
-     *
+     * 
      * @return
-     * The value
+     *     The value
      */
     @JsonProperty("value")
     public String getValue() {
@@ -71,9 +65,9 @@ public class ConfigurationOption_ {
     }
 
     /**
-     *
+     * 
      * @param value
-     * The value
+     *     The value
      */
     @JsonProperty("value")
     public void setValue(String value) {
@@ -85,59 +79,19 @@ public class ConfigurationOption_ {
         return this;
     }
 
-    /**
-     *
-     * @return
-     * The type
-     */
-    @JsonProperty("type")
-    public String getType() {
-        return type;
-    }
-
-    /**
-     *
-     * @param type
-     * The type
-     */
-    @JsonProperty("type")
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public ConfigurationOption_ withType(String type) {
-        this.type = type;
-        return this;
-    }
-
-    /**
-     *
-     * @return
-     * The permissions
-     */
-    @JsonProperty("permissions")
-    public String getPermissions() {
-        return permissions;
-    }
-
-    /**
-     *
-     * @param permissions
-     * The permissions
-     */
-    @JsonProperty("permissions")
-    public void setPermissions(String permissions) {
-        this.permissions = permissions;
-    }
-
-    public ConfigurationOption_ withPermissions(String permissions) {
-        this.permissions = permissions;
-        return this;
-    }
-
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return EqualsBuilder.reflectionEquals(this, other);
     }
 
     @JsonAnyGetter
@@ -153,23 +107,6 @@ public class ConfigurationOption_ {
     public ConfigurationOption_ withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(name).append(value).append(type).append(permissions).append(additionalProperties).toHashCode();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        }
-        if ((other instanceof ConfigurationOption_) == false) {
-            return false;
-        }
-        ConfigurationOption_ rhs = ((ConfigurationOption_) other);
-        return new EqualsBuilder().append(name, rhs.name).append(value, rhs.value).append(type, rhs.type).append(permissions, rhs.permissions).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

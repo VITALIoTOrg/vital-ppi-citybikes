@@ -1,3 +1,4 @@
+
 package eu.vital.reply.jsonpojos;
 
 import java.util.HashMap;
@@ -16,8 +17,10 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-        "name",
-        "value"
+    "name",
+    "value",
+    "type",
+    "permissions"
 })
 public class ConfigurationOption {
 
@@ -25,11 +28,15 @@ public class ConfigurationOption {
     private String name;
     @JsonProperty("value")
     private String value;
+    @JsonProperty("type")
+    private String type;
+    @JsonProperty("permissions")
+    private String permissions;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
-     *
+     * 
      * @return
      *     The name
      */
@@ -39,7 +46,7 @@ public class ConfigurationOption {
     }
 
     /**
-     *
+     * 
      * @param name
      *     The name
      */
@@ -54,7 +61,7 @@ public class ConfigurationOption {
     }
 
     /**
-     *
+     * 
      * @return
      *     The value
      */
@@ -64,7 +71,7 @@ public class ConfigurationOption {
     }
 
     /**
-     *
+     * 
      * @param value
      *     The value
      */
@@ -75,6 +82,56 @@ public class ConfigurationOption {
 
     public ConfigurationOption withValue(String value) {
         this.value = value;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The type
+     */
+    @JsonProperty("type")
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * 
+     * @param type
+     *     The type
+     */
+    @JsonProperty("type")
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public ConfigurationOption withType(String type) {
+        this.type = type;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The permissions
+     */
+    @JsonProperty("permissions")
+    public String getPermissions() {
+        return permissions;
+    }
+
+    /**
+     * 
+     * @param permissions
+     *     The permissions
+     */
+    @JsonProperty("permissions")
+    public void setPermissions(String permissions) {
+        this.permissions = permissions;
+    }
+
+    public ConfigurationOption withPermissions(String permissions) {
+        this.permissions = permissions;
         return this;
     }
 

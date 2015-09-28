@@ -326,8 +326,8 @@ public class HiPPI {
 
         ConfigurationOptionsGetBody response = new ConfigurationOptionsGetBody();
 
-        ConfigurationOption_ configurationOption = new ConfigurationOption_();
-        List<ConfigurationOption_> configurationOptions = new ArrayList<>();
+        ConfigurationOption configurationOption = new ConfigurationOption();
+        List<ConfigurationOption> configurationOptions = new ArrayList<>();
 
         configurationOption.setName("logVerbosity");
         configurationOption.setValue(this.hiReplySvc.getSnapshot().getTaskManager().getLogsPriorityLevel());
@@ -367,7 +367,7 @@ public class HiPPI {
 
         String taskManagerServiceId = this.hiReplySvc.getSnapshot().getTaskManager().getID();
 
-        List<ConfigurationOption> configList = configurationOptionsReqBody.getConfigurationOptions();
+        List<ConfigurationOption_> configList = configurationOptionsReqBody.getConfigurationOptions();
 
         for (int i = 0; i<configList.size(); i++) {
             String currentConfigurationOptions = configList.get(i).getName();
@@ -1254,14 +1254,14 @@ public class HiPPI {
         sensor.setHasLastKnownLocation(location);
 
         int dirCount = currentSensor.getDirectionCount();
-        List<SsnObserf> observedProperties = new ArrayList<>();
+        List<SsnObserf_> observedProperties = new ArrayList<>();
 
         if (dirCount == 1) {
             //speed e color
-            SsnObserf speed = new SsnObserf();
+            SsnObserf_ speed = new SsnObserf_();
             speed.setType(this.transfProt+this.ontBaseUri+this.speedProp);
             speed.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+this.speedProp);
-            SsnObserf color = new SsnObserf();
+            SsnObserf_ color = new SsnObserf_();
             color.setType(this.transfProt+this.ontBaseUri+this.colorProp);
             color.setUri(this.transfProt+this.symbolicUri+"ico/" + id + "/"+this.colorProp);
             observedProperties.add(speed);
@@ -1270,18 +1270,18 @@ public class HiPPI {
 
         if (dirCount == 2) {
             //speed e color + reverse
-            SsnObserf speed = new SsnObserf();
+            SsnObserf_ speed = new SsnObserf_();
             speed.setType(this.transfProt+this.ontBaseUri+this.speedProp);
             speed.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+this.speedProp);
-            SsnObserf color = new SsnObserf();
+            SsnObserf_ color = new SsnObserf_();
             color.setType(this.transfProt+this.ontBaseUri+this.colorProp);
             color.setUri(this.transfProt+this.symbolicUri+"ico/" + id + "/"+colorProp);
             observedProperties.add(speed);
             observedProperties.add(color);
-            SsnObserf revspeed = new SsnObserf();
+            SsnObserf_ revspeed = new SsnObserf_();
             revspeed.setType(this.transfProt+this.ontBaseUri+this.reverseSpeedProp);
             revspeed.setUri(this.transfProt+this.symbolicUri+"ico/" + id + "/"+this.reverseSpeedProp);
-            SsnObserf revcolor = new SsnObserf();
+            SsnObserf_ revcolor = new SsnObserf_();
             revcolor.setType(this.transfProt+this.ontBaseUri+this.reverseColorProp);
             revcolor.setUri(this.transfProt+this.symbolicUri+"ico/" + id + "/"+this.reverseColorProp);
             observedProperties.add(revspeed);
@@ -1306,44 +1306,44 @@ public class HiPPI {
 
         sensor.setStatus("vital:Running");
 
-        List<SsnObserf> observedProperties = new ArrayList<>();
+        List<SsnObserf_> observedProperties = new ArrayList<>();
 
-        SsnObserf observedProperty = new SsnObserf();
+        SsnObserf_ observedProperty = new SsnObserf_();
         observedProperty.setType(this.transfProt+this.ontBaseUri+"memUsed");
         observedProperty.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+"memUsed");
         observedProperties.add(observedProperty);
 
-        observedProperty = new SsnObserf();
+        observedProperty = new SsnObserf_();
         observedProperty.setType(this.transfProt+this.ontBaseUri+"memAvailable");
         observedProperty.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+"memAvailable");
         observedProperties.add(observedProperty);
 
-        observedProperty = new SsnObserf();
+        observedProperty = new SsnObserf_();
         observedProperty.setType(this.transfProt+this.ontBaseUri+"diskAvailable");
         observedProperty.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+"diskAvailable");
         observedProperties.add(observedProperty);
 
-        observedProperty = new SsnObserf();
+        observedProperty = new SsnObserf_();
         observedProperty.setType(this.transfProt+this.ontBaseUri+"cpuUsage");
         observedProperty.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+"cpuUsage");
         observedProperties.add(observedProperty);
 
-        observedProperty = new SsnObserf();
+        observedProperty = new SsnObserf_();
         observedProperty.setType(this.transfProt+this.ontBaseUri+"servedRequest");
         observedProperty.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+"servedRequest");
         observedProperties.add(observedProperty);
 
-        observedProperty = new SsnObserf();
+        observedProperty = new SsnObserf_();
         observedProperty.setType(this.transfProt+this.ontBaseUri+"errors");
         observedProperty.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+"errors");
         observedProperties.add(observedProperty);
 
-        observedProperty = new SsnObserf();
+        observedProperty = new SsnObserf_();
         observedProperty.setType(this.transfProt+this.ontBaseUri+"upTime");
         observedProperty.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+"upTime");
         observedProperties.add(observedProperty);
 
-        observedProperty = new SsnObserf();
+        observedProperty = new SsnObserf_();
         observedProperty.setType(this.transfProt+this.ontBaseUri+"pendingRequests");
         observedProperty.setUri(this.transfProt+this.symbolicUri+"ico/"+id+"/"+"pendingRequests");
         observedProperties.add(observedProperty);
