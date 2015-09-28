@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @version 1.0.0
  */
 
-@Path("")
+@Path("/v2")
 public class HiPPIv2 {
 
     private Logger logger;
