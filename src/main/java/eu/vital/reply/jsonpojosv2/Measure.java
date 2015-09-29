@@ -18,8 +18,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "@context",
-    "uri",
+    "id",
     "type",
+    "ssn:observedBy",
     "ssn:observationProperty",
     "ssn:observationResultTime",
     "dul:hasLocation",
@@ -30,10 +31,12 @@ public class Measure {
 
     @JsonProperty("@context")
     private String Context;
-    @JsonProperty("uri")
-    private String uri;
+    @JsonProperty("id")
+    private String id;
     @JsonProperty("type")
     private String type;
+    @JsonProperty("ssn:observedBy")
+    private String ssnObservedBy;
     @JsonProperty("ssn:observationProperty")
     private SsnObservationProperty ssnObservationProperty;
     @JsonProperty("ssn:observationResultTime")
@@ -75,25 +78,25 @@ public class Measure {
     /**
      * 
      * @return
-     *     The uri
+     *     The id
      */
-    @JsonProperty("uri")
-    public String getUri() {
-        return uri;
+    @JsonProperty("id")
+    public String getId() {
+        return id;
     }
 
     /**
      * 
-     * @param uri
-     *     The uri
+     * @param id
+     *     The id
      */
-    @JsonProperty("uri")
-    public void setUri(String uri) {
-        this.uri = uri;
+    @JsonProperty("id")
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public Measure withUri(String uri) {
-        this.uri = uri;
+    public Measure withId(String id) {
+        this.id = id;
         return this;
     }
 
@@ -119,6 +122,31 @@ public class Measure {
 
     public Measure withType(String type) {
         this.type = type;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The ssnObservedBy
+     */
+    @JsonProperty("ssn:observedBy")
+    public String getSsnObservedBy() {
+        return ssnObservedBy;
+    }
+
+    /**
+     * 
+     * @param ssnObservedBy
+     *     The ssn:observedBy
+     */
+    @JsonProperty("ssn:observedBy")
+    public void setSsnObservedBy(String ssnObservedBy) {
+        this.ssnObservedBy = ssnObservedBy;
+    }
+
+    public Measure withSsnObservedBy(String ssnObservedBy) {
+        this.ssnObservedBy = ssnObservedBy;
         return this;
     }
 

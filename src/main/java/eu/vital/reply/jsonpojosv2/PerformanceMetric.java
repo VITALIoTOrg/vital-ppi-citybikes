@@ -18,19 +18,20 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "@context",
-    "uri",
+    "id",
     "type",
     "ssn:observationProperty",
     "ssn:observationResultTime",
     "ssn:observationQuality",
+    "ssn:featureOfInterest",
     "ssn:observationResult"
 })
 public class PerformanceMetric {
 
     @JsonProperty("@context")
     private String Context;
-    @JsonProperty("uri")
-    private String uri;
+    @JsonProperty("id")
+    private String id;
     @JsonProperty("type")
     private String type;
     @JsonProperty("ssn:observationProperty")
@@ -39,6 +40,8 @@ public class PerformanceMetric {
     private SsnObservationResultTime_ ssnObservationResultTime;
     @JsonProperty("ssn:observationQuality")
     private SsnObservationQuality_ ssnObservationQuality;
+    @JsonProperty("ssn:featureOfInterest")
+    private String ssnFeatureOfInterest;
     @JsonProperty("ssn:observationResult")
     private SsnObservationResult_ ssnObservationResult;
     @JsonIgnore
@@ -72,25 +75,25 @@ public class PerformanceMetric {
     /**
      * 
      * @return
-     *     The uri
+     *     The id
      */
-    @JsonProperty("uri")
-    public String getUri() {
-        return uri;
+    @JsonProperty("id")
+    public String getId() {
+        return id;
     }
 
     /**
      * 
-     * @param uri
-     *     The uri
+     * @param id
+     *     The id
      */
-    @JsonProperty("uri")
-    public void setUri(String uri) {
-        this.uri = uri;
+    @JsonProperty("id")
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public PerformanceMetric withUri(String uri) {
-        this.uri = uri;
+    public PerformanceMetric withId(String id) {
+        this.id = id;
         return this;
     }
 
@@ -191,6 +194,31 @@ public class PerformanceMetric {
 
     public PerformanceMetric withSsnObservationQuality(SsnObservationQuality_ ssnObservationQuality) {
         this.ssnObservationQuality = ssnObservationQuality;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The ssnFeatureOfInterest
+     */
+    @JsonProperty("ssn:featureOfInterest")
+    public String getSsnFeatureOfInterest() {
+        return ssnFeatureOfInterest;
+    }
+
+    /**
+     * 
+     * @param ssnFeatureOfInterest
+     *     The ssn:featureOfInterest
+     */
+    @JsonProperty("ssn:featureOfInterest")
+    public void setSsnFeatureOfInterest(String ssnFeatureOfInterest) {
+        this.ssnFeatureOfInterest = ssnFeatureOfInterest;
+    }
+
+    public PerformanceMetric withSsnFeatureOfInterest(String ssnFeatureOfInterest) {
+        this.ssnFeatureOfInterest = ssnFeatureOfInterest;
         return this;
     }
 

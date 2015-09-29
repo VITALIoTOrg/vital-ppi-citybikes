@@ -1,12 +1,12 @@
 {
    "@context":"http://vital-iot.org/contexts/measurement.jsonld",
-   "uri":"http://www.example.com/iot/{id}/perf/memUsed",
+   "id":"http://www.example.com/iot/{id}/perf/memUsed",
    "type":"ssn:Observation",
    "ssn:observationProperty":{
-      "type":"<ontology uri>/MemUsage"
+      "type":"vital:MemUsage"
    },
    "ssn:observationResultTime":{
-      "inXSDDateTime":"2014-08-20T16:47:32+01:00"
+      "time:inXSDDateTime":"2014-08-20T16:47:32+01:00"
    },
    "ssn:observationQuality":{
       "ssn:hasMeasurementProperty":{
@@ -14,8 +14,9 @@
          "hasValue":"HighReliability"
       }
    },
+   "ssn:featureOfInterest": "http://example.com",
    "ssn:observationResult":{
-      "type":"memoryMetric",
+      "type":"ssn:ObservationValue",
       "ssn:hasValue":{
          "type":"ssn:ObservationValue",
          "value":"233333",
