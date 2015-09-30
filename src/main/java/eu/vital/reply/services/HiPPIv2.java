@@ -254,7 +254,7 @@ public class HiPPIv2 {
         List<String>pms = metricRequest.getMetric();
         len = pms.size();
         for(i = 0; i < len; i++) {
-            pm = pms.get(i).replaceAll("http://vital-iot.eu/ontology/ns/", "");
+            pm = pms.get(i).replaceAll("http://" + this.ontBaseUri, "");
 
             PerformanceMetric metric = null;
             if (pm.contains("memUsed")) {
@@ -491,7 +491,7 @@ public class HiPPIv2 {
             String currentType;
             Service tmpService;
             for (i = 0; i < requestedType.size(); i++) {
-                currentType = requestedType.get(i).replaceAll("http://vital-iot.eu/ontology/ns/", "");
+                currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
                 if (currentType.contains("ObservationService")) {
                     tmpService = this.createMonitoringService();
                     if(!services.contains(tmpService)) {
@@ -589,7 +589,7 @@ public class HiPPIv2 {
             String currentType;
             Sensor tmpSensor;
             for (i = 0; i < requestedType.size(); i++) {
-                currentType = requestedType.get(i).replaceAll("http://vital-iot.eu/ontology/ns/", "");
+                currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
                 if (currentType.contains("MonitoringSensor")) {
                     tmpSensor = this.createMonitoringSensor();
                     if(!sensors.contains(tmpSensor)) {
@@ -757,7 +757,7 @@ public class HiPPIv2 {
                 }
 
                 // check if the sensor has the requested property
-                String property = observationRequest.getProperty().replaceAll("http://vital-iot.eu/ontology/ns/", "");
+                String property = observationRequest.getProperty().replaceAll("http://" + this.ontBaseUri, "");
 
                 if (!this.checkTrafficProperty(currentSensor, property)) {
                     return "{\n" +
@@ -1454,7 +1454,7 @@ public class HiPPIv2 {
         m.setType("ssn:Observation");
 
         SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
-        ssnObservationProperty.setType("http://vital-iot.eu/ontology/ns/" + property);
+        ssnObservationProperty.setType("http://" + this.ontBaseUri + property);
 
         m.setSsnObservationProperty(ssnObservationProperty);
 
@@ -1540,7 +1540,7 @@ public class HiPPIv2 {
         m.setType("ssn:Observation");
 
         SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
-        ssnObservationProperty.setType("http://vital-iot.eu/ontology/ns/" + property);
+        ssnObservationProperty.setType("http://" + this.ontBaseUri + property);
 
         m.setSsnObservationProperty(ssnObservationProperty);
 
