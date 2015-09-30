@@ -448,7 +448,7 @@ public class HiPPIv2 {
             Service tmpService;
             for (i = 0; i < requestedType.size(); i++) {
                 currentType = requestedType.get(i).replaceAll("http://vital-iot.eu/ontology/ns/", "");
-                if (currentType.contains("MonitoringService")) {
+                if (currentType.contains("ObservationService")) {
                     tmpService = this.createMonitoringService();
                     if(!services.contains(tmpService)) {
                         services.add(tmpService);
@@ -460,7 +460,7 @@ public class HiPPIv2 {
             for (i = 0; i < requestedService.size(); i++) {
                 currentId = requestedService.get(i).replaceAll(this.transfProt + this.symbolicUri + "service/", "");
 
-                if (currentId.contains("monitoring")) {
+                if (currentId.contains("observation")) {
                     tmpService = this.createMonitoringService();
                     if(!services.contains(tmpService)) {
                         services.add(tmpService);
