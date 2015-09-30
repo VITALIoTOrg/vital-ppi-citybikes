@@ -19,37 +19,37 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "configurationOptions"
+    "parameters"
 })
-public class ConfigurationOptionsReqBody {
+public class ConfigurationReqBody {
 
-    @JsonProperty("configurationOptions")
-    private List<ConfigurationOption_> configurationOptions = new ArrayList<ConfigurationOption_>();
+    @JsonProperty("parameters")
+    private List<Parameter_> parameters = new ArrayList<Parameter_>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The configurationOptions
+     *     The parameters
      */
-    @JsonProperty("configurationOptions")
-    public List<ConfigurationOption_> getConfigurationOptions() {
-        return configurationOptions;
+    @JsonProperty("parameters")
+    public List<Parameter_> getParameters() {
+        return parameters;
     }
 
     /**
      * 
-     * @param configurationOptions
-     *     The configurationOptions
+     * @param parameters
+     *     The parameters
      */
-    @JsonProperty("configurationOptions")
-    public void setConfigurationOptions(List<ConfigurationOption_> configurationOptions) {
-        this.configurationOptions = configurationOptions;
+    @JsonProperty("parameters")
+    public void setParameters(List<Parameter_> parameters) {
+        this.parameters = parameters;
     }
 
-    public ConfigurationOptionsReqBody withConfigurationOptions(List<ConfigurationOption_> configurationOptions) {
-        this.configurationOptions = configurationOptions;
+    public ConfigurationReqBody withParameters(List<Parameter_> parameters) {
+        this.parameters = parameters;
         return this;
     }
 
@@ -78,7 +78,7 @@ public class ConfigurationOptionsReqBody {
         this.additionalProperties.put(name, value);
     }
 
-    public ConfigurationOptionsReqBody withAdditionalProperty(String name, Object value) {
+    public ConfigurationReqBody withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }

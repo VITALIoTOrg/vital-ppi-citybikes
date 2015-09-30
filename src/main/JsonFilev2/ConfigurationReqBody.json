@@ -1,5 +1,5 @@
 {
-    "configurationOptions": [
+    "parameters": [
         {
             "name": "c1",
             "value": "new value v1"

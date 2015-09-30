@@ -265,28 +265,28 @@ public class HiPPIv2 {
     */
 
 
-    @Path("/configurationOptions")
+    @Path("/configuration")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getConfigurationOptions() throws Exception {
+    public String getConfiguration() throws Exception {
 
         String info = uriInfo.getBaseUri().toString();
 
         String out = "";
 
-        ConfigurationOptionsGetBody response = new ConfigurationOptionsGetBody();
+        ConfigurationGetBody response = new ConfigurationGetBody();
 
-        ConfigurationOption configurationOption = new ConfigurationOption();
-        List<ConfigurationOption> configurationOptions = new ArrayList<>();
+        Parameter parameter = new Parameter();
+        List<Parameter> parameters = new ArrayList<>();
 
-        configurationOption.setName("logVerbosity");
-        configurationOption.setValue(this.hiReplySvc.getSnapshot().getTaskManager().getLogsPriorityLevel());
-        configurationOption.setType(this.transfProt + this.ontBaseUri + "string");
-        configurationOption.setPermissions("rw");
+        parameter.setName(this.logVerbosity);
+        parameter.setValue(this.hiReplySvc.getSnapshot().getTaskManager().getLogsPriorityLevel());
+        parameter.setType("http://www.w3.org/2001/XMLSchema#string");
+        parameter.setPermissions("rw");
 
-        configurationOptions.add(configurationOption);
+        parameters.add(parameter);
 
-        response.setConfigurationOptions(configurationOptions);
+        response.setParameters(parameters);
 
         try {
             out = JsonUtils.serializeJson(response);
@@ -299,17 +299,17 @@ public class HiPPIv2 {
         return out;
     }
 
-
-    @Path("/configurationOptions")
+    @Path("/configuration")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response setConfigurationOptions(String bodyRequest) {
+    public Response setConfiguration(String bodyRequest) {
+        int i;
 
-        ConfigurationOptionsReqBody configurationOptionsReqBody = null;
-        boolean esito = false;
+        ConfigurationReqBody configurationReqBody = null;
+        boolean success = false;
 
         try {
-            configurationOptionsReqBody = (ConfigurationOptionsReqBody) JsonUtils.deserializeJson(bodyRequest, ConfigurationOptionsReqBody.class);
+            configurationReqBody = (ConfigurationReqBody) JsonUtils.deserializeJson(bodyRequest, ConfigurationReqBody.class);
         } catch (IOException e) {
             this.logger.error("setConfigurationOptions -  error parsing request header");
             return Response.serverError().build();
@@ -317,21 +317,21 @@ public class HiPPIv2 {
 
         String taskManagerServiceId = this.hiReplySvc.getSnapshot().getTaskManager().getID();
 
-        List<ConfigurationOption_> configList = configurationOptionsReqBody.getConfigurationOptions();
+        List<Parameter_> configList = configurationReqBody.getParameters();
 
-        for (int i = 0; i<configList.size(); i++) {
-            String currentConfigurationOptions = configList.get(i).getName();
-            if (currentConfigurationOptions.equals(this.logVerbosity)) {
+        for(i = 0; i < configList.size(); i++) {
+            String currentConfiguration = configList.get(i).getName();
+            if(currentConfiguration.equals(this.logVerbosity)) {
                 String logsPriorityValue = configList.get(i).getValue().toUpperCase();
                 try {
-                    esito = this.hiReplySvc.setPropertyValue(taskManagerServiceId,hiLogVerbositySetting,logsPriorityValue);
+                    success = this.hiReplySvc.setPropertyValue(taskManagerServiceId, hiLogVerbositySetting, logsPriorityValue);
                 } catch (Exception e) {
-                    esito = false;
+                    success = false;
                 }
             }
         }
 
-        if (esito) {
+        if(success) {
             return Response.ok().build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();

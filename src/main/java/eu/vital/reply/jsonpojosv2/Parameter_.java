@@ -18,20 +18,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "name",
-    "value",
-    "type",
-    "permissions"
+    "value"
 })
-public class ConfigurationOption {
+public class Parameter_ {
 
     @JsonProperty("name")
     private String name;
     @JsonProperty("value")
     private String value;
-    @JsonProperty("type")
-    private String type;
-    @JsonProperty("permissions")
-    private String permissions;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -55,7 +49,7 @@ public class ConfigurationOption {
         this.name = name;
     }
 
-    public ConfigurationOption withName(String name) {
+    public Parameter_ withName(String name) {
         this.name = name;
         return this;
     }
@@ -80,58 +74,8 @@ public class ConfigurationOption {
         this.value = value;
     }
 
-    public ConfigurationOption withValue(String value) {
+    public Parameter_ withValue(String value) {
         this.value = value;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The type
-     */
-    @JsonProperty("type")
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * 
-     * @param type
-     *     The type
-     */
-    @JsonProperty("type")
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public ConfigurationOption withType(String type) {
-        this.type = type;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The permissions
-     */
-    @JsonProperty("permissions")
-    public String getPermissions() {
-        return permissions;
-    }
-
-    /**
-     * 
-     * @param permissions
-     *     The permissions
-     */
-    @JsonProperty("permissions")
-    public void setPermissions(String permissions) {
-        this.permissions = permissions;
-    }
-
-    public ConfigurationOption withPermissions(String permissions) {
-        this.permissions = permissions;
         return this;
     }
 
@@ -160,7 +104,7 @@ public class ConfigurationOption {
         this.additionalProperties.put(name, value);
     }
 
-    public ConfigurationOption withAdditionalProperty(String name, Object value) {
+    public Parameter_ withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
