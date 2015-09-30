@@ -230,41 +230,6 @@ public class HiPPIv2 {
 
     }
 
-    /*
-    test services for:
-        - pending requests (/fool)
-        - error requests (/exc)
-
-    @Path("/fool")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getFool() throws InterruptedException {
-
-        Thread.sleep(60000);
-
-        return "{\n" +
-                "\"fooled\": \"fooled service\"\n"+
-                "}";
-
-    }
-
-    @Path("/exc")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getExc() throws Exception {
-        String out = "";
-
-        try {
-            int a = 1/0;
-        } catch (Exception e) {
-            throw new Exception("eccezione di test");
-        }
-
-        return out;
-    }
-    */
-
-
     @Path("/configuration")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
