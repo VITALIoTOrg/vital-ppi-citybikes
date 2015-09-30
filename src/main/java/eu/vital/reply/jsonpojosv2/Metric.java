@@ -20,7 +20,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
     "type",
     "id"
 })
-public class SsnObserf_ {
+public class Metric {
 
     @JsonProperty("type")
     private String type;
@@ -49,7 +49,7 @@ public class SsnObserf_ {
         this.type = type;
     }
 
-    public SsnObserf_ withType(String type) {
+    public Metric withType(String type) {
         this.type = type;
         return this;
     }
@@ -74,7 +74,7 @@ public class SsnObserf_ {
         this.id = id;
     }
 
-    public SsnObserf_ withId(String id) {
+    public Metric withId(String id) {
         this.id = id;
         return this;
     }
@@ -104,7 +104,7 @@ public class SsnObserf_ {
         this.additionalProperties.put(name, value);
     }
 
-    public SsnObserf_ withAdditionalProperty(String name, Object value) {
+    public Metric withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }

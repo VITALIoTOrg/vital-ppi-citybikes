@@ -45,7 +45,7 @@ public class Sensor {
     @JsonProperty("hasLastKnownLocation")
     private HasLastKnownLocation hasLastKnownLocation;
     @JsonProperty("ssn:observes")
-    private List<SsnObserf_> ssnObserves = new ArrayList<SsnObserf_>();
+    private List<SsnObserf> ssnObserves = new ArrayList<SsnObserf>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -230,7 +230,7 @@ public class Sensor {
      *     The ssnObserves
      */
     @JsonProperty("ssn:observes")
-    public List<SsnObserf_> getSsnObserves() {
+    public List<SsnObserf> getSsnObserves() {
         return ssnObserves;
     }
 
@@ -240,11 +240,11 @@ public class Sensor {
      *     The ssn:observes
      */
     @JsonProperty("ssn:observes")
-    public void setSsnObserves(List<SsnObserf_> ssnObserves) {
+    public void setSsnObserves(List<SsnObserf> ssnObserves) {
         this.ssnObserves = ssnObserves;
     }
 
-    public Sensor withSsnObserves(List<SsnObserf_> ssnObserves) {
+    public Sensor withSsnObserves(List<SsnObserf> ssnObserves) {
         this.ssnObserves = ssnObserves;
         return this;
     }

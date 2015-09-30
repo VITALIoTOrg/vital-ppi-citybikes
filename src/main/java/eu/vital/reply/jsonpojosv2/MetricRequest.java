@@ -1,7 +1,9 @@
 
 package eu.vital.reply.jsonpojosv2;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -17,65 +19,37 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "type",
-    "id"
+    "metric"
 })
-public class SsnObserf {
+public class MetricRequest {
 
-    @JsonProperty("type")
-    private String type;
-    @JsonProperty("id")
-    private String id;
+    @JsonProperty("metric")
+    private List<String> metric = new ArrayList<String>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The type
+     *     The metric
      */
-    @JsonProperty("type")
-    public String getType() {
-        return type;
+    @JsonProperty("metric")
+    public List<String> getMetric() {
+        return metric;
     }
 
     /**
      * 
-     * @param type
-     *     The type
+     * @param metric
+     *     The metric
      */
-    @JsonProperty("type")
-    public void setType(String type) {
-        this.type = type;
+    @JsonProperty("metric")
+    public void setMetric(List<String> metric) {
+        this.metric = metric;
     }
 
-    public SsnObserf withType(String type) {
-        this.type = type;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The id
-     */
-    @JsonProperty("id")
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * 
-     * @param id
-     *     The id
-     */
-    @JsonProperty("id")
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public SsnObserf withId(String id) {
-        this.id = id;
+    public MetricRequest withMetric(List<String> metric) {
+        this.metric = metric;
         return this;
     }
 
@@ -104,7 +78,7 @@ public class SsnObserf {
         this.additionalProperties.put(name, value);
     }
 
-    public SsnObserf withAdditionalProperty(String name, Object value) {
+    public MetricRequest withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }

@@ -165,58 +165,58 @@ public class HiPPIv2 {
         return out;
     }
 
-    @Path("/performance")
+    @Path("/performance/metadata")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getPerformanceMetrics() throws Exception {
+    public String getSupportedPerformanceMetrics() throws Exception {
 
         String out = "";
 
         PerformaceMetricsMetadata performaceMetricsMetadata = new PerformaceMetricsMetadata();
 
-        List<SsnObserf> list = new ArrayList<>();
+        List<Metric> list = new ArrayList<>();
 
-        SsnObserf ssnObserf = new SsnObserf();
-        ssnObserf.setType(this.transfProt+this.ontBaseUri+"memUsed");
-        ssnObserf.setUri(this.transfProt+this.symbolicUri+"ico/PerformanceIco/"+"memUsed");
-        list.add(ssnObserf);
+        Metric metric = new Metric();
+        metric.setType(this.transfProt + this.ontBaseUri + "memUsed");
+        metric.setId(this.transfProt + this.symbolicUri + "sensor/monitoring/memUsed");
+        list.add(metric);
 
-        ssnObserf = new SsnObserf();
-        ssnObserf.setType(this.transfProt+this.ontBaseUri+"memAvailable");
-        ssnObserf.setUri(this.transfProt+this.symbolicUri+"ico/PerformanceIco/"+"memAvailable");
-        list.add(ssnObserf);
+        metric = new Metric();
+        metric.setType(this.transfProt + this.ontBaseUri + "memAvailable");
+        metric.setId(this.transfProt + this.symbolicUri + "sensor/monitoring/memAvailable");
+        list.add(metric);
 
-        ssnObserf = new SsnObserf();
-        ssnObserf.setType(this.transfProt+this.ontBaseUri+"diskAvailable");
-        ssnObserf.setUri(this.transfProt+this.symbolicUri+"ico/PerformanceIco/"+"memAvailable");
-        list.add(ssnObserf);
+        metric = new Metric();
+        metric.setType(this.transfProt + this.ontBaseUri + "diskAvailable");
+        metric.setId(this.transfProt + this.symbolicUri + "sensor/monitoring/diskAvailable");
+        list.add(metric);
 
-        ssnObserf = new SsnObserf();
-        ssnObserf.setType(this.transfProt+this.ontBaseUri+"cpuUsage");
-        ssnObserf.setUri(this.transfProt+this.symbolicUri+"ico/PerformanceIco/"+"memAvailable");
-        list.add(ssnObserf);
+        metric = new Metric();
+        metric.setType(this.transfProt + this.ontBaseUri + "sysLoad");
+        metric.setId(this.transfProt + this.symbolicUri + "sensor/monitoring/sysLoad");
+        list.add(metric);
 
-        ssnObserf = new SsnObserf();
-        ssnObserf.setType(this.transfProt+this.ontBaseUri+"servedRequest");
-        ssnObserf.setUri(this.transfProt+this.symbolicUri+"ico/PerformanceIco/"+"memAvailable");
-        list.add(ssnObserf);
+        metric = new Metric();
+        metric.setType(this.transfProt + this.ontBaseUri + "servedRequest");
+        metric.setId(this.transfProt + this.symbolicUri + "sensor/monitoring/servedRequest");
+        list.add(metric);
 
-        ssnObserf = new SsnObserf();
-        ssnObserf.setType(this.transfProt+this.ontBaseUri+"errors");
-        ssnObserf.setUri(this.transfProt+this.symbolicUri+"ico/PerformanceIco/"+"memAvailable");
-        list.add(ssnObserf);
+        metric = new Metric();
+        metric.setType(this.transfProt + this.ontBaseUri + "errors");
+        metric.setId(this.transfProt + this.symbolicUri + "sensor/monitoring/errors");
+        list.add(metric);
 
-        ssnObserf = new SsnObserf();
-        ssnObserf.setType(this.transfProt+this.ontBaseUri+"upTime");
-        ssnObserf.setUri(this.transfProt+this.symbolicUri+"ico/PerformanceIco/"+"memAvailable");
-        list.add(ssnObserf);
+        metric = new Metric();
+        metric.setType(this.transfProt + this.ontBaseUri + "sysUptime");
+        metric.setId(this.transfProt + this.symbolicUri + "sensor/monitoring/sysUptime");
+        list.add(metric);
 
-        ssnObserf = new SsnObserf();
-        ssnObserf.setType(this.transfProt+this.ontBaseUri+"pendingRequests");
-        ssnObserf.setUri(this.transfProt+this.symbolicUri+"ico/PerformanceIco/"+"memAvailable");
-        list.add(ssnObserf);
+        metric = new Metric();
+        metric.setType(this.transfProt + this.ontBaseUri + "pendingRequests");
+        metric.setId(this.transfProt + this.symbolicUri + "sensor/monitoring/pendingRequest");
+        list.add(metric);
 
-        performaceMetricsMetadata.setSsnObserves(list);
+        performaceMetricsMetadata.setMetrics(list);
 
         try {
             out = JsonUtils.serializeJson(performaceMetricsMetadata);
@@ -227,7 +227,72 @@ public class HiPPIv2 {
         }
 
         return out;
+    }
 
+    @Path("/performance/observation")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getPerformanceMetrics(String bodyRequest) throws Exception {
+
+        int i, len;
+        MetricRequest metricRequest = null;
+        ArrayList<PerformanceMetric> metrics = new ArrayList<>();
+        String pm;
+
+        String out = "";
+
+        try {
+            metricRequest = (MetricRequest) JsonUtils.deserializeJson(bodyRequest, MetricRequest.class);
+        } catch (IOException e) {
+            this.logger.error("GET METRIC - IOException parsing the json request");
+            return "{\n" +
+                    "\"error\": \"Malformed request body\"\n"+
+                    "}";
+        }
+
+        List<String>pms = metricRequest.getMetric();
+        len = pms.size();
+        for(i = 0; i < len; i++) {
+            pm = pms.get(i).replaceAll("http://vital-iot.eu/ontology/ns/", "");
+
+            PerformanceMetric metric = null;
+            if (pm.contains("memUsed")) {
+                metric = this.getMemoryUsed();
+            } else if (pm.toLowerCase().contains("memAvailable")) {
+                metric = this.getMemoryAvailable();
+            } else if (pm.toLowerCase().contains("diskAvailable")) {
+                metric = this.getDiskAvailable();
+            } else if (pm.toLowerCase().contains("sysLoad")) {
+                metric = this.getCpuUsage();
+            } else if (pm.toLowerCase().contains("servedRequest")) {
+                metric = this.getServedRequest();
+            } else if (pm.toLowerCase().contains("errors")) {
+                metric = this.getErrors();
+            } else if (pm.toLowerCase().contains("sysUptime")) {
+                metric = this.getUpTime();
+            } else if (pm.toLowerCase().contains("pendingRequests")) {
+                metric = this.getPendingRequest();
+            } else {
+                return "{\n" +
+                        "\"error\": \"Performance " + pm.toLowerCase() + " not present.\"\n" +
+                        "}";
+            }
+
+            if (metric != null) {
+                metrics.add(metric);
+            }
+        }
+
+        try {
+            out = JsonUtils.serializeJson(metrics);
+        } catch (IOException e) {
+            this.logger.error("GET METRIC - serialize to json response IO Exception");
+            throw new Exception("GET METRIC - serialize to json response IO Exception");
+            //e.printStackTrace();
+        }
+
+        return out;
     }
 
     @Path("/configuration")
@@ -621,7 +686,10 @@ public class HiPPIv2 {
         int i, s, len;
         ObservationRequest observationRequest = null;
         ArrayList<Measure> measures = new ArrayList<>();
+        ArrayList<PerformanceMetric> metrics = new ArrayList<>();
         String id;
+
+        String out = "";
 
         try {
             observationRequest = (ObservationRequest) JsonUtils.deserializeJson(bodyRequest, ObservationRequest.class);
@@ -639,30 +707,45 @@ public class HiPPIv2 {
 
             if (id.contains("monitoring")) {
                 // Monitoring sensor
-
+                PerformanceMetric metric = null;
                 // get the requested property
                 String requestedProperty = observationRequest.getProperty();
                 if (requestedProperty.contains("memUsed")) {
-                    return this.getMemoryUsed();
+                    metric = this.getMemoryUsed();
                 } else if (requestedProperty.contains("memAvailable")) {
-                    return this.getMemoryAvailable();
+                    metric = this.getMemoryAvailable();
                 } else if (requestedProperty.contains("diskAvailable")) {
-                    return this.getDiskAvailable();
+                    metric = this.getDiskAvailable();
                 } else if (requestedProperty.contains("sysLoad")) {
-                    return this.getCpuUsage();
+                    metric = this.getCpuUsage();
                 } else if (requestedProperty.contains("servedRequest")) {
-                    return this.getServedRequest();
+                    metric = this.getServedRequest();
                 } else if (requestedProperty.contains("errors")) {
-                    return this.getErrors();
+                    metric = this.getErrors();
                 } else if (requestedProperty.contains("sysUptime")) {
-                    return this.getUpTime();
+                    metric = this.getUpTime();
                 } else if (requestedProperty.contains("pendingRequests")) {
-                    return this.getPendingRequest();
+                    metric = this.getPendingRequest();
                 } else {
                     return "{\n" +
                             "\"error\": \"Performance " + requestedProperty + " not present.\"\n" +
                             "}";
                 }
+
+                if(metric != null) {
+                    metrics.add(metric);
+                }
+
+                try {
+                    out = JsonUtils.serializeJson(metrics);
+                } catch (IOException e) {
+                    this.logger.error("GET OBSERVATION - serialize to json response IO Exception");
+                    throw new Exception("GET OBSERVATION - serialize to json response IO Exception");
+                    //e.printStackTrace();
+                }
+
+                return out;
+
             } else {
                 // check if the sensor exists
                 ServiceList.TrafficSensor currentSensor = this.retrieveSensor(id);
@@ -761,8 +844,6 @@ public class HiPPIv2 {
             }
         }
 
-        String out = "";
-
         try {
             out = JsonUtils.serializeJson(measures);
         } catch (IOException e) {
@@ -774,8 +855,7 @@ public class HiPPIv2 {
         return out;
     }
 
-    private String getPendingRequest() throws Exception {
-        String out = "";
+    private PerformanceMetric getPendingRequest() throws Exception {
 
         /*
         Sottraggo 1 xke a questo punto la corrente resources è considerata in pending
@@ -821,20 +901,10 @@ public class HiPPIv2 {
 
         pendingReq.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
-        try {
-            out = JsonUtils.serializeJson(pendingReq);
-        } catch (IOException e) {
-            this.logger.error("pendingReq - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("pendingReq - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
-        }
-
-        return out;
+        return pendingReq;
     }
 
-    private String getUpTime() throws Exception {
-
-        String out = "";
+    private PerformanceMetric getUpTime() throws Exception {
 
         Date now = new Date();
 
@@ -878,20 +948,10 @@ public class HiPPIv2 {
 
         sysUpTime.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
-        try {
-            out = JsonUtils.serializeJson(sysUpTime);
-        } catch (IOException e) {
-            this.logger.error("upTime - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("upTime - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
-        }
-
-        return out;
+        return sysUpTime;
     }
 
-
-    private String getServedRequest() throws Exception {
-        String out = "";
+    private PerformanceMetric getServedRequest() throws Exception {
 
         /* aggiungo 1 al corrente. la callback aggiorna il numero solo
            a fine metodo, quindi senza il +1 il dato non sarebbe consistente
@@ -939,20 +999,10 @@ public class HiPPIv2 {
 
         servedRequest.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
-        try {
-            out = JsonUtils.serializeJson(servedRequest);
-        } catch (IOException e) {
-            this.logger.error("servedReq - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("servedReq - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
-        }
-
-        return out;
+        return servedRequest;
     }
 
-
-    private String getErrors() throws Exception {
-        String out = "";
+    private PerformanceMetric getErrors() throws Exception {
 
         requestError = StatCounter.getErrorNumber();
 
@@ -993,21 +1043,10 @@ public class HiPPIv2 {
 
         errors.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
-        try {
-            out = JsonUtils.serializeJson(errors);
-        } catch (IOException e) {
-            this.logger.error("errors - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("errors - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
-        }
-
-        return out;
+        return errors;
     }
 
-
-    private String getMemoryUsed() throws Exception {
-
-        String out = "";
+    private PerformanceMetric getMemoryUsed() throws Exception {
 
         ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
 
@@ -1049,21 +1088,10 @@ public class HiPPIv2 {
 
         memUsed.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
-        try {
-            out = JsonUtils.serializeJson(memUsed);
-        } catch (IOException e) {
-            this.logger.error("memUsed - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("memUsed - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
-        }
-
-        return out;
+        return memUsed;
     }
 
-
-    private String getMemoryAvailable() throws Exception {
-
-        String out = "";
+    private PerformanceMetric getMemoryAvailable() throws Exception {
 
         ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
 
@@ -1104,21 +1132,10 @@ public class HiPPIv2 {
 
         memAval.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
-        try {
-            out = JsonUtils.serializeJson(memAval);
-        } catch (IOException e) {
-            this.logger.error("memAvailable - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("memAvailable - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
-        }
-
-        return out;
+        return memAval;
     }
 
-
-    private String getCpuUsage() throws Exception {
-
-        String out = "";
+    private PerformanceMetric getCpuUsage() throws Exception {
 
         ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
 
@@ -1159,21 +1176,10 @@ public class HiPPIv2 {
 
         load.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
-        try {
-            out = JsonUtils.serializeJson(load);
-        } catch (IOException e) {
-            this.logger.error("cpuUsage - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("cpuUsage - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
-        }
-
-        return out;
+        return load;
     }
 
-
-    private String getDiskAvailable() throws Exception {
-
-        String out = "";
+    private PerformanceMetric getDiskAvailable() throws Exception {
 
         ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
 
@@ -1218,15 +1224,7 @@ public class HiPPIv2 {
 
         diskAval.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
-        try {
-            out = JsonUtils.serializeJson(diskAval);
-        } catch (IOException e) {
-            this.logger.error("diskAvailable - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("diskAvailable - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
-        }
-
-        return out;
+        return diskAval;
     }
 
     /*
@@ -1319,14 +1317,14 @@ public class HiPPIv2 {
         sensor.setHasLastKnownLocation(location);
 
         int dirCount = currentSensor.getDirectionCount();
-        List<SsnObserf_> observedProperties = new ArrayList<>();
+        List<SsnObserf> observedProperties = new ArrayList<>();
 
         if (dirCount == 1) {
             //speed e color
-            SsnObserf_ speed = new SsnObserf_();
+            SsnObserf speed = new SsnObserf();
             speed.setType("vital:" + this.speedProp);
             speed.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + this.speedProp);
-            SsnObserf_ color = new SsnObserf_();
+            SsnObserf color = new SsnObserf();
             color.setType("vital:" + this.colorProp);
             color.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + this.colorProp);
             observedProperties.add(speed);
@@ -1335,18 +1333,18 @@ public class HiPPIv2 {
 
         if (dirCount == 2) {
             //speed e color + reverse
-            SsnObserf_ speed = new SsnObserf_();
+            SsnObserf speed = new SsnObserf();
             speed.setType("vital:" + this.speedProp);
             speed.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + this.speedProp);
-            SsnObserf_ color = new SsnObserf_();
+            SsnObserf color = new SsnObserf();
             color.setType("vital:" + this.colorProp);
             color.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" +colorProp);
             observedProperties.add(speed);
             observedProperties.add(color);
-            SsnObserf_ revspeed = new SsnObserf_();
+            SsnObserf revspeed = new SsnObserf();
             revspeed.setType("vital:" + this.reverseSpeedProp);
             revspeed.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + this.reverseSpeedProp);
-            SsnObserf_ revcolor = new SsnObserf_();
+            SsnObserf revcolor = new SsnObserf();
             revcolor.setType("vital:" + this.reverseColorProp);
             revcolor.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + this.reverseColorProp);
             observedProperties.add(revspeed);
@@ -1388,44 +1386,44 @@ public class HiPPIv2 {
 
         sensor.setStatus("vital:Running");
 
-        List<SsnObserf_> observedProperties = new ArrayList<>();
+        List<SsnObserf> observedProperties = new ArrayList<>();
 
-        SsnObserf_ observedProperty = new SsnObserf_();
+        SsnObserf observedProperty = new SsnObserf();
         observedProperty.setType("vital:MemUsed");
         observedProperty.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" +"memUsed");
         observedProperties.add(observedProperty);
 
-        observedProperty = new SsnObserf_();
+        observedProperty = new SsnObserf();
         observedProperty.setType("vital:MemAvailable");
         observedProperty.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + "memAvailable");
         observedProperties.add(observedProperty);
 
-        observedProperty = new SsnObserf_();
+        observedProperty = new SsnObserf();
         observedProperty.setType("vital:DiskAvailable");
         observedProperty.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + "diskAvailable");
         observedProperties.add(observedProperty);
 
-        observedProperty = new SsnObserf_();
+        observedProperty = new SsnObserf();
         observedProperty.setType("vital:SysLoad");
         observedProperty.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + "sysLoad");
         observedProperties.add(observedProperty);
 
-        observedProperty = new SsnObserf_();
+        observedProperty = new SsnObserf();
         observedProperty.setType("vital:ServedRequest");
         observedProperty.setId(this.transfProt + this.symbolicUri + "sensor/" +id+ "/" + "servedRequest");
         observedProperties.add(observedProperty);
 
-        observedProperty = new SsnObserf_();
+        observedProperty = new SsnObserf();
         observedProperty.setType("vital:Errors");
         observedProperty.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + "errors");
         observedProperties.add(observedProperty);
 
-        observedProperty = new SsnObserf_();
+        observedProperty = new SsnObserf();
         observedProperty.setType("vital:SysUpTime");
         observedProperty.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + "sysUptime");
         observedProperties.add(observedProperty);
 
-        observedProperty = new SsnObserf_();
+        observedProperty = new SsnObserf();
         observedProperty.setType("vital:PendingRequests");
         observedProperty.setId(this.transfProt + this.symbolicUri + "sensor/" + id + "/" + "pendingRequests");
         observedProperties.add(observedProperty);
