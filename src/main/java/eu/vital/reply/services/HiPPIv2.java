@@ -392,6 +392,97 @@ public class HiPPIv2 {
     }
 
     /**
+     * Method that returns the metadata about the requested service(s). This method is optional.
+     * @param bodyRequest <br>
+     *            JSON-LD String with the body request <br>
+     *            { <br>
+     *              "id": <br>
+     *              [ <br>
+     *                  "http://example.com/service/1" <br>
+     *              ], <br>
+     *              "type": <br>
+     *              [ <br>
+     *                  "http://vital-iot.eu/ontology/ns/MonitoringService" <br>
+     *              ] <br>
+     *            } <br>
+     * If the id and type fields are omitted, all the serivices are requested <br>
+     * @return Returns a serialized String with the list of the requested services. <br>
+     */
+    @Path("/service/metadata")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getServiceMetadata(String bodyRequest) throws Exception {
+
+        int i, j;
+        SensorRequest serviceRequest = new SensorRequest(); // TODO rename type, it's the same
+
+        try {
+            serviceRequest = (SensorRequest) JsonUtils.deserializeJson(bodyRequest, SensorRequest.class);
+        } catch (IOException e) {
+            this.logger.error("GET SERVICE METADATA - IOException parsing the json request");
+            return "{\n" +
+                    "\"error\": \"Malformed request body\"\n"+
+                    "}";
+        }
+
+        List<String> requestedService = new ArrayList<>();
+        List<String> requestedType = new ArrayList<>();
+
+        try {
+            requestedService = serviceRequest.getId();
+            requestedType = serviceRequest.getType();
+        } catch (NullPointerException e) {
+            this.logger.error("/service/metadata IO Exception - Requested Sensor");
+            throw new Exception("/service/metadata IO Exception - Requested Sensor");
+            //e.printStackTrace();
+        }
+
+        List<Service> services = new ArrayList<>(); // output list
+
+        if ((requestedService.size() == 0) && (requestedType.size() == 0)) {
+            // then all the services must be returned
+            services.add(createMonitoringService());
+        } else {
+            String currentType;
+            Service tmpService;
+            for (i = 0; i < requestedType.size(); i++) {
+                currentType = requestedType.get(i).replaceAll("http://vital-iot.eu/ontology/ns/", "");
+                if (currentType.contains("MonitoringService")) {
+                    tmpService = this.createMonitoringService();
+                    if(!services.contains(tmpService)) {
+                        services.add(tmpService);
+                    }
+                }
+            }
+            // return only some selected services
+            String currentId;
+            for (i = 0; i < requestedService.size(); i++) {
+                currentId = requestedService.get(i).replaceAll(this.transfProt + this.symbolicUri + "service/", "");
+
+                if (currentId.contains("monitoring")) {
+                    tmpService = this.createMonitoringService();
+                    if(!services.contains(tmpService)) {
+                        services.add(tmpService);
+                    }
+                }
+            }
+        }
+
+        String out = "";
+
+        try {
+            out = JsonUtils.serializeJson(services);
+        } catch (IOException e) {
+            this.logger.error("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
+            //e.printStackTrace();
+        }
+
+        return out;
+    }
+
+    /**
      * Method that returns the metadata about the requested sensor(s). This method is mandatory.
      * @param bodyRequest <br>
      *            JSON-LD String with the body request <br>
@@ -423,7 +514,7 @@ public class HiPPIv2 {
         try {
             sensorRequest = (SensorRequest) JsonUtils.deserializeJson(bodyRequest, SensorRequest.class);
         } catch (IOException e) {
-            this.logger.error("GET OBSERVATION - IOException parsing the json request");
+            this.logger.error("GET SENSOR METADATA - IOException parsing the json request");
             return "{\n" +
                     "\"error\": \"Malformed request body\"\n"+
                     "}";
@@ -434,6 +525,7 @@ public class HiPPIv2 {
 
         try {
             requestedSensor = sensorRequest.getId();
+            requestedType = sensorRequest.getType();
         } catch (NullPointerException e) {
             this.logger.error("/sensor/metadata IO Exception - Requested Sensor");
             throw new Exception("/sensor/metadata IO Exception - Requested Sensor");
@@ -442,7 +534,7 @@ public class HiPPIv2 {
 
         List<Sensor> sensors = new ArrayList<>(); // output list
 
-        if (requestedSensor.size() == 0) {
+        if ((requestedSensor.size() == 0) && (requestedType.size() == 0)) {
             // then all the sensors must be returned
             List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshot().getTrafficSensor();
             for (i = 0; i < trafficSensors.size(); i++) {
@@ -453,7 +545,7 @@ public class HiPPIv2 {
             String currentType;
             Sensor tmpSensor;
             for (i = 0; i < requestedType.size(); i++) {
-                currentType = requestedSensor.get(i).replaceAll("http://vital-iot.eu/ontology/ns/", "");
+                currentType = requestedType.get(i).replaceAll("http://vital-iot.eu/ontology/ns/", "");
                 if (currentType.contains("MonitoringSensor")) {
                     tmpSensor = this.createMonitoringSensor();
                     if(!sensors.contains(tmpSensor)) {
@@ -1285,6 +1377,23 @@ public class HiPPIv2 {
         sensor.setSsnObserves(observedProperties);
 
         return sensor;
+    }
+
+    private Service createMonitoringService() {
+        Service monitoringService = new Service();
+
+        monitoringService.setContext("http://vital-iot.eu/contexts/service.jsonld");
+        monitoringService.setId(this.transfProt + this.symbolicUri + "service/observation");
+        monitoringService.setType("vital:ObservationService");
+        List<Operation> operations = new ArrayList<>();
+        Operation operation = new Operation();
+        operation.setType("vital:GetObservations");
+        operation.setHrestHasMethod("hrest:POST");
+        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "v2/sensor/observation");
+        operations.add(operation);
+        monitoringService.setOperations(operations);
+
+        return monitoringService;
     }
 
     private Sensor createMonitoringSensor() {
