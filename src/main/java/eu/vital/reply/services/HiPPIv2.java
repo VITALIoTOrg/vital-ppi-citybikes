@@ -165,7 +165,7 @@ public class HiPPIv2 {
         return out;
     }
 
-    @Path("/performance/metadata")
+    @Path("/system/performance")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getSupportedPerformanceMetrics() throws Exception {
@@ -229,7 +229,7 @@ public class HiPPIv2 {
         return out;
     }
 
-    @Path("/performance/observation")
+    @Path("/system/performance")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -486,16 +486,34 @@ public class HiPPIv2 {
 
         if ((requestedService.size() == 0) && (requestedType.size() == 0)) {
             // then all the services must be returned
+            services.add(createObservationService());
             services.add(createMonitoringService());
+            services.add(createConfigurationService());
         } else {
             String currentType;
             Service tmpService;
             for (i = 0; i < requestedType.size(); i++) {
                 currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
                 if (currentType.contains("ObservationService")) {
-                    tmpService = this.createMonitoringService();
+                    tmpService = this.createObservationService();
                     if(!services.contains(tmpService)) {
                         services.add(tmpService);
+                    }
+                }
+                else {
+                    if (currentType.contains("MonitoringService")) {
+                        tmpService = this.createMonitoringService();
+                        if (!services.contains(tmpService)) {
+                            services.add(tmpService);
+                        }
+                    }
+                    else {
+                        if (currentType.contains("ConfigurationService")) {
+                            tmpService = this.createConfigurationService();
+                            if (!services.contains(tmpService)) {
+                                services.add(tmpService);
+                            }
+                        }
                     }
                 }
             }
@@ -503,11 +521,26 @@ public class HiPPIv2 {
             String currentId;
             for (i = 0; i < requestedService.size(); i++) {
                 currentId = requestedService.get(i).replaceAll(this.transfProt + this.symbolicUri + "service/", "");
-
-                if (currentId.contains("observation")) {
-                    tmpService = this.createMonitoringService();
+                if(currentId.contains("observation")) {
+                    tmpService = this.createObservationService();
                     if(!services.contains(tmpService)) {
                         services.add(tmpService);
+                    }
+                }
+                else {
+                    if(currentId.contains("monitoring")) {
+                        tmpService = this.createMonitoringService();
+                        if(!services.contains(tmpService)) {
+                            services.add(tmpService);
+                        }
+                    }
+                    else {
+                        if(currentId.contains("configuration")) {
+                            tmpService = this.createConfigurationService();
+                            if(!services.contains(tmpService)) {
+                                services.add(tmpService);
+                            }
+                        }
                     }
                 }
             }
@@ -1356,17 +1389,63 @@ public class HiPPIv2 {
         return sensor;
     }
 
-    private Service createMonitoringService() {
-        Service monitoringService = new Service();
-
-        monitoringService.setContext("http://vital-iot.eu/contexts/service.jsonld");
-        monitoringService.setId(this.transfProt + this.symbolicUri + "service/observation");
-        monitoringService.setType("vital:ObservationService");
+    private Service createObservationService() {
+        Service observationService = new Service();
+        observationService.setContext("http://vital-iot.eu/contexts/service.jsonld");
+        observationService.setId(this.transfProt + this.symbolicUri + "service/observation");
+        observationService.setType("vital:ObservationService");
         List<Operation> operations = new ArrayList<>();
         Operation operation = new Operation();
         operation.setType("vital:GetObservations");
         operation.setHrestHasMethod("hrest:POST");
         operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "v2/sensor/observation");
+        operations.add(operation);
+        observationService.setOperations(operations);
+
+        return observationService;
+    }
+
+    private Service createConfigurationService() {
+        Service configurationService = new Service();
+        configurationService.setContext("http://vital-iot.eu/contexts/service.jsonld");
+        configurationService.setId(this.transfProt + this.symbolicUri + "service/configuration");
+        configurationService.setType("vital:ConfigurationService");
+        List<Operation> operations = new ArrayList<>();
+        Operation operation = new Operation();
+        operation.setType("vital:GetConfiguration");
+        operation.setHrestHasMethod("hrest:GET");
+        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "v2/configuration");
+        operations.add(operation);
+        operation = new Operation();
+        operation.setType("vital:SetConfiguration");
+        operation.setHrestHasMethod("hrest:POST");
+        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "v2/configuration");
+        operations.add(operation);
+        configurationService.setOperations(operations);
+
+        return configurationService;
+    }
+
+    private Service createMonitoringService() {
+        Service monitoringService = new Service();
+        monitoringService.setContext("http://vital-iot.eu/contexts/service.jsonld");
+        monitoringService.setId(this.transfProt + this.symbolicUri + "service/monitoring");
+        monitoringService.setType("vital:MonitoringService");
+        List<Operation> operations = new ArrayList<>();
+        Operation operation = new Operation();
+        operation.setType("vital:GetSystemStatus");
+        operation.setHrestHasMethod("hrest:GET");
+        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "v2/system/status");
+        operations.add(operation);
+        operation = new Operation();
+        operation.setType("vital:GetSupportedPerformanceMetrics");
+        operation.setHrestHasMethod("hrest:GET");
+        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "v2/system/performance");
+        operations.add(operation);
+        operation = new Operation();
+        operation.setType("vital:GetPerformanceMetrics");
+        operation.setHrestHasMethod("hrest:POST");
+        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "v2/system/performance");
         operations.add(operation);
         monitoringService.setOperations(operations);
 
