@@ -339,16 +339,10 @@ public class HiPPIv2 {
     }
 
     /**
-     * Method that returns the Lifecycle information of the system. This method is not mandatory.
-     * @param bodyRequest <br>
-     *            JSON-LD String with the body request <br>
-     *            { <br>
-     *              "@context": "http://vital-iot.org/contexts/query.jsonld", <br>
-     *              "type": "vital:iotSystem" <br>
-     *            } <br>
-     * @return Returns a string with the serialized JSON-LD Lifecycle information.
+     * Method that returns the status of the system. This method is not mandatory.
+     * @return Returns a string with the serialized JSON-LD status information.
      */
-    @Path("/external/lifecycle_information")
+    @Path("/system/status")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -359,24 +353,44 @@ public class HiPPIv2 {
         try {
             emptyRequest = (EmptyRequest) JsonUtils.deserializeJson(bodyRequest, EmptyRequest.class);
         } catch (IOException e) {
-            this.logger.error("lifecycle information -  error parsing request header");
+            this.logger.error("system status - error parsing request header");
             return "{\n" +
                     "\"error\": \"Malformed request body\"\n"+
                     "}";
         }
-        // TODO --> check sulla request, trattamento di eventuali filtri
 
         ServiceList system = hiReplySvc.getSnapshot();
-        LifecycleInformation lifecycleInformation = new LifecycleInformation();
+        PerformanceMetric lifecycleInformation = new PerformanceMetric();
 
-        lifecycleInformation.setContext("http://vital.iot.org/system.jsonld");
-        lifecycleInformation.setUri(system.getIoTSystem().getUri());
+        Date date = new Date();
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
+        lifecycleInformation.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
+        lifecycleInformation.setId(this.transfProt + this.symbolicUri + "sensor/monitoring/observation");
+        lifecycleInformation.setType("ssn:Observation");
+
+        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+        ssnObservationProperty_.setType("vital:OperationalState");
+        lifecycleInformation.setSsnObservationProperty(ssnObservationProperty_);
+
+        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+        lifecycleInformation.setSsnObservationResultTime(ssnObservationResultTime_);
+
+        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+        ssnObservationResult_.setType("ssn:SensorOutput");
+        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+        ssnHasValue_.setType("ssn:ObservationValue");
         if (system.getIoTSystem().getStatus().equals("Running")) {
-            lifecycleInformation.setStatus("vital:Running");
+            ssnHasValue_.setValue("vital:Running");
         } else {
-            lifecycleInformation.setStatus("vital:Unavailable");
+            ssnHasValue_.setValue("vital:Unavailable");
         }
+        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+        lifecycleInformation.setSsnObservationResult(ssnObservationResult_);
+
+        lifecycleInformation.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
         String out = "";
 
