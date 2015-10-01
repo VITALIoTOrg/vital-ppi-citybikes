@@ -374,20 +374,8 @@ public class HiPPIv2 {
      */
     @Path("/system/status")
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String getLifecycleInformation(String bodyRequest) throws Exception {
-
-        EmptyRequest emptyRequest = null;
-
-        try {
-            emptyRequest = (EmptyRequest) JsonUtils.deserializeJson(bodyRequest, EmptyRequest.class);
-        } catch (IOException e) {
-            this.logger.error("system status - error parsing request header");
-            return "{\n" +
-                    "\"error\": \"Malformed request body\"\n"+
-                    "}";
-        }
 
         ServiceList system = hiReplySvc.getSnapshot();
         PerformanceMetric lifecycleInformation = new PerformanceMetric();
