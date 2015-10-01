@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @version 2.0.0
  */
 
-@Path("/v2")
+@Path("/ppi")
 public class HiPPIv2 {
 
     private Logger logger;
@@ -124,15 +124,15 @@ public class HiPPIv2 {
         ArrayList<String> services = new ArrayList<>();
         ArrayList<String> sensors = new ArrayList<>();
 
-        // Using the context from Katerina's server... we should store it on and use it from our server
-        ioTSystem.setContext("http://104.131.128.70:8080/istanbul-traffic/contexts/system.jsonld");
+        // Is it ok or it must be a real accessible file?
+        ioTSystem.setContext("http://vital-iot.eu/contexts/system.jsonld");
         ioTSystem.setId(system.getIoTSystem().getUri());
         ioTSystem.setType("vital:IoTSystem"); // is it really it?
         ioTSystem.setName(system.getIoTSystem().getID());
         ioTSystem.setDescription(system.getIoTSystem().getDescription());
 
         ioTSystem.setOperator(system.getIoTSystem().getOperator());
-        ioTSystem.setServiceArea(system.getIoTSystem().getServiceArea());
+        ioTSystem.setServiceArea("http://dbpedia.org/page/" + system.getIoTSystem().getServiceArea());
 
         List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshot().getTrafficSensor();
         for(i = 0; i < trafficSensors.size(); i++) {
