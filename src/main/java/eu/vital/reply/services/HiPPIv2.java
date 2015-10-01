@@ -112,7 +112,7 @@ public class HiPPIv2 {
         try {
             emptyRequest = (EmptyRequest) JsonUtils.deserializeJson(bodyRequest, EmptyRequest.class);
         } catch (IOException e) {
-            this.logger.error("/v2/METADATA error parsing request header");
+            this.logger.error("/METADATA error parsing request header");
             return "{\n" +
                     "\"error\": \"Malformed request body\"\n"+
                     "}";
@@ -1386,7 +1386,7 @@ public class HiPPIv2 {
         Operation operation = new Operation();
         operation.setType("vital:GetObservations");
         operation.setHrestHasMethod("hrest:POST");
-        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "v2/sensor/observation");
+        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "sensor/observation");
         operations.add(operation);
         observationService.setOperations(operations);
 
@@ -1402,12 +1402,12 @@ public class HiPPIv2 {
         Operation operation = new Operation();
         operation.setType("vital:GetConfiguration");
         operation.setHrestHasMethod("hrest:GET");
-        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "v2/configuration");
+        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "configuration");
         operations.add(operation);
         operation = new Operation();
         operation.setType("vital:SetConfiguration");
         operation.setHrestHasMethod("hrest:POST");
-        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "v2/configuration");
+        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "configuration");
         operations.add(operation);
         configurationService.setOperations(operations);
 
@@ -1422,18 +1422,18 @@ public class HiPPIv2 {
         List<Operation> operations = new ArrayList<>();
         Operation operation = new Operation();
         operation.setType("vital:GetSystemStatus");
-        operation.setHrestHasMethod("hrest:GET");
-        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "v2/system/status");
+        operation.setHrestHasMethod("hrest:POST");
+        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "system/status");
         operations.add(operation);
         operation = new Operation();
         operation.setType("vital:GetSupportedPerformanceMetrics");
         operation.setHrestHasMethod("hrest:GET");
-        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "v2/system/performance");
+        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "system/performance");
         operations.add(operation);
         operation = new Operation();
         operation.setType("vital:GetPerformanceMetrics");
         operation.setHrestHasMethod("hrest:POST");
-        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "v2/system/performance");
+        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "system/performance");
         operations.add(operation);
         monitoringService.setOperations(operations);
 
