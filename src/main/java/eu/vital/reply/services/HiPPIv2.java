@@ -177,42 +177,42 @@ public class HiPPIv2 {
         List<Metric> list = new ArrayList<>();
 
         Metric metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "memUsed");
+        metric.setType(this.transfProt + this.ontBaseUri + "MemUsed");
         metric.setId(this.transfProt + this.symbolicUri + "sensor/monitoring/memUsed");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "memAvailable");
+        metric.setType(this.transfProt + this.ontBaseUri + "MemAvailable");
         metric.setId(this.transfProt + this.symbolicUri + "sensor/monitoring/memAvailable");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "diskAvailable");
+        metric.setType(this.transfProt + this.ontBaseUri + "DiskAvailable");
         metric.setId(this.transfProt + this.symbolicUri + "sensor/monitoring/diskAvailable");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "sysLoad");
+        metric.setType(this.transfProt + this.ontBaseUri + "SysLoad");
         metric.setId(this.transfProt + this.symbolicUri + "sensor/monitoring/sysLoad");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "servedRequest");
+        metric.setType(this.transfProt + this.ontBaseUri + "ServedRequest");
         metric.setId(this.transfProt + this.symbolicUri + "sensor/monitoring/servedRequest");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "errors");
+        metric.setType(this.transfProt + this.ontBaseUri + "Errors");
         metric.setId(this.transfProt + this.symbolicUri + "sensor/monitoring/errors");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "sysUptime");
+        metric.setType(this.transfProt + this.ontBaseUri + "SysUpTime");
         metric.setId(this.transfProt + this.symbolicUri + "sensor/monitoring/sysUptime");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "pendingRequests");
+        metric.setType(this.transfProt + this.ontBaseUri + "PendingRequests");
         metric.setId(this.transfProt + this.symbolicUri + "sensor/monitoring/pendingRequest");
         list.add(metric);
 
