@@ -2,6 +2,7 @@
    "@context":"http://vital-iot.org/contexts/measurement.jsonld",
    "id":"http://www.example.com/iot/{id}/perf/memUsed",
    "type":"ssn:Observation",
+   "ssn:observedBy": "http://example.com/sensor/123",
    "ssn:observationProperty":{
       "type":"vital:MemUsage"
    },

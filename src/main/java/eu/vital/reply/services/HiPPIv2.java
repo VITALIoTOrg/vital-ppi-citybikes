@@ -259,19 +259,19 @@ public class HiPPIv2 {
             PerformanceMetric metric = null;
             if (pm.contains("memUsed")) {
                 metric = this.getMemoryUsed();
-            } else if (pm.toLowerCase().contains("memAvailable")) {
+            } else if (pm.toLowerCase().contains("memavailable")) {
                 metric = this.getMemoryAvailable();
-            } else if (pm.toLowerCase().contains("diskAvailable")) {
+            } else if (pm.toLowerCase().contains("diskavailable")) {
                 metric = this.getDiskAvailable();
-            } else if (pm.toLowerCase().contains("sysLoad")) {
+            } else if (pm.toLowerCase().contains("sysload")) {
                 metric = this.getCpuUsage();
-            } else if (pm.toLowerCase().contains("servedRequest")) {
+            } else if (pm.toLowerCase().contains("servedrequest")) {
                 metric = this.getServedRequest();
             } else if (pm.toLowerCase().contains("errors")) {
                 metric = this.getErrors();
-            } else if (pm.toLowerCase().contains("sysUptime")) {
+            } else if (pm.toLowerCase().contains("sysuptime")) {
                 metric = this.getUpTime();
-            } else if (pm.toLowerCase().contains("pendingRequests")) {
+            } else if (pm.toLowerCase().contains("pendingrequests")) {
                 metric = this.getPendingRequest();
             } else {
                 return "{\n" +
@@ -280,6 +280,7 @@ public class HiPPIv2 {
             }
 
             if (metric != null) {
+                metric.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
                 metrics.add(metric);
             }
         }
@@ -731,21 +732,23 @@ public class HiPPIv2 {
                 PerformanceMetric metric = null;
                 // get the requested property
                 String requestedProperty = observationRequest.getProperty();
-                if (requestedProperty.contains("memUsed")) {
+                SsnObservationProperty_ ob;
+                if (requestedProperty.toLowerCase().contains("memused")) {
                     metric = this.getMemoryUsed();
-                } else if (requestedProperty.contains("memAvailable")) {
+                } else if (requestedProperty.toLowerCase().contains("memavailable")) {
                     metric = this.getMemoryAvailable();
-                } else if (requestedProperty.contains("diskAvailable")) {
+                } else if (requestedProperty.toLowerCase().contains("diskavailable")) {
                     metric = this.getDiskAvailable();
-                } else if (requestedProperty.contains("sysLoad")) {
+                } else if (requestedProperty.toLowerCase().contains("sysload")) {
                     metric = this.getCpuUsage();
-                } else if (requestedProperty.contains("servedRequest")) {
+                } else if (requestedProperty.toLowerCase().contains("servedrequest")) {
                     metric = this.getServedRequest();
-                } else if (requestedProperty.contains("errors")) {
+                    metric = this.getServedRequest();
+                } else if (requestedProperty.toLowerCase().contains("errors")) {
                     metric = this.getErrors();
-                } else if (requestedProperty.contains("sysUptime")) {
+                } else if (requestedProperty.toLowerCase().contains("sysuptime")) {
                     metric = this.getUpTime();
-                } else if (requestedProperty.contains("pendingRequests")) {
+                } else if (requestedProperty.toLowerCase().contains("pendingrequests")) {
                     metric = this.getPendingRequest();
                 } else {
                     return "{\n" +
@@ -754,6 +757,10 @@ public class HiPPIv2 {
                 }
 
                 if(metric != null) {
+                    metric.setSsnObservedBy(ids.get(s));
+                    ob = new SsnObservationProperty_();
+                    ob.setType("http://" + this.ontBaseUri + metric.getSsnObservationProperty().getType().replaceAll("vital:", ""));
+                    metric.setSsnObservationProperty(ob);
                     metrics.add(metric);
                 }
 
@@ -904,12 +911,12 @@ public class HiPPIv2 {
         ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
         pendingReq.setSsnObservationResultTime(ssnObservationResultTime_);
 
-        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        /*SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
         SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
         ssnHasMeasurementProperty_.setType("Reliability");
         ssnHasMeasurementProperty_.setHasValue("HighReliability");
         ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        pendingReq.setSsnObservationQuality(ssnObservationQuality_);
+        pendingReq.setSsnObservationQuality(ssnObservationQuality_);*/
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
         ssnObservationResult_.setType("ssn:SensorOutput");
@@ -919,8 +926,6 @@ public class HiPPIv2 {
         ssnHasValue_.setQudtUnit("qudt:number");
         ssnObservationResult_.setSsnHasValue(ssnHasValue_);
         pendingReq.setSsnObservationResult(ssnObservationResult_);
-
-        pendingReq.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
         return pendingReq;
     }
@@ -951,12 +956,12 @@ public class HiPPIv2 {
         ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         sysUpTime.setSsnObservationResultTime(ssnObservationResultTime_);
 
-        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        /*SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
         SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
         ssnHasMeasurementProperty_.setType("Reliability");
         ssnHasMeasurementProperty_.setHasValue("HighReliability");
         ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        sysUpTime.setSsnObservationQuality(ssnObservationQuality_);
+        sysUpTime.setSsnObservationQuality(ssnObservationQuality_);*/
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
         ssnObservationResult_.setType("ssn:SensorOutput");
@@ -966,8 +971,6 @@ public class HiPPIv2 {
         ssnHasValue_.setQudtUnit("qudt:milliseconds");
         ssnObservationResult_.setSsnHasValue(ssnHasValue_);
         sysUpTime.setSsnObservationResult(ssnObservationResult_);
-
-        sysUpTime.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
         return sysUpTime;
     }
@@ -1002,12 +1005,12 @@ public class HiPPIv2 {
         ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
         servedRequest.setSsnObservationResultTime(ssnObservationResultTime_);
 
-        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        /*SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
         SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
         ssnHasMeasurementProperty_.setType("Reliability");
         ssnHasMeasurementProperty_.setHasValue("HighReliability");
         ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        servedRequest.setSsnObservationQuality(ssnObservationQuality_);
+        servedRequest.setSsnObservationQuality(ssnObservationQuality_);*/
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
         ssnObservationResult_.setType("ssn:SensorOutput");
@@ -1017,8 +1020,6 @@ public class HiPPIv2 {
         ssnHasValue_.setQudtUnit("qudt:Number");
         ssnObservationResult_.setSsnHasValue(ssnHasValue_);
         servedRequest.setSsnObservationResult(ssnObservationResult_);
-
-        servedRequest.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
         return servedRequest;
     }
@@ -1046,12 +1047,12 @@ public class HiPPIv2 {
         ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
         errors.setSsnObservationResultTime(ssnObservationResultTime_);
 
-        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        /*SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
         SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
         ssnHasMeasurementProperty_.setType("Reliability");
         ssnHasMeasurementProperty_.setHasValue("HighReliability");
         ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        errors.setSsnObservationQuality(ssnObservationQuality_);
+        errors.setSsnObservationQuality(ssnObservationQuality_);*/
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
         ssnObservationResult_.setType("ssn:SensorOutput");
@@ -1061,8 +1062,6 @@ public class HiPPIv2 {
         ssnHasValue_.setQudtUnit("qudt:Number");
         ssnObservationResult_.setSsnHasValue(ssnHasValue_);
         errors.setSsnObservationResult(ssnObservationResult_);
-
-        errors.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
         return errors;
     }
@@ -1091,12 +1090,12 @@ public class HiPPIv2 {
         ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
         memUsed.setSsnObservationResultTime(ssnObservationResultTime_);
 
-        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        /*SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
         SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
         ssnHasMeasurementProperty_.setType("Reliability");
         ssnHasMeasurementProperty_.setHasValue("HighReliability");
         ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        memUsed.setSsnObservationQuality(ssnObservationQuality_);
+        memUsed.setSsnObservationQuality(ssnObservationQuality_);*/
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
         ssnObservationResult_.setType("ssn:SensorOutput");
@@ -1106,8 +1105,6 @@ public class HiPPIv2 {
         ssnHasValue_.setQudtUnit("qudt:Byte");
         ssnObservationResult_.setSsnHasValue(ssnHasValue_);
         memUsed.setSsnObservationResult(ssnObservationResult_);
-
-        memUsed.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
         return memUsed;
     }
@@ -1135,12 +1132,12 @@ public class HiPPIv2 {
         ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
         memAval.setSsnObservationResultTime(ssnObservationResultTime_);
 
-        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        /*SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
         SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
         ssnHasMeasurementProperty_.setType("Reliability");
         ssnHasMeasurementProperty_.setHasValue("HighReliability");
         ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        memAval.setSsnObservationQuality(ssnObservationQuality_);
+        memAval.setSsnObservationQuality(ssnObservationQuality_);*/
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
         ssnObservationResult_.setType("ssn:SensorOutput");
@@ -1150,8 +1147,6 @@ public class HiPPIv2 {
         ssnHasValue_.setQudtUnit("qudt:Byte");
         ssnObservationResult_.setSsnHasValue(ssnHasValue_);
         memAval.setSsnObservationResult(ssnObservationResult_);
-
-        memAval.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
         return memAval;
     }
@@ -1179,12 +1174,12 @@ public class HiPPIv2 {
         ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
         load.setSsnObservationResultTime(ssnObservationResultTime_);
 
-        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        /*SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
         SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
         ssnHasMeasurementProperty_.setType("Reliability");
         ssnHasMeasurementProperty_.setHasValue("HighReliability");
         ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        load.setSsnObservationQuality(ssnObservationQuality_);
+        load.setSsnObservationQuality(ssnObservationQuality_);*/
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
         ssnObservationResult_.setType("ssn:SensorOutput");
@@ -1194,8 +1189,6 @@ public class HiPPIv2 {
         ssnHasValue_.setQudtUnit("qudt:Percentage");
         ssnObservationResult_.setSsnHasValue(ssnHasValue_);
         load.setSsnObservationResult(ssnObservationResult_);
-
-        load.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
         return load;
     }
@@ -1227,12 +1220,12 @@ public class HiPPIv2 {
         ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
         diskAval.setSsnObservationResultTime(ssnObservationResultTime_);
 
-        SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
+        /*SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
         SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
         ssnHasMeasurementProperty_.setType("Reliability");
         ssnHasMeasurementProperty_.setHasValue("HighReliability");
         ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        diskAval.setSsnObservationQuality(ssnObservationQuality_);
+        diskAval.setSsnObservationQuality(ssnObservationQuality_);*/
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
         ssnObservationResult_.setType("ssn:SensorOutput");
@@ -1242,8 +1235,6 @@ public class HiPPIv2 {
         ssnHasValue_.setQudtUnit("qudt:Byte");
         ssnObservationResult_.setSsnHasValue(ssnHasValue_);
         diskAval.setSsnObservationResult(ssnObservationResult_);
-
-        diskAval.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
         return diskAval;
     }
@@ -1519,6 +1510,7 @@ public class HiPPIv2 {
         m.setContext("http://vital-iot.org/contexts/measurement.jsonld");
         m.setId(this.transfProt + this.symbolicUri + "sensor/" + currentSensor.getID() + "/observation");
         m.setType("ssn:Observation");
+        m.setSsnObservedBy(this.transfProt + this.symbolicUri + "sensor/" + currentSensor.getID());
 
         SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
         ssnObservationProperty.setType("http://" + this.ontBaseUri + property);
@@ -1539,11 +1531,11 @@ public class HiPPIv2 {
 
         m.setDulHasLocation(dulHasLocation);
 
-        SsnObservationQuality ssnObservationQuality = new SsnObservationQuality();
+        /*SsnObservationQuality ssnObservationQuality = new SsnObservationQuality();
         SsnHasMeasurementProperty ssnHasMeasurementProperty = new SsnHasMeasurementProperty();
         ssnHasMeasurementProperty.setType("Reliability");
         ssnHasMeasurementProperty.setHasValue("HighReliability");
-        ssnObservationQuality.setSsnHasMeasurementProperty(ssnHasMeasurementProperty);
+        ssnObservationQuality.setSsnHasMeasurementProperty(ssnHasMeasurementProperty);*/
 
         SsnObservationResult ssnObservationResult = new SsnObservationResult();
         ssnObservationResult.setType("ssn:SensorOutput");
@@ -1608,6 +1600,7 @@ public class HiPPIv2 {
 
         SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
         ssnObservationProperty.setType("http://" + this.ontBaseUri + property);
+        m.setSsnObservedBy(this.transfProt + this.symbolicUri + "sensor/" + currentSensor.getID());
 
         m.setSsnObservationProperty(ssnObservationProperty);
 
@@ -1625,11 +1618,11 @@ public class HiPPIv2 {
 
         m.setDulHasLocation(dulHasLocation);
 
-        SsnObservationQuality ssnObservationQuality = new SsnObservationQuality();
+        /*SsnObservationQuality ssnObservationQuality = new SsnObservationQuality();
         SsnHasMeasurementProperty ssnHasMeasurementProperty = new SsnHasMeasurementProperty();
         ssnHasMeasurementProperty.setType("Reliability");
         ssnHasMeasurementProperty.setHasValue("HighReliability");
-        ssnObservationQuality.setSsnHasMeasurementProperty(ssnHasMeasurementProperty);
+        ssnObservationQuality.setSsnHasMeasurementProperty(ssnHasMeasurementProperty);*/
 
         SsnObservationResult ssnObservationResult = new SsnObservationResult();
         ssnObservationResult.setType("ssn:SensorOutput");
