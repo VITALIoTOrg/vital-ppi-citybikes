@@ -130,7 +130,7 @@ public class HiPPIv2 {
         sensors.add(this.createMonitoringSensor().getId());
         ioTSystem.setSensors(sensors);
 
-        // Adding services (describes in /service/metadata)
+        // Adding services (described in /service/metadata)
         services.add(this.transfProt + this.symbolicUri + "/service/configuration");
         services.add(this.transfProt + this.symbolicUri + "/service/monitoring");
         services.add(this.transfProt + this.symbolicUri + "/service/observation");
@@ -752,7 +752,7 @@ public class HiPPIv2 {
                 // check if the sensor exists
                 ServiceList.TrafficSensor currentSensor = this.retrieveSensor(id);
 
-                if (currentSensor == null) {
+                if(currentSensor == null) {
                     return "{\n" +
                             "\"error\": \"ID " + id + " not present.\"\n" +
                             "}";
@@ -761,13 +761,13 @@ public class HiPPIv2 {
                 // check if the sensor has the requested property
                 String property = observationRequest.getProperty().replaceAll("http://" + this.ontBaseUri, "");
 
-                if (!this.checkTrafficProperty(currentSensor, property)) {
+                if(!this.checkTrafficProperty(currentSensor, property)) {
                     return "{\n" +
                             "\"error\": \"Property " + property + " not present for " + id + " sensor.\"\n" +
                             "}";
                 }
 
-                if (observationRequest.getFrom() != null && observationRequest.getTo() != null) {
+                if(observationRequest.getFrom() != null && observationRequest.getTo() != null) {
                     // get history range
 
                     SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
@@ -800,12 +800,12 @@ public class HiPPIv2 {
 
                     List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(hiReplySvc.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
 
-                    for (i = 0; i < historyMeasures.size(); i++) {
+                    for(i = 0; i < historyMeasures.size(); i++) {
                         measures.add(this.createMeasureFromHistoryMeasure(historyMeasures.get(i), currentSensor, property));
                     }
 
-                } else if (observationRequest.getFrom() != null && observationRequest.getTo() == null) {
-                    // get tutti i valori da from
+                } else if(observationRequest.getFrom() != null && observationRequest.getTo() == null) {
+                    // get all values since from
 
                     SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                     SimpleDateFormat hiReplyFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -830,16 +830,15 @@ public class HiPPIv2 {
                     } catch (ParseException e) {
                         this.logger.error("GET OBSERVATION - Parse exception during parse date for hi reply format");
                         throw new Exception("GET OBSERVATION - Parse exception during parse date for hi reply format");
-                        //e.printStackTrace();
                     }
 
                     List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(hiReplySvc.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
 
-                    for (i = 0; i < historyMeasures.size(); i++) {
+                    for(i = 0; i < historyMeasures.size(); i++) {
                         measures.add(this.createMeasureFromHistoryMeasure(historyMeasures.get(i), currentSensor, property));
                     }
 
-                } else if (observationRequest.getFrom() == null && observationRequest.getTo() == null) {
+                } else if(observationRequest.getFrom() == null && observationRequest.getTo() == null) {
                     // get last value only
                     measures.add(this.createMeasureFromSensor(currentSensor, property));
                 }
@@ -858,10 +857,7 @@ public class HiPPIv2 {
 
     private PerformanceMetric getPendingRequest() throws Exception {
 
-        /*
-        Sottraggo 1 xke a questo punto la corrente resources è considerata in pending
-        dato che al momento della richiesta QUESTO metodo non è ancora andato in FINISH --> risulta tra i pending
-         */
+        /* Minus 1 because this method has not yet ended (is still pending) */
 
         int pendingRequest = StatCounter.getPendingRequest() - 1;
 
@@ -936,10 +932,7 @@ public class HiPPIv2 {
 
     private PerformanceMetric getServedRequest() throws Exception {
 
-        /* aggiungo 1 al corrente. la callback aggiorna il numero solo
-           a fine metodo, quindi senza il +1 il dato non sarebbe consistente
-           mancando il conto dell'esecuzione corrente.
-         */
+        /* Plus 1 for the current request */
 
         requestCount = StatCounter.getRequestNumber();
         int auxCount = requestCount.get();
