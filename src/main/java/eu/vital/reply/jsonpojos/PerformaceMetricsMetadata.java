@@ -19,37 +19,37 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "ssn:observes"
+    "metrics"
 })
 public class PerformaceMetricsMetadata {
 
-    @JsonProperty("ssn:observes")
-    private List<SsnObserf> ssnObserves = new ArrayList<SsnObserf>();
+    @JsonProperty("metrics")
+    private List<Metric> metrics = new ArrayList<Metric>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The ssnObserves
+     *     The metrics
      */
-    @JsonProperty("ssn:observes")
-    public List<SsnObserf> getSsnObserves() {
-        return ssnObserves;
+    @JsonProperty("metrics")
+    public List<Metric> getMetrics() {
+        return metrics;
     }
 
     /**
      * 
-     * @param ssnObserves
-     *     The ssn:observes
+     * @param metrics
+     *     The metrics
      */
-    @JsonProperty("ssn:observes")
-    public void setSsnObserves(List<SsnObserf> ssnObserves) {
-        this.ssnObserves = ssnObserves;
+    @JsonProperty("metrics")
+    public void setMetrics(List<Metric> metrics) {
+        this.metrics = metrics;
     }
 
-    public PerformaceMetricsMetadata withSsnObserves(List<SsnObserf> ssnObserves) {
-        this.ssnObserves = ssnObserves;
+    public PerformaceMetricsMetadata withMetrics(List<Metric> metrics) {
+        this.metrics = metrics;
         return this;
     }
 

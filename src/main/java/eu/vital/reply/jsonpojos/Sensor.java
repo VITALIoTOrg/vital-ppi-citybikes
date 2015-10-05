@@ -20,9 +20,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "@context",
-    "uri",
-    "name",
+    "id",
     "type",
+    "name",
     "description",
     "status",
     "hasLastKnownLocation",
@@ -32,12 +32,12 @@ public class Sensor {
 
     @JsonProperty("@context")
     private String Context;
-    @JsonProperty("uri")
-    private String uri;
-    @JsonProperty("name")
-    private String name;
+    @JsonProperty("id")
+    private String id;
     @JsonProperty("type")
     private String type;
+    @JsonProperty("name")
+    private String name;
     @JsonProperty("description")
     private String description;
     @JsonProperty("status")
@@ -45,7 +45,7 @@ public class Sensor {
     @JsonProperty("hasLastKnownLocation")
     private HasLastKnownLocation hasLastKnownLocation;
     @JsonProperty("ssn:observes")
-    private List<SsnObserf_> ssnObserves = new ArrayList<SsnObserf_>();
+    private List<SsnObserf> ssnObserves = new ArrayList<SsnObserf>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -77,50 +77,25 @@ public class Sensor {
     /**
      * 
      * @return
-     *     The uri
+     *     The id
      */
-    @JsonProperty("uri")
-    public String getUri() {
-        return uri;
+    @JsonProperty("id")
+    public String getId() {
+        return id;
     }
 
     /**
      * 
-     * @param uri
-     *     The uri
+     * @param id
+     *     The id
      */
-    @JsonProperty("uri")
-    public void setUri(String uri) {
-        this.uri = uri;
+    @JsonProperty("id")
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public Sensor withUri(String uri) {
-        this.uri = uri;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The name
-     */
-    @JsonProperty("name")
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * 
-     * @param name
-     *     The name
-     */
-    @JsonProperty("name")
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Sensor withName(String name) {
-        this.name = name;
+    public Sensor withId(String id) {
+        this.id = id;
         return this;
     }
 
@@ -146,6 +121,31 @@ public class Sensor {
 
     public Sensor withType(String type) {
         this.type = type;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The name
+     */
+    @JsonProperty("name")
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * 
+     * @param name
+     *     The name
+     */
+    @JsonProperty("name")
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Sensor withName(String name) {
+        this.name = name;
         return this;
     }
 
@@ -230,7 +230,7 @@ public class Sensor {
      *     The ssnObserves
      */
     @JsonProperty("ssn:observes")
-    public List<SsnObserf_> getSsnObserves() {
+    public List<SsnObserf> getSsnObserves() {
         return ssnObserves;
     }
 
@@ -240,11 +240,11 @@ public class Sensor {
      *     The ssn:observes
      */
     @JsonProperty("ssn:observes")
-    public void setSsnObserves(List<SsnObserf_> ssnObserves) {
+    public void setSsnObserves(List<SsnObserf> ssnObserves) {
         this.ssnObserves = ssnObserves;
     }
 
-    public Sensor withSsnObserves(List<SsnObserf_> ssnObserves) {
+    public Sensor withSsnObserves(List<SsnObserf> ssnObserves) {
         this.ssnObserves = ssnObserves;
         return this;
     }

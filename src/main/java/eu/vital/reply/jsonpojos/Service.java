@@ -1,7 +1,9 @@
 
 package eu.vital.reply.jsonpojos;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -17,17 +19,73 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
+    "@context",
+    "id",
     "type",
-    "uri"
+    "operations"
 })
-public class SsnObserf_ {
+public class Service {
 
+    @JsonProperty("@context")
+    private String Context;
+    @JsonProperty("id")
+    private String id;
     @JsonProperty("type")
     private String type;
-    @JsonProperty("uri")
-    private String uri;
+    @JsonProperty("operations")
+    private List<Operation> operations = new ArrayList<Operation>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    /**
+     * 
+     * @return
+     *     The Context
+     */
+    @JsonProperty("@context")
+    public String getContext() {
+        return Context;
+    }
+
+    /**
+     * 
+     * @param Context
+     *     The @context
+     */
+    @JsonProperty("@context")
+    public void setContext(String Context) {
+        this.Context = Context;
+    }
+
+    public Service withContext(String Context) {
+        this.Context = Context;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The id
+     */
+    @JsonProperty("id")
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * 
+     * @param id
+     *     The id
+     */
+    @JsonProperty("id")
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Service withId(String id) {
+        this.id = id;
+        return this;
+    }
 
     /**
      * 
@@ -49,7 +107,7 @@ public class SsnObserf_ {
         this.type = type;
     }
 
-    public SsnObserf_ withType(String type) {
+    public Service withType(String type) {
         this.type = type;
         return this;
     }
@@ -57,25 +115,25 @@ public class SsnObserf_ {
     /**
      * 
      * @return
-     *     The uri
+     *     The operations
      */
-    @JsonProperty("uri")
-    public String getUri() {
-        return uri;
+    @JsonProperty("operations")
+    public List<Operation> getOperations() {
+        return operations;
     }
 
     /**
      * 
-     * @param uri
-     *     The uri
+     * @param operations
+     *     The operations
      */
-    @JsonProperty("uri")
-    public void setUri(String uri) {
-        this.uri = uri;
+    @JsonProperty("operations")
+    public void setOperations(List<Operation> operations) {
+        this.operations = operations;
     }
 
-    public SsnObserf_ withUri(String uri) {
-        this.uri = uri;
+    public Service withOperations(List<Operation> operations) {
+        this.operations = operations;
         return this;
     }
 
@@ -104,7 +162,7 @@ public class SsnObserf_ {
         this.additionalProperties.put(name, value);
     }
 
-    public SsnObserf_ withAdditionalProperty(String name, Object value) {
+    public Service withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }

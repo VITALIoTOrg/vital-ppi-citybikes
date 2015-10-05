@@ -1,5 +1,5 @@
 
-package eu.vital.reply.jsonpojosv2;
+package eu.vital.reply.jsonpojos;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,14 +18,17 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "type",
-    "id"
+    "hrest:hasAddress",
+    "hrest:hasMethod"
 })
-public class SsnObserf {
+public class Operation {
 
     @JsonProperty("type")
     private String type;
-    @JsonProperty("id")
-    private String id;
+    @JsonProperty("hrest:hasAddress")
+    private String hrestHasAddress;
+    @JsonProperty("hrest:hasMethod")
+    private String hrestHasMethod;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -49,7 +52,7 @@ public class SsnObserf {
         this.type = type;
     }
 
-    public SsnObserf withType(String type) {
+    public Operation withType(String type) {
         this.type = type;
         return this;
     }
@@ -57,25 +60,50 @@ public class SsnObserf {
     /**
      * 
      * @return
-     *     The id
+     *     The hrestHasAddress
      */
-    @JsonProperty("id")
-    public String getId() {
-        return id;
+    @JsonProperty("hrest:hasAddress")
+    public String getHrestHasAddress() {
+        return hrestHasAddress;
     }
 
     /**
      * 
-     * @param id
-     *     The id
+     * @param hrestHasAddress
+     *     The hrest:hasAddress
      */
-    @JsonProperty("id")
-    public void setId(String id) {
-        this.id = id;
+    @JsonProperty("hrest:hasAddress")
+    public void setHrestHasAddress(String hrestHasAddress) {
+        this.hrestHasAddress = hrestHasAddress;
     }
 
-    public SsnObserf withId(String id) {
-        this.id = id;
+    public Operation withHrestHasAddress(String hrestHasAddress) {
+        this.hrestHasAddress = hrestHasAddress;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The hrestHasMethod
+     */
+    @JsonProperty("hrest:hasMethod")
+    public String getHrestHasMethod() {
+        return hrestHasMethod;
+    }
+
+    /**
+     * 
+     * @param hrestHasMethod
+     *     The hrest:hasMethod
+     */
+    @JsonProperty("hrest:hasMethod")
+    public void setHrestHasMethod(String hrestHasMethod) {
+        this.hrestHasMethod = hrestHasMethod;
+    }
+
+    public Operation withHrestHasMethod(String hrestHasMethod) {
+        this.hrestHasMethod = hrestHasMethod;
         return this;
     }
 
@@ -104,7 +132,7 @@ public class SsnObserf {
         this.additionalProperties.put(name, value);
     }
 
-    public SsnObserf withAdditionalProperty(String name, Object value) {
+    public Operation withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }

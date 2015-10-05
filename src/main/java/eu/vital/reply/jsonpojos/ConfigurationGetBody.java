@@ -1,7 +1,9 @@
 
-package eu.vital.reply.jsonpojosv2;
+package eu.vital.reply.jsonpojos;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -17,93 +19,37 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "type",
-    "value",
-    "qudt:unit"
+    "parameters"
 })
-public class SsnHasValue_ {
+public class ConfigurationGetBody {
 
-    @JsonProperty("type")
-    private String type;
-    @JsonProperty("value")
-    private String value;
-    @JsonProperty("qudt:unit")
-    private String qudtUnit;
+    @JsonProperty("parameters")
+    private List<Parameter> parameters = new ArrayList<Parameter>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The type
+     *     The parameters
      */
-    @JsonProperty("type")
-    public String getType() {
-        return type;
+    @JsonProperty("parameters")
+    public List<Parameter> getParameters() {
+        return parameters;
     }
 
     /**
      * 
-     * @param type
-     *     The type
+     * @param parameters
+     *     The parameters
      */
-    @JsonProperty("type")
-    public void setType(String type) {
-        this.type = type;
+    @JsonProperty("parameters")
+    public void setParameters(List<Parameter> parameters) {
+        this.parameters = parameters;
     }
 
-    public SsnHasValue_ withType(String type) {
-        this.type = type;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The value
-     */
-    @JsonProperty("value")
-    public String getValue() {
-        return value;
-    }
-
-    /**
-     * 
-     * @param value
-     *     The value
-     */
-    @JsonProperty("value")
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public SsnHasValue_ withValue(String value) {
-        this.value = value;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The qudtUnit
-     */
-    @JsonProperty("qudt:unit")
-    public String getQudtUnit() {
-        return qudtUnit;
-    }
-
-    /**
-     * 
-     * @param qudtUnit
-     *     The qudt:unit
-     */
-    @JsonProperty("qudt:unit")
-    public void setQudtUnit(String qudtUnit) {
-        this.qudtUnit = qudtUnit;
-    }
-
-    public SsnHasValue_ withQudtUnit(String qudtUnit) {
-        this.qudtUnit = qudtUnit;
+    public ConfigurationGetBody withParameters(List<Parameter> parameters) {
+        this.parameters = parameters;
         return this;
     }
 
@@ -132,7 +78,7 @@ public class SsnHasValue_ {
         this.additionalProperties.put(name, value);
     }
 
-    public SsnHasValue_ withAdditionalProperty(String name, Object value) {
+    public ConfigurationGetBody withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }

@@ -1,7 +1,9 @@
 
 package eu.vital.reply.jsonpojos;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -17,65 +19,37 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "hrest:hasAddress",
-    "hrest:hasMethod"
+    "parameters"
 })
-public class SystemOperation {
+public class ConfigurationReqBody {
 
-    @JsonProperty("hrest:hasAddress")
-    private String hrestHasAddress;
-    @JsonProperty("hrest:hasMethod")
-    private String hrestHasMethod;
+    @JsonProperty("parameters")
+    private List<Parameter_> parameters = new ArrayList<Parameter_>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The hrestHasAddress
+     *     The parameters
      */
-    @JsonProperty("hrest:hasAddress")
-    public String getHrestHasAddress() {
-        return hrestHasAddress;
+    @JsonProperty("parameters")
+    public List<Parameter_> getParameters() {
+        return parameters;
     }
 
     /**
      * 
-     * @param hrestHasAddress
-     *     The hrest:hasAddress
+     * @param parameters
+     *     The parameters
      */
-    @JsonProperty("hrest:hasAddress")
-    public void setHrestHasAddress(String hrestHasAddress) {
-        this.hrestHasAddress = hrestHasAddress;
+    @JsonProperty("parameters")
+    public void setParameters(List<Parameter_> parameters) {
+        this.parameters = parameters;
     }
 
-    public SystemOperation withHrestHasAddress(String hrestHasAddress) {
-        this.hrestHasAddress = hrestHasAddress;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The hrestHasMethod
-     */
-    @JsonProperty("hrest:hasMethod")
-    public String getHrestHasMethod() {
-        return hrestHasMethod;
-    }
-
-    /**
-     * 
-     * @param hrestHasMethod
-     *     The hrest:hasMethod
-     */
-    @JsonProperty("hrest:hasMethod")
-    public void setHrestHasMethod(String hrestHasMethod) {
-        this.hrestHasMethod = hrestHasMethod;
-    }
-
-    public SystemOperation withHrestHasMethod(String hrestHasMethod) {
-        this.hrestHasMethod = hrestHasMethod;
+    public ConfigurationReqBody withParameters(List<Parameter_> parameters) {
+        this.parameters = parameters;
         return this;
     }
 
@@ -104,7 +78,7 @@ public class SystemOperation {
         this.additionalProperties.put(name, value);
     }
 
-    public SystemOperation withAdditionalProperty(String name, Object value) {
+    public ConfigurationReqBody withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }

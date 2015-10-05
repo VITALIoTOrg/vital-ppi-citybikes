@@ -19,37 +19,65 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "configurationOptions"
+    "id",
+    "type"
 })
-public class ConfigurationOptionsGetBody {
+public class SensorRequest {
 
-    @JsonProperty("configurationOptions")
-    private List<ConfigurationOption> configurationOptions = new ArrayList<ConfigurationOption>();
+    @JsonProperty("id")
+    private List<String> id = new ArrayList<String>();
+    @JsonProperty("type")
+    private List<String> type = new ArrayList<String>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The configurationOptions
+     *     The id
      */
-    @JsonProperty("configurationOptions")
-    public List<ConfigurationOption> getConfigurationOptions() {
-        return configurationOptions;
+    @JsonProperty("id")
+    public List<String> getId() {
+        return id;
     }
 
     /**
      * 
-     * @param configurationOptions
-     *     The configurationOptions
+     * @param id
+     *     The id
      */
-    @JsonProperty("configurationOptions")
-    public void setConfigurationOptions(List<ConfigurationOption> configurationOptions) {
-        this.configurationOptions = configurationOptions;
+    @JsonProperty("id")
+    public void setId(List<String> id) {
+        this.id = id;
     }
 
-    public ConfigurationOptionsGetBody withConfigurationOptions(List<ConfigurationOption> configurationOptions) {
-        this.configurationOptions = configurationOptions;
+    public SensorRequest withId(List<String> id) {
+        this.id = id;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The type
+     */
+    @JsonProperty("type")
+    public List<String> getType() {
+        return type;
+    }
+
+    /**
+     * 
+     * @param type
+     *     The type
+     */
+    @JsonProperty("type")
+    public void setType(List<String> type) {
+        this.type = type;
+    }
+
+    public SensorRequest withType(List<String> type) {
+        this.type = type;
         return this;
     }
 
@@ -78,7 +106,7 @@ public class ConfigurationOptionsGetBody {
         this.additionalProperties.put(name, value);
     }
 
-    public ConfigurationOptionsGetBody withAdditionalProperty(String name, Object value) {
+    public SensorRequest withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }

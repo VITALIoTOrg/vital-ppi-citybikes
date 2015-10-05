@@ -18,14 +18,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "type",
-    "uri"
+    "id"
 })
 public class SsnObserf {
 
     @JsonProperty("type")
     private String type;
-    @JsonProperty("uri")
-    private String uri;
+    @JsonProperty("id")
+    private String id;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -57,25 +57,25 @@ public class SsnObserf {
     /**
      * 
      * @return
-     *     The uri
+     *     The id
      */
-    @JsonProperty("uri")
-    public String getUri() {
-        return uri;
+    @JsonProperty("id")
+    public String getId() {
+        return id;
     }
 
     /**
      * 
-     * @param uri
-     *     The uri
+     * @param id
+     *     The id
      */
-    @JsonProperty("uri")
-    public void setUri(String uri) {
-        this.uri = uri;
+    @JsonProperty("id")
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public SsnObserf withUri(String uri) {
-        this.uri = uri;
+    public SsnObserf withId(String id) {
+        this.id = id;
         return this;
     }
 

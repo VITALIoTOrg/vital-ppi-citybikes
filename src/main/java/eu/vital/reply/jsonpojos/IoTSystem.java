@@ -20,20 +20,24 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "@context",
-    "uri",
+    "id",
+    "type",
     "name",
     "description",
     "operator",
     "serviceArea",
-    "status",
-    "providesService"
+    "sensors",
+    "services",
+    "status"
 })
 public class IoTSystem {
 
     @JsonProperty("@context")
     private String Context;
-    @JsonProperty("uri")
-    private String uri;
+    @JsonProperty("id")
+    private String id;
+    @JsonProperty("type")
+    private String type;
     @JsonProperty("name")
     private String name;
     @JsonProperty("description")
@@ -42,10 +46,12 @@ public class IoTSystem {
     private String operator;
     @JsonProperty("serviceArea")
     private String serviceArea;
+    @JsonProperty("sensors")
+    private List<String> sensors = new ArrayList<String>();
+    @JsonProperty("services")
+    private List<String> services = new ArrayList<String>();
     @JsonProperty("status")
     private String status;
-    @JsonProperty("providesService")
-    private List<ProvidesService> providesService = new ArrayList<ProvidesService>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -77,25 +83,50 @@ public class IoTSystem {
     /**
      * 
      * @return
-     *     The uri
+     *     The id
      */
-    @JsonProperty("uri")
-    public String getUri() {
-        return uri;
+    @JsonProperty("id")
+    public String getId() {
+        return id;
     }
 
     /**
      * 
-     * @param uri
-     *     The uri
+     * @param id
+     *     The id
      */
-    @JsonProperty("uri")
-    public void setUri(String uri) {
-        this.uri = uri;
+    @JsonProperty("id")
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public IoTSystem withUri(String uri) {
-        this.uri = uri;
+    public IoTSystem withId(String id) {
+        this.id = id;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The type
+     */
+    @JsonProperty("type")
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * 
+     * @param type
+     *     The type
+     */
+    @JsonProperty("type")
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public IoTSystem withType(String type) {
+        this.type = type;
         return this;
     }
 
@@ -202,6 +233,56 @@ public class IoTSystem {
     /**
      * 
      * @return
+     *     The sensors
+     */
+    @JsonProperty("sensors")
+    public List<String> getSensors() {
+        return sensors;
+    }
+
+    /**
+     * 
+     * @param sensors
+     *     The sensors
+     */
+    @JsonProperty("sensors")
+    public void setSensors(List<String> sensors) {
+        this.sensors = sensors;
+    }
+
+    public IoTSystem withSensors(List<String> sensors) {
+        this.sensors = sensors;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The services
+     */
+    @JsonProperty("services")
+    public List<String> getServices() {
+        return services;
+    }
+
+    /**
+     * 
+     * @param services
+     *     The services
+     */
+    @JsonProperty("services")
+    public void setServices(List<String> services) {
+        this.services = services;
+    }
+
+    public IoTSystem withServices(List<String> services) {
+        this.services = services;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
      *     The status
      */
     @JsonProperty("status")
@@ -221,31 +302,6 @@ public class IoTSystem {
 
     public IoTSystem withStatus(String status) {
         this.status = status;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The providesService
-     */
-    @JsonProperty("providesService")
-    public List<ProvidesService> getProvidesService() {
-        return providesService;
-    }
-
-    /**
-     * 
-     * @param providesService
-     *     The providesService
-     */
-    @JsonProperty("providesService")
-    public void setProvidesService(List<ProvidesService> providesService) {
-        this.providesService = providesService;
-    }
-
-    public IoTSystem withProvidesService(List<ProvidesService> providesService) {
-        this.providesService = providesService;
         return this;
     }
 

@@ -17,37 +17,37 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "inXSDDateTime"
+    "time:inXSDDateTime"
 })
 public class SsnObservationResultTime {
 
-    @JsonProperty("inXSDDateTime")
-    private String inXSDDateTime;
+    @JsonProperty("time:inXSDDateTime")
+    private String timeInXSDDateTime;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The inXSDDateTime
+     *     The timeInXSDDateTime
      */
-    @JsonProperty("inXSDDateTime")
-    public String getInXSDDateTime() {
-        return inXSDDateTime;
+    @JsonProperty("time:inXSDDateTime")
+    public String getTimeInXSDDateTime() {
+        return timeInXSDDateTime;
     }
 
     /**
      * 
-     * @param inXSDDateTime
-     *     The inXSDDateTime
+     * @param timeInXSDDateTime
+     *     The time:inXSDDateTime
      */
-    @JsonProperty("inXSDDateTime")
-    public void setInXSDDateTime(String inXSDDateTime) {
-        this.inXSDDateTime = inXSDDateTime;
+    @JsonProperty("time:inXSDDateTime")
+    public void setTimeInXSDDateTime(String timeInXSDDateTime) {
+        this.timeInXSDDateTime = timeInXSDDateTime;
     }
 
-    public SsnObservationResultTime withInXSDDateTime(String inXSDDateTime) {
-        this.inXSDDateTime = inXSDDateTime;
+    public SsnObservationResultTime withTimeInXSDDateTime(String timeInXSDDateTime) {
+        this.timeInXSDDateTime = timeInXSDDateTime;
         return this;
     }
 

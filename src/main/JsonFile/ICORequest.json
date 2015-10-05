@@ -1,9 +1,0 @@
-{
-  "@context": "http://vital-iot.org/contexts/query.jsonld",
-  "icos":
-  [
-    "http://www.example.com/ico/123/",
-    "http://www.example.com/ico/1234/",
-    "http://www.example.com/ico/12345/"
-  ]
-}

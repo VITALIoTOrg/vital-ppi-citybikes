@@ -1,5 +1,5 @@
 
-package eu.vital.reply.jsonpojosv2;
+package eu.vital.reply.jsonpojos;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,37 +17,65 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "ssn:hasMeasurementProperty"
+    "name",
+    "value"
 })
-public class SsnObservationQuality {
+public class Parameter_ {
 
-    @JsonProperty("ssn:hasMeasurementProperty")
-    private SsnHasMeasurementProperty ssnHasMeasurementProperty;
+    @JsonProperty("name")
+    private String name;
+    @JsonProperty("value")
+    private String value;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The ssnHasMeasurementProperty
+     *     The name
      */
-    @JsonProperty("ssn:hasMeasurementProperty")
-    public SsnHasMeasurementProperty getSsnHasMeasurementProperty() {
-        return ssnHasMeasurementProperty;
+    @JsonProperty("name")
+    public String getName() {
+        return name;
     }
 
     /**
      * 
-     * @param ssnHasMeasurementProperty
-     *     The ssn:hasMeasurementProperty
+     * @param name
+     *     The name
      */
-    @JsonProperty("ssn:hasMeasurementProperty")
-    public void setSsnHasMeasurementProperty(SsnHasMeasurementProperty ssnHasMeasurementProperty) {
-        this.ssnHasMeasurementProperty = ssnHasMeasurementProperty;
+    @JsonProperty("name")
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public SsnObservationQuality withSsnHasMeasurementProperty(SsnHasMeasurementProperty ssnHasMeasurementProperty) {
-        this.ssnHasMeasurementProperty = ssnHasMeasurementProperty;
+    public Parameter_ withName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The value
+     */
+    @JsonProperty("value")
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * 
+     * @param value
+     *     The value
+     */
+    @JsonProperty("value")
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public Parameter_ withValue(String value) {
+        this.value = value;
         return this;
     }
 
@@ -76,7 +104,7 @@ public class SsnObservationQuality {
         this.additionalProperties.put(name, value);
     }
 
-    public SsnObservationQuality withAdditionalProperty(String name, Object value) {
+    public Parameter_ withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }

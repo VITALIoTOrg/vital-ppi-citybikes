@@ -1,7 +1,9 @@
 
 package eu.vital.reply.jsonpojos;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -17,18 +19,15 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "@context",
-    "ico",
+    "sensor",
     "property",
     "from",
     "to"
 })
 public class ObservationRequest {
 
-    @JsonProperty("@context")
-    private String Context;
-    @JsonProperty("ico")
-    private String ico;
+    @JsonProperty("sensor")
+    private List<String> sensor = new ArrayList<String>();
     @JsonProperty("property")
     private String property;
     @JsonProperty("from")
@@ -41,50 +40,25 @@ public class ObservationRequest {
     /**
      * 
      * @return
-     *     The Context
+     *     The sensor
      */
-    @JsonProperty("@context")
-    public String getContext() {
-        return Context;
+    @JsonProperty("sensor")
+    public List<String> getSensor() {
+        return sensor;
     }
 
     /**
      * 
-     * @param Context
-     *     The @context
+     * @param sensor
+     *     The sensor
      */
-    @JsonProperty("@context")
-    public void setContext(String Context) {
-        this.Context = Context;
+    @JsonProperty("sensor")
+    public void setSensor(List<String> sensor) {
+        this.sensor = sensor;
     }
 
-    public ObservationRequest withContext(String Context) {
-        this.Context = Context;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The ico
-     */
-    @JsonProperty("ico")
-    public String getIco() {
-        return ico;
-    }
-
-    /**
-     * 
-     * @param ico
-     *     The ico
-     */
-    @JsonProperty("ico")
-    public void setIco(String ico) {
-        this.ico = ico;
-    }
-
-    public ObservationRequest withIco(String ico) {
-        this.ico = ico;
+    public ObservationRequest withSensor(List<String> sensor) {
+        this.sensor = sensor;
         return this;
     }
 

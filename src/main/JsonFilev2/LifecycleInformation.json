@@ -1,5 +1,0 @@
-{
-  "@context": "http://vital-iot.org/contexts/system.jsonld",
-  "uri": "http://www.example.com",
-  "status": "vital:Running"
-}

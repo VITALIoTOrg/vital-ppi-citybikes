@@ -166,12 +166,12 @@
                 <artifactId>jsonschema2pojo-maven-plugin</artifactId>
                 <version>0.4.5</version>
                 <configuration>
-                    <sourceDirectory>${basedir}/src/main/JsonFilev2</sourceDirectory>
+                    <sourceDirectory>${basedir}/src/main/JsonFile</sourceDirectory>
                     <generateBuilders>true</generateBuilders>
                     <includeHashcodeAndEquals>true</includeHashcodeAndEquals>
                     <outputDirectory>${basedir}/src/main/java</outputDirectory>
                     <sourceType>json</sourceType>
-                    <targetPackage>eu.vital.reply.jsonpojosv2</targetPackage>
+                    <targetPackage>eu.vital.reply.jsonpojos</targetPackage>
                 </configuration>
                 <executions>
                     <execution>

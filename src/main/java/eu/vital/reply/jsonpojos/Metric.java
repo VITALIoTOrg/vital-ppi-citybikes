@@ -1,5 +1,5 @@
 
-package eu.vital.reply.jsonpojosv2;
+package eu.vital.reply.jsonpojos;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,37 +17,65 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "time:inXSDDateTime"
+    "type",
+    "id"
 })
-public class SsnObservationResultTime {
+public class Metric {
 
-    @JsonProperty("time:inXSDDateTime")
-    private String timeInXSDDateTime;
+    @JsonProperty("type")
+    private String type;
+    @JsonProperty("id")
+    private String id;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The timeInXSDDateTime
+     *     The type
      */
-    @JsonProperty("time:inXSDDateTime")
-    public String getTimeInXSDDateTime() {
-        return timeInXSDDateTime;
+    @JsonProperty("type")
+    public String getType() {
+        return type;
     }
 
     /**
      * 
-     * @param timeInXSDDateTime
-     *     The time:inXSDDateTime
+     * @param type
+     *     The type
      */
-    @JsonProperty("time:inXSDDateTime")
-    public void setTimeInXSDDateTime(String timeInXSDDateTime) {
-        this.timeInXSDDateTime = timeInXSDDateTime;
+    @JsonProperty("type")
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public SsnObservationResultTime withTimeInXSDDateTime(String timeInXSDDateTime) {
-        this.timeInXSDDateTime = timeInXSDDateTime;
+    public Metric withType(String type) {
+        this.type = type;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The id
+     */
+    @JsonProperty("id")
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * 
+     * @param id
+     *     The id
+     */
+    @JsonProperty("id")
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Metric withId(String id) {
+        this.id = id;
         return this;
     }
 
@@ -76,7 +104,7 @@ public class SsnObservationResultTime {
         this.additionalProperties.put(name, value);
     }
 
-    public SsnObservationResultTime withAdditionalProperty(String name, Object value) {
+    public Metric withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }

@@ -1,5 +1,5 @@
 
-package eu.vital.reply.jsonpojosv2;
+package eu.vital.reply.jsonpojos;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,17 +17,73 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
+    "name",
+    "value",
     "type",
-    "hasValue"
+    "permissions"
 })
-public class SsnHasMeasurementProperty {
+public class Parameter {
 
+    @JsonProperty("name")
+    private String name;
+    @JsonProperty("value")
+    private String value;
     @JsonProperty("type")
     private String type;
-    @JsonProperty("hasValue")
-    private String hasValue;
+    @JsonProperty("permissions")
+    private String permissions;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    /**
+     * 
+     * @return
+     *     The name
+     */
+    @JsonProperty("name")
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * 
+     * @param name
+     *     The name
+     */
+    @JsonProperty("name")
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Parameter withName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The value
+     */
+    @JsonProperty("value")
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * 
+     * @param value
+     *     The value
+     */
+    @JsonProperty("value")
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public Parameter withValue(String value) {
+        this.value = value;
+        return this;
+    }
 
     /**
      * 
@@ -49,7 +105,7 @@ public class SsnHasMeasurementProperty {
         this.type = type;
     }
 
-    public SsnHasMeasurementProperty withType(String type) {
+    public Parameter withType(String type) {
         this.type = type;
         return this;
     }
@@ -57,25 +113,25 @@ public class SsnHasMeasurementProperty {
     /**
      * 
      * @return
-     *     The hasValue
+     *     The permissions
      */
-    @JsonProperty("hasValue")
-    public String getHasValue() {
-        return hasValue;
+    @JsonProperty("permissions")
+    public String getPermissions() {
+        return permissions;
     }
 
     /**
      * 
-     * @param hasValue
-     *     The hasValue
+     * @param permissions
+     *     The permissions
      */
-    @JsonProperty("hasValue")
-    public void setHasValue(String hasValue) {
-        this.hasValue = hasValue;
+    @JsonProperty("permissions")
+    public void setPermissions(String permissions) {
+        this.permissions = permissions;
     }
 
-    public SsnHasMeasurementProperty withHasValue(String hasValue) {
-        this.hasValue = hasValue;
+    public Parameter withPermissions(String permissions) {
+        this.permissions = permissions;
         return this;
     }
 
@@ -104,7 +160,7 @@ public class SsnHasMeasurementProperty {
         this.additionalProperties.put(name, value);
     }
 
-    public SsnHasMeasurementProperty withAdditionalProperty(String name, Object value) {
+    public Parameter withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
