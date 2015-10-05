@@ -3,8 +3,6 @@ package eu.vital.reply;
 import eu.vital.reply.services.HiPPIv2;
 import eu.vital.reply.utils.ConfigReader;
 import eu.vital.reply.utils.PpiApplicationEventListener;
-import eu.vital.reply.utils.PpiRequestEventListener;
-import eu.vital.reply.utils.StatCounter;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -14,7 +12,6 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Date;
 
 /**
  * Main Class that will start a Grizzly HTTP server instance
@@ -23,6 +20,7 @@ import java.util.Date;
  * @author <a href="mailto:f.deceglia@reply.it">Fabrizio de Ceglia</a>
  * @version 1.0.0
  */
+
 public class Main {
     // Base URI the Grizzly HTTP server will listen on
     public static String BASE_URI;
@@ -44,7 +42,7 @@ public class Main {
 
     /**
      * Main method. Starts the HTTP Server instance.
-     * @param args
+     * @param args arguments
      * @throws IOException, URISyntaxException, JAXBException, SAXException
      */
     public static void main(String[] args) throws IOException, URISyntaxException, JAXBException, SAXException
@@ -55,13 +53,12 @@ public class Main {
         String hostName = configReader.get(ConfigReader.SERVER_HOSTNAME);
         String hostPort = configReader.get(ConfigReader.SERVER_PORT);
 
-        BASE_URI = "http://"+hostName+":"+hostPort+"/";
+        BASE_URI = "http://" + hostName + ":" + hostPort + "/";
 
         final HttpServer server = startServer();
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
         System.in.read();
-        server.stop();
+        server.shutdownNow();
     }
 }
-
