@@ -27,15 +27,14 @@ import java.util.Date;
  */
 
 /**
- * TODO: Mapping ServiceId con prefisso della macchina o no?
- * Es.: San11633-TrS_1 --> TrS_1 ?? --> TrS per rendere generico ogni metodo. riconosco dal prefisso il tipo di sensore
+ * TODO: Mapping ServiceId with machine prefix or not?
+ * Es.: San11633-TrS_1 --> TrS_1 ?? --> TrS to make all methods generic. Identify the sensor type from the prefix.
  * TrS: Traffic Sensor
  * Thermometer: Temperature Sensor
  */
 public class HiReplySvc
 {
     private HttpClient http;
-    private ConfigReader config;
     private Logger logger;
 
     private String host;
@@ -56,7 +55,7 @@ public class HiReplySvc
 
     public HiReplySvc()
     {
-        config = ConfigReader.getInstance();
+        ConfigReader config = ConfigReader.getInstance();
         http = HttpClients.createDefault();
         logger = LogManager.getLogger(HiReplySvc.class);
 
@@ -73,8 +72,8 @@ public class HiReplySvc
 
     public ServiceList getSnapshotFiltered(String filter)
     {
-        String respString = "";
-        URI uri = null;
+        String respString;
+        URI uri;
         try
         {
             uri = new URIBuilder()
@@ -105,7 +104,7 @@ public class HiReplySvc
 
         HttpGet get = new HttpGet(uri);
 
-        HttpResponse resp = null;
+        HttpResponse resp;
         try
         {
             resp = http.execute(get);
@@ -116,7 +115,7 @@ public class HiReplySvc
             return null;
         }
 
-        ServiceList serviceList = null;
+        ServiceList serviceList;
 
         try
         {
@@ -137,8 +136,8 @@ public class HiReplySvc
 
     public PropertyList getPropertyNames(String serviceId)
     {
-        String respString = "";
-        URI uri = null;
+        String respString;
+        URI uri;
         try
         {
             uri = new URIBuilder()
@@ -155,7 +154,7 @@ public class HiReplySvc
 
         HttpGet get = new HttpGet(uri);
 
-        HttpResponse resp = null;
+        HttpResponse resp;
         try
         {
             resp = http.execute(get);
@@ -166,7 +165,7 @@ public class HiReplySvc
             return null;
         }
 
-        PropertyList props = null;
+        PropertyList props;
         try
         {
             props = (PropertyList) UnmarshalUtil.getInstance().unmarshal(respString);
@@ -181,8 +180,8 @@ public class HiReplySvc
 
     public String getPropertyValue(String serviceId, String propertyName)
     {
-        String respString = "";
-        URI uri = null;
+        String respString;
+        URI uri;
         try
         {
             uri = new URIBuilder()
@@ -200,7 +199,7 @@ public class HiReplySvc
 
         HttpGet get = new HttpGet(uri);
 
-        HttpResponse resp = null;
+        HttpResponse resp;
         try
         {
             resp = http.execute(get);
@@ -216,8 +215,8 @@ public class HiReplySvc
 
     public boolean setPropertyValue(String serviceId, String propertyName, String value)
     {
-        String respString = "";
-        URI uri = null;
+        String respString;
+        URI uri;
         try
         {
             uri = new URIBuilder()
@@ -236,7 +235,7 @@ public class HiReplySvc
 
         HttpGet get = new HttpGet(uri);
 
-        HttpResponse resp = null;
+        HttpResponse resp;
         try
         {
             resp = http.execute(get);
@@ -252,8 +251,8 @@ public class HiReplySvc
 
     public String getPropertyAttribute(String serviceId, String propertyName, String attributeName)
     {
-        String respString = "";
-        URI uri = null;
+        String respString;
+        URI uri;
         try
         {
             uri = new URIBuilder()
@@ -272,7 +271,7 @@ public class HiReplySvc
 
         HttpGet get = new HttpGet(uri);
 
-        HttpResponse resp = null;
+        HttpResponse resp;
         try
         {
             resp = http.execute(get);
@@ -288,13 +287,13 @@ public class HiReplySvc
 
     public ValueList getPropertyHistoricalValues(String serviceId, String propertyName, Date startTime, Date endTime)
     {
-        String respString = "";
+        String respString;
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
         String startDate = df.format(startTime);
         String endDate = df.format(endTime);
 
-        URI uri = null;
+        URI uri;
         try
         {
             uri = new URIBuilder()
