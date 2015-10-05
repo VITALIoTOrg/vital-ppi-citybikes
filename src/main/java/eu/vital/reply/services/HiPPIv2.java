@@ -1,9 +1,5 @@
 package eu.vital.reply.services;
 
-/**
- * Created by l.bracco on 28/09/2015.
- */
-
 import eu.vital.reply.clients.HiReplySvc;
 import eu.vital.reply.jsonpojosv2.*;
 import eu.vital.reply.utils.ConfigReader;
@@ -28,7 +24,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
 /**
  * HiPPIv2 Class that provides all the REST API that a system attached to Vital will expose
  *
@@ -42,10 +37,7 @@ public class HiPPIv2 {
 
     private Logger logger;
     private HiReplySvc hiReplySvc;
-    private ConfigReader configReader;
 
-    private String hostPort;
-    private String hostName;
     private String symbolicUri;
     private String ontBaseUri;
 
@@ -67,13 +59,11 @@ public class HiPPIv2 {
 
     public HiPPIv2() {
 
-        configReader = ConfigReader.getInstance();
+        ConfigReader configReader = ConfigReader.getInstance();
 
         hiReplySvc = new HiReplySvc();
         logger = LogManager.getLogger(HiPPIv2.class);
 
-        hostName = configReader.get(ConfigReader.SERVER_HOSTNAME);
-        hostPort = configReader.get(ConfigReader.SERVER_PORT);
         symbolicUri = configReader.get(ConfigReader.SYMBOLIC_URI);
         ontBaseUri = configReader.get(ConfigReader.ONT_BASE_URI_PROPERTY);
 
@@ -107,10 +97,9 @@ public class HiPPIv2 {
     public String getMetadata(String bodyRequest) throws Exception {
 
         int i;
-        EmptyRequest emptyRequest = null;
 
         try {
-            emptyRequest = (EmptyRequest) JsonUtils.deserializeJson(bodyRequest, EmptyRequest.class);
+            JsonUtils.deserializeJson(bodyRequest, EmptyRequest.class);
         } catch (IOException e) {
             this.logger.error("/METADATA error parsing request header");
             return "{\n" +
@@ -152,14 +141,13 @@ public class HiPPIv2 {
             ioTSystem.setStatus("vital:Running");
         }
 
-        String out = "";
+        String out;
 
         try {
             out = JsonUtils.serializeJson(ioTSystem);
         } catch (IOException e) {
             this.logger.error("JSON UTILS IO EXCEPTION - metadata information");
             throw new Exception("JSON UTILS IO EXCEPTION - metadata information");
-            //e.printStackTrace();
         }
 
         return out;
@@ -170,7 +158,7 @@ public class HiPPIv2 {
     @Produces(MediaType.APPLICATION_JSON)
     public String getSupportedPerformanceMetrics() throws Exception {
 
-        String out = "";
+        String out;
 
         PerformaceMetricsMetadata performaceMetricsMetadata = new PerformaceMetricsMetadata();
 
@@ -223,7 +211,6 @@ public class HiPPIv2 {
         } catch (IOException e) {
             this.logger.error("JSON UTILS IO EXCEPTION - getPerformanceMetric information");
             throw new Exception("JSON UTILS IO EXCEPTION - getPerformanceMetric information");
-            //e.printStackTrace();
         }
 
         return out;
@@ -236,11 +223,11 @@ public class HiPPIv2 {
     public String getPerformanceMetrics(String bodyRequest) throws Exception {
 
         int i, len;
-        MetricRequest metricRequest = null;
+        MetricRequest metricRequest;
         ArrayList<PerformanceMetric> metrics = new ArrayList<>();
         String pm;
 
-        String out = "";
+        String out;
 
         try {
             metricRequest = (MetricRequest) JsonUtils.deserializeJson(bodyRequest, MetricRequest.class);
@@ -256,7 +243,7 @@ public class HiPPIv2 {
         for(i = 0; i < len; i++) {
             pm = pms.get(i).replaceAll("http://" + this.ontBaseUri, "");
 
-            PerformanceMetric metric = null;
+            PerformanceMetric metric;
             if (pm.contains("memUsed")) {
                 metric = this.getMemoryUsed();
             } else if (pm.toLowerCase().contains("memavailable")) {
@@ -290,7 +277,6 @@ public class HiPPIv2 {
         } catch (IOException e) {
             this.logger.error("GET METRIC - serialize to json response IO Exception");
             throw new Exception("GET METRIC - serialize to json response IO Exception");
-            //e.printStackTrace();
         }
 
         return out;
@@ -301,9 +287,7 @@ public class HiPPIv2 {
     @Produces(MediaType.APPLICATION_JSON)
     public String getConfiguration() throws Exception {
 
-        String info = uriInfo.getBaseUri().toString();
-
-        String out = "";
+        String out;
 
         ConfigurationGetBody response = new ConfigurationGetBody();
 
@@ -324,7 +308,6 @@ public class HiPPIv2 {
         } catch (IOException e) {
             this.logger.error("getConfigurationOptions - Deserialize JSON UTILS IO EXCEPTION");
             throw new Exception("getConfigurationOptions - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
         }
 
         return out;
@@ -336,7 +319,7 @@ public class HiPPIv2 {
     public Response setConfiguration(String bodyRequest) {
         int i;
 
-        ConfigurationReqBody configurationReqBody = null;
+        ConfigurationReqBody configurationReqBody;
         boolean success = false;
 
         try {
@@ -411,14 +394,13 @@ public class HiPPIv2 {
 
         lifecycleInformation.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
 
-        String out = "";
+        String out;
 
         try {
             out = JsonUtils.serializeJson(lifecycleInformation);
         } catch (IOException e) {
             this.logger.error("JSON UTILS IO EXCEPTION - lifecycle information");
             throw new Exception("JSON UTILS IO EXCEPTION - lifecycle information");
-            //e.printStackTrace();
         }
 
         return out;
@@ -447,8 +429,8 @@ public class HiPPIv2 {
     @Produces(MediaType.APPLICATION_JSON)
     public String getServiceMetadata(String bodyRequest) throws Exception {
 
-        int i, j;
-        SensorRequest serviceRequest = new SensorRequest(); // TODO rename type, it's the same
+        int i;
+        SensorRequest serviceRequest; // TODO rename type, it's the same
 
         try {
             serviceRequest = (SensorRequest) JsonUtils.deserializeJson(bodyRequest, SensorRequest.class);
@@ -459,8 +441,8 @@ public class HiPPIv2 {
                     "}";
         }
 
-        List<String> requestedService = new ArrayList<>();
-        List<String> requestedType = new ArrayList<>();
+        List<String> requestedService;
+        List<String> requestedType;
 
         try {
             requestedService = serviceRequest.getId();
@@ -468,7 +450,6 @@ public class HiPPIv2 {
         } catch (NullPointerException e) {
             this.logger.error("/service/metadata IO Exception - Requested Sensor");
             throw new Exception("/service/metadata IO Exception - Requested Sensor");
-            //e.printStackTrace();
         }
 
         List<Service> services = new ArrayList<>(); // output list
@@ -535,14 +516,13 @@ public class HiPPIv2 {
             }
         }
 
-        String out = "";
+        String out;
 
         try {
             out = JsonUtils.serializeJson(services);
         } catch (IOException e) {
             this.logger.error("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
             throw new Exception("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
         }
 
         return out;
@@ -575,7 +555,7 @@ public class HiPPIv2 {
     public String getIcoMetadata(String bodyRequest) throws Exception {
 
         int i, j;
-        SensorRequest sensorRequest = new SensorRequest();
+        SensorRequest sensorRequest;
 
         try {
             sensorRequest = (SensorRequest) JsonUtils.deserializeJson(bodyRequest, SensorRequest.class);
@@ -586,8 +566,8 @@ public class HiPPIv2 {
                     "}";
         }
 
-        List<String> requestedSensor = new ArrayList<>();
-        List<String> requestedType = new ArrayList<>();
+        List<String> requestedSensor;
+        List<String> requestedType;
 
         try {
             requestedSensor = sensorRequest.getId();
@@ -595,7 +575,6 @@ public class HiPPIv2 {
         } catch (NullPointerException e) {
             this.logger.error("/sensor/metadata IO Exception - Requested Sensor");
             throw new Exception("/sensor/metadata IO Exception - Requested Sensor");
-            //e.printStackTrace();
         }
 
         List<Sensor> sensors = new ArrayList<>(); // output list
@@ -640,7 +619,7 @@ public class HiPPIv2 {
                 } else {
                     String filter = hiReplySvc.createFilter("ID", currentId);
 
-                    ServiceList.TrafficSensor currentTrafficSensor = null;
+                    ServiceList.TrafficSensor currentTrafficSensor;
 
                     try {
                         currentTrafficSensor = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor().get(0);
@@ -657,20 +636,17 @@ public class HiPPIv2 {
             }
         }
 
-        String out = "";
+        String out;
 
         try {
             out = JsonUtils.serializeJson(sensors);
         } catch (IOException e) {
             this.logger.error("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
             throw new Exception("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
-            //e.printStackTrace();
         }
 
         return out;
     }
-
-
 
     /**
      * Method that returns the observation about the requested ICO/ICOs. This method is mandatory.
@@ -706,12 +682,12 @@ public class HiPPIv2 {
     @Produces(MediaType.APPLICATION_JSON)
     public String getObservation(String bodyRequest) throws Exception {
         int i, s, len;
-        ObservationRequest observationRequest = null;
+        ObservationRequest observationRequest;
         ArrayList<Measure> measures = new ArrayList<>();
         ArrayList<PerformanceMetric> metrics = new ArrayList<>();
         String id;
 
-        String out = "";
+        String out;
 
         try {
             observationRequest = (ObservationRequest) JsonUtils.deserializeJson(bodyRequest, ObservationRequest.class);
@@ -729,7 +705,7 @@ public class HiPPIv2 {
 
             if (id.contains("monitoring")) {
                 // Monitoring sensor
-                PerformanceMetric metric = null;
+                PerformanceMetric metric;
                 // get the requested property
                 String requestedProperty = observationRequest.getProperty();
                 SsnObservationProperty_ ob;
@@ -742,7 +718,6 @@ public class HiPPIv2 {
                 } else if (requestedProperty.toLowerCase().contains("sysload")) {
                     metric = this.getCpuUsage();
                 } else if (requestedProperty.toLowerCase().contains("servedrequest")) {
-                    metric = this.getServedRequest();
                     metric = this.getServedRequest();
                 } else if (requestedProperty.toLowerCase().contains("errors")) {
                     metric = this.getErrors();
@@ -769,7 +744,6 @@ public class HiPPIv2 {
                 } catch (IOException e) {
                     this.logger.error("GET OBSERVATION - serialize to json response IO Exception");
                     throw new Exception("GET OBSERVATION - serialize to json response IO Exception");
-                    //e.printStackTrace();
                 }
 
                 return out;
@@ -838,8 +812,8 @@ public class HiPPIv2 {
 
                     Date fromDate;
                     Date toDate = new Date(); // hi reply still need end date (use current date)
-                    Date fromDateHiReply = null;
-                    Date toDateHiReply = null;
+                    Date fromDateHiReply;
+                    Date toDateHiReply;
 
                     try {
                         fromDate = arrivedFormat.parse(observationRequest.getFrom());
@@ -877,7 +851,6 @@ public class HiPPIv2 {
         } catch (IOException e) {
             this.logger.error("GET OBSERVATION - serialize to json response IO Exception");
             throw new Exception("GET OBSERVATION - serialize to json response IO Exception");
-            //e.printStackTrace();
         }
 
         return out;
@@ -910,13 +883,6 @@ public class HiPPIv2 {
 
         ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
         pendingReq.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        /*SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
-        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
-        ssnHasMeasurementProperty_.setType("Reliability");
-        ssnHasMeasurementProperty_.setHasValue("HighReliability");
-        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        pendingReq.setSsnObservationQuality(ssnObservationQuality_);*/
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
         ssnObservationResult_.setType("ssn:SensorOutput");
@@ -955,13 +921,6 @@ public class HiPPIv2 {
 
         ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         sysUpTime.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        /*SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
-        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
-        ssnHasMeasurementProperty_.setType("Reliability");
-        ssnHasMeasurementProperty_.setHasValue("HighReliability");
-        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        sysUpTime.setSsnObservationQuality(ssnObservationQuality_);*/
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
         ssnObservationResult_.setType("ssn:SensorOutput");
@@ -1005,13 +964,6 @@ public class HiPPIv2 {
         ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
         servedRequest.setSsnObservationResultTime(ssnObservationResultTime_);
 
-        /*SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
-        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
-        ssnHasMeasurementProperty_.setType("Reliability");
-        ssnHasMeasurementProperty_.setHasValue("HighReliability");
-        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        servedRequest.setSsnObservationQuality(ssnObservationQuality_);*/
-
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
         ssnObservationResult_.setType("ssn:SensorOutput");
         SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
@@ -1046,13 +998,6 @@ public class HiPPIv2 {
 
         ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
         errors.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        /*SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
-        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
-        ssnHasMeasurementProperty_.setType("Reliability");
-        ssnHasMeasurementProperty_.setHasValue("HighReliability");
-        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        errors.setSsnObservationQuality(ssnObservationQuality_);*/
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
         ssnObservationResult_.setType("ssn:SensorOutput");
@@ -1090,13 +1035,6 @@ public class HiPPIv2 {
         ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
         memUsed.setSsnObservationResultTime(ssnObservationResultTime_);
 
-        /*SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
-        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
-        ssnHasMeasurementProperty_.setType("Reliability");
-        ssnHasMeasurementProperty_.setHasValue("HighReliability");
-        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        memUsed.setSsnObservationQuality(ssnObservationQuality_);*/
-
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
         ssnObservationResult_.setType("ssn:SensorOutput");
         SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
@@ -1132,13 +1070,6 @@ public class HiPPIv2 {
         ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
         memAval.setSsnObservationResultTime(ssnObservationResultTime_);
 
-        /*SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
-        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
-        ssnHasMeasurementProperty_.setType("Reliability");
-        ssnHasMeasurementProperty_.setHasValue("HighReliability");
-        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        memAval.setSsnObservationQuality(ssnObservationQuality_);*/
-
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
         ssnObservationResult_.setType("ssn:SensorOutput");
         SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
@@ -1173,13 +1104,6 @@ public class HiPPIv2 {
 
         ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
         load.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        /*SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
-        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
-        ssnHasMeasurementProperty_.setType("Reliability");
-        ssnHasMeasurementProperty_.setHasValue("HighReliability");
-        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        load.setSsnObservationQuality(ssnObservationQuality_);*/
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
         ssnObservationResult_.setType("ssn:SensorOutput");
@@ -1220,13 +1144,6 @@ public class HiPPIv2 {
         ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
         diskAval.setSsnObservationResultTime(ssnObservationResultTime_);
 
-        /*SsnObservationQuality_ ssnObservationQuality_ = new SsnObservationQuality_();
-        SsnHasMeasurementProperty_ ssnHasMeasurementProperty_ = new SsnHasMeasurementProperty_();
-        ssnHasMeasurementProperty_.setType("Reliability");
-        ssnHasMeasurementProperty_.setHasValue("HighReliability");
-        ssnObservationQuality_.setSsnHasMeasurementProperty(ssnHasMeasurementProperty_);
-        diskAval.setSsnObservationQuality(ssnObservationQuality_);*/
-
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
         ssnObservationResult_.setType("ssn:SensorOutput");
         SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
@@ -1243,9 +1160,7 @@ public class HiPPIv2 {
         Private Class and Methods that adapt
         HiReply structure with Vital structure
     */
-
     private class HistoryMeasure {
-
         private float value;
         private Date date;
 
@@ -1253,23 +1168,18 @@ public class HiPPIv2 {
             this.value = value;
             this.date = date;
         }
-
         public void setValue(float value) {
             this.value = value;
         }
-
         public void setDate(Date date) {
             this.date = date;
         }
-
         public float getValue() {
             return this.value;
         }
-
         public Date getDate() {
             return this.date;
         }
-
     }
 
     private List<HistoryMeasure> getHistoryMeasures(ValueList valueList) throws Exception {
@@ -1278,23 +1188,19 @@ public class HiPPIv2 {
         List<String> values = valueList.getValue();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy HH:mm:ss");
 
-        for (int i = 0; i<values.size(); i++) {
-
-            String currentValue = values.get(i);
-            String[] splitted = currentValue.split(","); //splitted[0] = value --- splitted[1] data
+        for(String currentValue : values) {
+            String[] splitted = currentValue.split(","); // splitted[0] = value --- splitted[1] data
             float auxValue = Float.parseFloat(splitted[0]);
-            Date auxDate = new Date();
+            Date auxDate;
 
             try {
                 auxDate = dateFormat.parse(splitted[1]);
             } catch (ParseException e) {
                 this.logger.error("ERROR PARSING DATE FROM HISTORY VALUE");
                 throw new Exception("ERROR PARSING DATE FROM HISTORY VALUE");
-                //e.printStackTrace();
             }
 
             historyMeasures.add(new HistoryMeasure(auxValue, auxDate));
-
         }
 
         return historyMeasures;
@@ -1498,13 +1404,12 @@ public class HiPPIv2 {
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         String hiReplyTimestamp = this.hiReplySvc.getPropertyAttribute(currentSensor.getID(), property, "Timestamp");
-        Date timestamp = null;
+        Date timestamp;
         try {
             timestamp = timestampDateFormat.parse(hiReplyTimestamp);
         } catch (ParseException e) {
             this.logger.error("HiPPI - createMeasureFromSensor - ERROR PARSING DATE FROM HIREPLY TIMESTAMP");
             throw new Exception("HiPPI - createMeasureFromSensor - ERROR PARSING DATE FROM HIREPLY TIMESTAMP");
-            //e.printStackTrace();
         }
 
         m.setContext("http://vital-iot.org/contexts/measurement.jsonld");
@@ -1530,12 +1435,6 @@ public class HiPPIv2 {
         dulHasLocation.setGeoAlt("0.0");
 
         m.setDulHasLocation(dulHasLocation);
-
-        /*SsnObservationQuality ssnObservationQuality = new SsnObservationQuality();
-        SsnHasMeasurementProperty ssnHasMeasurementProperty = new SsnHasMeasurementProperty();
-        ssnHasMeasurementProperty.setType("Reliability");
-        ssnHasMeasurementProperty.setHasValue("HighReliability");
-        ssnObservationQuality.setSsnHasMeasurementProperty(ssnHasMeasurementProperty);*/
 
         SsnObservationResult ssnObservationResult = new SsnObservationResult();
         ssnObservationResult.setType("ssn:SensorOutput");
@@ -1565,7 +1464,7 @@ public class HiPPIv2 {
                 ssnHasValue.setValue(""+speedValue);
                 ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
             } else if (property.equals(this.colorProp)) {
-                colorValue = currentSensor.getColor();;
+                colorValue = currentSensor.getColor();
                 ssnHasValue.setValue(""+colorValue);
                 ssnHasValue.setQudtUnit("qudt:Color");
             } else if (property.equals(this.reverseSpeedProp)) {
@@ -1582,7 +1481,6 @@ public class HiPPIv2 {
         }
 
         ssnObservationResult.setSsnHasValue(ssnHasValue);
-
         m.setSsnObservationResult(ssnObservationResult);
 
         return m;
@@ -1618,12 +1516,6 @@ public class HiPPIv2 {
 
         m.setDulHasLocation(dulHasLocation);
 
-        /*SsnObservationQuality ssnObservationQuality = new SsnObservationQuality();
-        SsnHasMeasurementProperty ssnHasMeasurementProperty = new SsnHasMeasurementProperty();
-        ssnHasMeasurementProperty.setType("Reliability");
-        ssnHasMeasurementProperty.setHasValue("HighReliability");
-        ssnObservationQuality.setSsnHasMeasurementProperty(ssnHasMeasurementProperty);*/
-
         SsnObservationResult ssnObservationResult = new SsnObservationResult();
         ssnObservationResult.setType("ssn:SensorOutput");
         SsnHasValue ssnHasValue = new SsnHasValue();
@@ -1669,7 +1561,6 @@ public class HiPPIv2 {
         }
 
         ssnObservationResult.setSsnHasValue(ssnHasValue);
-
         m.setSsnObservationResult(ssnObservationResult);
 
         return m;
@@ -1677,11 +1568,10 @@ public class HiPPIv2 {
 
     private ServiceList.TrafficSensor retrieveSensor(String id) {
 
-        String filter = hiReplySvc.createFilter("ID",id);
-
+        String filter = hiReplySvc.createFilter("ID", id);
         List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor();
 
-        ServiceList.TrafficSensor currentSensor = null;
+        ServiceList.TrafficSensor currentSensor;
 
         try {
             currentSensor = trafficSensors.get(0);
