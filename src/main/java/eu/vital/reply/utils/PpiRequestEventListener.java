@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * Created by f.deceglia on 24/03/2015.
  */
+
 public class PpiRequestEventListener implements RequestEventListener {
 
     private volatile int count = 0;
@@ -19,7 +20,6 @@ public class PpiRequestEventListener implements RequestEventListener {
         this.count = count;
     }
 
-
     @Override
     public void onEvent(RequestEvent requestEvent) {
         switch (requestEvent.getType()) {
@@ -30,26 +30,26 @@ public class PpiRequestEventListener implements RequestEventListener {
                         + " started for request " + count);
                 eventPath = requestEvent.getUriInfo().getPath();
                 /*
-                passo come indice il numero di count, che in questo caso corrisponde
-                al numero progressivo di ogni evento scatenato
+                Use count as index, which corresponds to the
+                progressive number of each fired up event
                  */
-                EventHelper eventHelper = new EventHelper(count,eventPath);
+                EventHelper eventHelper = new EventHelper(count, eventPath);
                 StatCounter.addEventHelper(eventHelper);
                 break;
-            /*case RESOURCE_METHOD_FINISHED:
-            eliminato xke non è qui che la richiesta è completamente terminata, ma nello stato FINISHED
+                /* case RESOURCE_METHOD_FINISHED:
+                deleted because it is not here that the request is ended, but in the FINISHED status
                 logger.info("Request " + requestEvent
                         + " finished.");
                 StatCounter.setRequestedNumber(count);
                 EventHelper eventHelperF = new EventHelper(count,eventPath);
                 boolean esito = StatCounter.deleteEventHelper(eventHelperF);
-                break;*/
+                break; */
             case FINISHED:
                 logger.info("Request " + requestEvent
                         + " finished.");
                 StatCounter.setRequestedNumber(count);
                 EventHelper eventHelperF = new EventHelper(count,eventPath);
-                /*boolean esito = */StatCounter.deleteEventHelper(eventHelperF);
+                /* boolean outcome = */ StatCounter.deleteEventHelper(eventHelperF);
                 break;
             case ON_EXCEPTION:
                 logger.info("Request " + requestEvent + " has thrown an Exception");

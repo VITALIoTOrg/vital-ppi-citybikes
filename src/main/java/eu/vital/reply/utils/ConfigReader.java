@@ -10,12 +10,12 @@ import java.util.Properties;
 /**
  * Created by a.martelli on 09/10/2014.
  */
+
 public class ConfigReader
 {
     private static ConfigReader instance;
 
     private Properties config;
-    private Logger logger;
 
     public static final String SYMBOLIC_URI                        = "SYMBOLIC_URI";
     public static final String SERVER_HOSTNAME                     = "SERVER_HOSTNAME";
@@ -41,16 +41,16 @@ public class ConfigReader
 
     private ConfigReader()
     {
-        logger = LogManager.getLogger(ConfigReader.class);
+        Logger logger = LogManager.getLogger(ConfigReader.class);
         config = new Properties();
-        InputStream is =this.getClass().getResourceAsStream("/config.properties");
+        InputStream is = this.getClass().getResourceAsStream("/config.properties");
         try
         {
             config.load(is);
         }
         catch (IOException e)
         {
-            this.logger.error("ConfigReader - IO EXCEPTION");
+            logger.error("ConfigReader - IO EXCEPTION");
             e.printStackTrace();
         }
     }

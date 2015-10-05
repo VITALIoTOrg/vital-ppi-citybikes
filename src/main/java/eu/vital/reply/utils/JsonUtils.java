@@ -1,13 +1,11 @@
 package eu.vital.reply.utils;
 
-
 import java.io.IOException; 
 
 import com.fasterxml.jackson.core.JsonParseException; 
 import com.fasterxml.jackson.databind.JsonMappingException; 
 import com.fasterxml.jackson.databind.ObjectMapper; 
 
- 
 /**
  * JsonUtility Class that provides facilities for manipulating JSON strings
  * 
@@ -27,10 +25,10 @@ public class JsonUtils {
 	 * @throws JsonMappingException 
 	 * @throws JsonParseException 
 	 */	
-	public static <T> Object deserializeJson(String jsonString, Class<T> outClass) throws JsonParseException, JsonMappingException, IOException 
+	public static <T> Object deserializeJson(String jsonString, Class<T> outClass) throws IOException
 	{
 		ObjectMapper om = new ObjectMapper();
-		Object result = null;
+		Object result;
 		
 		result = om.readValue(jsonString, outClass);
 
@@ -47,14 +45,14 @@ public class JsonUtils {
 	 * @throws JsonMappingException 
 	 * @throws JsonParseException 
 	 */
-	public static String serializeJson(Object obj) throws JsonParseException, JsonMappingException, IOException 
+	public static String serializeJson(Object obj) throws IOException
 	{
 		ObjectMapper om = new ObjectMapper();
-		String result = "";
+		String result;
 
 		result = om.writeValueAsString(obj);
 
 		return result; 
 		
 	} 
-} 
+}

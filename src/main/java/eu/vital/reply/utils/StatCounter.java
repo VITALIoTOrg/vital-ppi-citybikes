@@ -1,8 +1,6 @@
 package eu.vital.reply.utils;
 
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -31,7 +29,7 @@ public class StatCounter {
     public static void incrementErrorNumeber() {
 
         int currentErrorNumber = errorNumber.get();
-        errorNumber.set(currentErrorNumber+1);
+        errorNumber.set(currentErrorNumber + 1);
     }
 
     public static synchronized void addEventHelper(EventHelper eventHelper) {

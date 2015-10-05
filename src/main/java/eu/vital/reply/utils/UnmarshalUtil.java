@@ -16,42 +16,28 @@ import java.io.StringReader;
 /**
  * Created by a.martelli on 13/10/2014.
  */
+
 public class UnmarshalUtil
 {
     private static UnmarshalUtil instance;
-
-    private SAXParserFactory spf;
-    private SAXParser sp;
-    private XMLReader xmlReader;
     private XMLFilter xmlFilter;
-
-    private JAXBContext context;
-    private Unmarshaller um;
     private UnmarshallerHandler unmarshallerHandler;
 
     private UnmarshalUtil()
     {
         try
         {
-            this.spf = SAXParserFactory.newInstance();
-            this.sp = this.spf.newSAXParser();
-            this.xmlReader = this.sp.getXMLReader();
-            this.xmlFilter = new IoTXMLFilter(this.xmlReader);
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            SAXParser sp = spf.newSAXParser();
+            XMLReader xmlReader = sp.getXMLReader();
+            this.xmlFilter = new IoTXMLFilter(xmlReader);
 
-            this.context = JAXBContext.newInstance("eu.vital.reply.xmlpojos");
-            this.um = this.context.createUnmarshaller();
-            this.unmarshallerHandler = this.um.getUnmarshallerHandler();
+            JAXBContext context = JAXBContext.newInstance("eu.vital.reply.xmlpojos");
+            Unmarshaller um = context.createUnmarshaller();
+            this.unmarshallerHandler = um.getUnmarshallerHandler();
             this.xmlFilter.setContentHandler(this.unmarshallerHandler);
         }
-        catch (ParserConfigurationException e)
-        {
-            e.printStackTrace();
-        }
-        catch (SAXException e)
-        {
-            e.printStackTrace();
-        }
-        catch (JAXBException e)
+        catch (ParserConfigurationException | SAXException | JAXBException e)
         {
             e.printStackTrace();
         }

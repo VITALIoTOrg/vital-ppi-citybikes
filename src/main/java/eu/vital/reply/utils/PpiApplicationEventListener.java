@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * Created by f.deceglia on 24/03/2015.
  */
+
 public class PpiApplicationEventListener implements ApplicationEventListener {
 
     private volatile int requestCount = 0;

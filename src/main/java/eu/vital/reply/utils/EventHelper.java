@@ -3,6 +3,7 @@ package eu.vital.reply.utils;
 /**
  * Created by f.deceglia on 26/03/2015.
  */
+
 public class EventHelper {
 
     private int id;
@@ -31,11 +32,11 @@ public class EventHelper {
 
     @Override
     public boolean equals(Object o) {
+        EventHelper eventHelper;
 
-        EventHelper eventHelper = (EventHelper) o;
-
-        if (this.id == eventHelper.getId() && this.resource.equals(eventHelper.getResource())) {
-            return true;
+        if(o.getClass() == EventHelper.class) {
+            eventHelper = (EventHelper) o;
+            return this.id == eventHelper.getId() && this.resource.equals(eventHelper.getResource());
         }
 
         return false;
