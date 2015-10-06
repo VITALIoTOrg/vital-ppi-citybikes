@@ -112,16 +112,6 @@ public class LifecycleInformation {
         return ToStringBuilder.reflectionToString(this);
     }
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return EqualsBuilder.reflectionEquals(this, other);
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -135,6 +125,23 @@ public class LifecycleInformation {
     public LifecycleInformation withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(Context).append(uri).append(status).append(additionalProperties).toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+        if ((other instanceof LifecycleInformation) == false) {
+            return false;
+        }
+        LifecycleInformation rhs = ((LifecycleInformation) other);
+        return new EqualsBuilder().append(Context, rhs.Context).append(uri, rhs.uri).append(status, rhs.status).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

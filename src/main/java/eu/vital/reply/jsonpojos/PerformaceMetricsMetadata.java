@@ -58,16 +58,6 @@ public class PerformaceMetricsMetadata {
         return ToStringBuilder.reflectionToString(this);
     }
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return EqualsBuilder.reflectionEquals(this, other);
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -81,6 +71,23 @@ public class PerformaceMetricsMetadata {
     public PerformaceMetricsMetadata withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(metrics).append(additionalProperties).toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+        if ((other instanceof PerformaceMetricsMetadata) == false) {
+            return false;
+        }
+        PerformaceMetricsMetadata rhs = ((PerformaceMetricsMetadata) other);
+        return new EqualsBuilder().append(metrics, rhs.metrics).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

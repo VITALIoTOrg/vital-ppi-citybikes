@@ -140,16 +140,6 @@ public class DulHasLocation {
         return ToStringBuilder.reflectionToString(this);
     }
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return EqualsBuilder.reflectionEquals(this, other);
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -163,6 +153,23 @@ public class DulHasLocation {
     public DulHasLocation withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(type).append(geoLat).append(geoLong).append(geoAlt).append(additionalProperties).toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+        if ((other instanceof DulHasLocation) == false) {
+            return false;
+        }
+        DulHasLocation rhs = ((DulHasLocation) other);
+        return new EqualsBuilder().append(type, rhs.type).append(geoLat, rhs.geoLat).append(geoLong, rhs.geoLong).append(geoAlt, rhs.geoAlt).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }
