@@ -1,5 +1,5 @@
 
-package eu.vital.reply.jsonpojosv2;
+package eu.vital.reply.jsonpojos;
 
 import java.util.HashMap;
 import java.util.Map;

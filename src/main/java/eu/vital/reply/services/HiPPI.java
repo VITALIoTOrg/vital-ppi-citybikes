@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @version 2.0.0
  */
 
-@Path("/ppi")
+@Path("")
 public class HiPPI {
 
     private Logger logger;

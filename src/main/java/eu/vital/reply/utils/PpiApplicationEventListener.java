@@ -1,43 +1,33 @@
 package eu.vital.reply.utils;
 
-import org.glassfish.jersey.server.monitoring.ApplicationEvent;
-import org.glassfish.jersey.server.monitoring.ApplicationEventListener;
-import org.glassfish.jersey.server.monitoring.RequestEvent;
-import org.glassfish.jersey.server.monitoring.RequestEventListener;
+import java.io.IOException;
+
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.ext.Provider;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * Created by f.deceglia on 24/03/2015.
+ * Update by l.bracco on 14/10/2015.
  */
 
-public class PpiApplicationEventListener implements ApplicationEventListener {
+@Provider
+public class PpiApplicationEventListener implements ContainerResponseFilter {
 
     private volatile int requestCount = 0;
 
     private Logger logger = LogManager.getLogger(PpiApplicationEventListener.class);
 
-    @Override
-    public void onEvent(ApplicationEvent applicationEvent) {
-        switch (applicationEvent.getType()) {
-            case INITIALIZATION_FINISHED:
-                logger.info("Application "
-                        + applicationEvent.getResourceConfig().getApplicationName()
-                        + " was initialized.");
-                break;
-            case DESTROY_FINISHED:
-                logger.info("Application "
-                        + applicationEvent.getResourceConfig().getApplicationName() + " destroyed.");
-                break;
-        }
-    }
-
-    @Override
-    public RequestEventListener onRequest(RequestEvent requestEvent) {
-        requestCount++;
-        logger.info("Request " + requestCount + " started.");
-        // return the listener instance that will handle this request.
-        return new PpiRequestEventListener(requestCount);
-
-    }
+	@Override
+	public void filter(ContainerRequestContext arg0, ContainerResponseContext arg1) throws IOException {
+		if(arg1.getStatus() != 500) {
+	        requestCount++;
+	        logger.info("Request " + requestCount + " started.");
+	        StatCounter.setRequestedNumber(requestCount);
+		}
+	}
 }
