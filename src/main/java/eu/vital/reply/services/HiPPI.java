@@ -591,18 +591,21 @@ public class HiPPI {
             Sensor tmpSensor;
             for (i = 0; i < requestedType.size(); i++) {
                 currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
-                if (currentType.contains("MonitoringSensor")) {
+                if (currentType.toLowerCase().contains("monitoringsensor")) {
                     tmpSensor = this.createMonitoringSensor();
                     if(!sensors.contains(tmpSensor)) {
                         sensors.add(tmpSensor);
                     }
                 } else {
-                    List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshot().getTrafficSensor();
-                    for(j = 0; j < trafficSensors.size(); j++) {
-                        tmpSensor = this.createSensorFromTraffic(trafficSensors.get(j));
-                        if(!sensors.contains(tmpSensor)) {
-                            sensors.add(tmpSensor);
-                        }
+                	currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
+                    if (currentType.toLowerCase().contains("vitalsensor")) {
+	                    List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshot().getTrafficSensor();
+	                    for(j = 0; j < trafficSensors.size(); j++) {
+	                        tmpSensor = this.createSensorFromTraffic(trafficSensors.get(j));
+	                        if(!sensors.contains(tmpSensor)) {
+	                            sensors.add(tmpSensor);
+	                        }
+	                    }
                     }
                 }
             }
@@ -611,7 +614,7 @@ public class HiPPI {
             for (i = 0; i < requestedSensor.size(); i++) {
                 currentId = requestedSensor.get(i).replaceAll(this.transfProt + this.symbolicUri + "/sensor/", "");
 
-                if (currentId.contains("monitoring")) {
+                if (currentId.toLowerCase().contains("monitoring")) {
                     tmpSensor = this.createMonitoringSensor();
                     if(!sensors.contains(tmpSensor)) {
                         sensors.add(tmpSensor);
@@ -866,7 +869,7 @@ public class HiPPI {
 
         PerformanceMetric pendingReq = new PerformanceMetric();
 
-        pendingReq.setContext("http://vital.iot.org/measurement.jsonld");
+        pendingReq.setContext("http://vital.iot.org/contexts/measurement.jsonld");
         pendingReq.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
         pendingReq.setType("ssn:Observation");
 
@@ -904,7 +907,7 @@ public class HiPPI {
 
         PerformanceMetric sysUpTime = new PerformanceMetric();
 
-        sysUpTime.setContext("http://vital.iot.org/measurement.jsonld");
+        sysUpTime.setContext("http://vital.iot.org/contexts/measurement.jsonld");
         sysUpTime.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
         sysUpTime.setType("ssn:Observation");
 
@@ -943,7 +946,7 @@ public class HiPPI {
 
         PerformanceMetric servedRequest = new PerformanceMetric();
 
-        servedRequest.setContext("http://vital.iot.org/measurement.jsonld");
+        servedRequest.setContext("http://vital.iot.org/contexts/measurement.jsonld");
         servedRequest.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
         servedRequest.setType("ssn:Observation");
 
@@ -978,7 +981,7 @@ public class HiPPI {
 
         PerformanceMetric errors = new PerformanceMetric();
 
-        errors.setContext("http://vital.iot.org/measurement.jsonld");
+        errors.setContext("http://vital.iot.org/contexts/measurement.jsonld");
         errors.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
         errors.setType("ssn:Observation");
 
@@ -1015,7 +1018,7 @@ public class HiPPI {
 
         PerformanceMetric memUsed = new PerformanceMetric();
 
-        memUsed.setContext("http://vital.iot.org/measurement.jsonld");
+        memUsed.setContext("http://vital.iot.org/contexts/measurement.jsonld");
         memUsed.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
         memUsed.setType("ssn:Observation");
 
@@ -1050,7 +1053,7 @@ public class HiPPI {
 
         PerformanceMetric memAval = new PerformanceMetric();
 
-        memAval.setContext("http://vital.iot.org/measurement.jsonld");
+        memAval.setContext("http://vital.iot.org/contexts/measurement.jsonld");
         memAval.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
         memAval.setType("ssn:Observation");
 
@@ -1085,8 +1088,8 @@ public class HiPPI {
 
         PerformanceMetric load = new PerformanceMetric();
 
-        load.setContext("http://vital.iot.org/measurement.jsonld");
-        load.setId(this.transfProt + this.symbolicUri + "/senson/monitoring/observation");
+        load.setContext("http://vital.iot.org/contexts/measurement.jsonld");
+        load.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
         load.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -1124,7 +1127,7 @@ public class HiPPI {
 
         PerformanceMetric diskAval = new PerformanceMetric();
 
-        diskAval.setContext("http://vital.iot.org/measurement.jsonld");
+        diskAval.setContext("http://vital.iot.org/contexts/measurement.jsonld");
         diskAval.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
         diskAval.setType("ssn:Observation");
 
