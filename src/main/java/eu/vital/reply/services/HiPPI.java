@@ -16,10 +16,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,6 +43,7 @@ public class HiPPI {
 
     private String symbolicUri;
     private String ontBaseUri;
+    private String contextsUri;
 
     private String transfProt;
 
@@ -66,6 +70,7 @@ public class HiPPI {
 
         symbolicUri = configReader.get(ConfigReader.SYMBOLIC_URI);
         ontBaseUri = configReader.get(ConfigReader.ONT_BASE_URI_PROPERTY);
+        contextsUri = configReader.get(ConfigReader.CONTEXTS_LOC);
 
         transfProt = configReader.get(ConfigReader.TRANSF_PROTOCOL);
 
@@ -114,7 +119,7 @@ public class HiPPI {
         ArrayList<String> sensors = new ArrayList<>();
 
         // Is it ok or it must be a real accessible file?
-        ioTSystem.setContext("http://vital-iot.eu/contexts/system.jsonld");
+        ioTSystem.setContext(contextsUri + "system.jsonld");
         ioTSystem.setId(system.getIoTSystem().getUri());
         ioTSystem.setType("vital:IoTSystem"); // is it really it?
         ioTSystem.setName(system.getIoTSystem().getID());
@@ -367,7 +372,7 @@ public class HiPPI {
         Date date = new Date();
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
-        lifecycleInformation.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
+        lifecycleInformation.setContext(contextsUri + "measurement.jsonld");
         lifecycleInformation.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
         lifecycleInformation.setType("ssn:Observation");
 
@@ -420,7 +425,7 @@ public class HiPPI {
      *                  "http://vital-iot.eu/ontology/ns/MonitoringService" <br>
      *              ] <br>
      *            } <br>
-     * If the id and type fields are omitted, all the serivices are requested <br>
+     * If the id and type fields are omitted, all the services are requested <br>
      * @return Returns a serialized String with the list of the requested services. <br>
      */
     @Path("/service/metadata")
@@ -858,6 +863,30 @@ public class HiPPI {
         return out;
     }
 
+    @Path("/contexts/{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getContext(@PathParam("id") String context) throws Exception {
+
+        String out = null;
+        byte[] b = new byte[4096];
+        int size;
+
+        InputStream is = this.getClass().getResourceAsStream("/contexts/" + context);
+        try
+        {
+            size = is.read(b);
+            out = new String(b, 0, size, StandardCharsets.UTF_8);
+        }
+        catch (IOException e)
+        {
+            logger.error("ConfigReader - IO EXCEPTION");
+            e.printStackTrace();
+        }
+
+        return out;
+    }
+
     private PerformanceMetric getPendingRequest() throws Exception {
 
         /* Minus 1 because this method has not yet ended (is still pending) */
@@ -869,7 +898,7 @@ public class HiPPI {
 
         PerformanceMetric pendingReq = new PerformanceMetric();
 
-        pendingReq.setContext("http://vital.iot.org/contexts/measurement.jsonld");
+        pendingReq.setContext(contextsUri + "measurement.jsonld");
         pendingReq.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
         pendingReq.setType("ssn:Observation");
 
@@ -907,7 +936,7 @@ public class HiPPI {
 
         PerformanceMetric sysUpTime = new PerformanceMetric();
 
-        sysUpTime.setContext("http://vital.iot.org/contexts/measurement.jsonld");
+        sysUpTime.setContext(contextsUri + "measurement.jsonld");
         sysUpTime.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
         sysUpTime.setType("ssn:Observation");
 
@@ -946,7 +975,7 @@ public class HiPPI {
 
         PerformanceMetric servedRequest = new PerformanceMetric();
 
-        servedRequest.setContext("http://vital.iot.org/contexts/measurement.jsonld");
+        servedRequest.setContext(contextsUri + "measurement.jsonld");
         servedRequest.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
         servedRequest.setType("ssn:Observation");
 
@@ -981,7 +1010,7 @@ public class HiPPI {
 
         PerformanceMetric errors = new PerformanceMetric();
 
-        errors.setContext("http://vital.iot.org/contexts/measurement.jsonld");
+        errors.setContext(contextsUri + "measurement.jsonld");
         errors.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
         errors.setType("ssn:Observation");
 
@@ -1018,7 +1047,7 @@ public class HiPPI {
 
         PerformanceMetric memUsed = new PerformanceMetric();
 
-        memUsed.setContext("http://vital.iot.org/contexts/measurement.jsonld");
+        memUsed.setContext(contextsUri + "measurement.jsonld");
         memUsed.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
         memUsed.setType("ssn:Observation");
 
@@ -1053,7 +1082,7 @@ public class HiPPI {
 
         PerformanceMetric memAval = new PerformanceMetric();
 
-        memAval.setContext("http://vital.iot.org/contexts/measurement.jsonld");
+        memAval.setContext(contextsUri + "measurement.jsonld");
         memAval.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
         memAval.setType("ssn:Observation");
 
@@ -1088,7 +1117,7 @@ public class HiPPI {
 
         PerformanceMetric load = new PerformanceMetric();
 
-        load.setContext("http://vital.iot.org/contexts/measurement.jsonld");
+        load.setContext(contextsUri + "measurement.jsonld");
         load.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
         load.setType("ssn:Observation");
 
@@ -1127,7 +1156,7 @@ public class HiPPI {
 
         PerformanceMetric diskAval = new PerformanceMetric();
 
-        diskAval.setContext("http://vital.iot.org/contexts/measurement.jsonld");
+        diskAval.setContext(contextsUri + "measurement.jsonld");
         diskAval.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
         diskAval.setType("ssn:Observation");
 
@@ -1206,7 +1235,7 @@ public class HiPPI {
         Sensor sensor = new Sensor();
         String id = currentSensor.getID();
 
-        sensor.setContext("http://vital-iot.org/contexts/sensor.jsonld");
+        sensor.setContext(contextsUri + "sensor.jsonld");
         sensor.setName(id);
         sensor.setType("vital:VitalSensor");
         sensor.setDescription(currentSensor.getDescription());
@@ -1272,7 +1301,7 @@ public class HiPPI {
 
     private Service createObservationService() {
         Service observationService = new Service();
-        observationService.setContext("http://vital-iot.eu/contexts/service.jsonld");
+        observationService.setContext(contextsUri + "service.jsonld");
         observationService.setId(this.transfProt + this.symbolicUri + "/service/observation");
         observationService.setType("vital:ObservationService");
         List<Operation> operations = new ArrayList<>();
@@ -1288,7 +1317,7 @@ public class HiPPI {
 
     private Service createConfigurationService() {
         Service configurationService = new Service();
-        configurationService.setContext("http://vital-iot.eu/contexts/service.jsonld");
+        configurationService.setContext(contextsUri + "service.jsonld");
         configurationService.setId(this.transfProt + this.symbolicUri + "/service/configuration");
         configurationService.setType("vital:ConfigurationService");
         List<Operation> operations = new ArrayList<>();
@@ -1309,7 +1338,7 @@ public class HiPPI {
 
     private Service createMonitoringService() {
         Service monitoringService = new Service();
-        monitoringService.setContext("http://vital-iot.eu/contexts/service.jsonld");
+        monitoringService.setContext(contextsUri + "service.jsonld");
         monitoringService.setId(this.transfProt + this.symbolicUri + "/service/monitoring");
         monitoringService.setType("vital:MonitoringService");
         List<Operation> operations = new ArrayList<>();
@@ -1338,7 +1367,7 @@ public class HiPPI {
 
         String id = "monitoring";
 
-        sensor.setContext("http://vital-iot.org/contexts/sensor.jsonld");
+        sensor.setContext(contextsUri + "sensor.jsonld");
         sensor.setName(id);
         sensor.setType("vital:MonitoringSensor");
         sensor.setDescription("HiReply Monitoring Sensor");
@@ -1408,7 +1437,7 @@ public class HiPPI {
             throw new Exception("HiPPI - createMeasureFromSensor - ERROR PARSING DATE FROM HIREPLY TIMESTAMP");
         }
 
-        m.setContext("http://vital-iot.org/contexts/measurement.jsonld");
+        m.setContext(contextsUri + "measurement.jsonld");
         m.setId(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID() + "/observation");
         m.setType("ssn:Observation");
         m.setSsnObservedBy(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID());
@@ -1488,7 +1517,7 @@ public class HiPPI {
 
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
-        m.setContext("http://vital-iot.org/contexts/measurement.jsonld");
+        m.setContext(contextsUri + "measurement.jsonld");
         m.setId(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID() + "/observation");
         m.setType("ssn:Observation");
 
