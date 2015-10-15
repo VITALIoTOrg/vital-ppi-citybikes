@@ -17,6 +17,7 @@ public class ConfigReader
 
     private Properties config;
 
+    public static final String CONTEXTS_LOC                        = "CONTEXTS_LOC";
     public static final String SYMBOLIC_URI                        = "SYMBOLIC_URI";
     public static final String SERVER_HOSTNAME                     = "SERVER_HOSTNAME";
     public static final String SERVER_PORT                         = "SERVER_PORT";
@@ -37,7 +38,6 @@ public class ConfigReader
     public static final String REVERSE_SPEED_PROP                  = "REVERSE_SPEED_PROP";
     public static final String REVERSE_COLOR_PROP                  = "REVERSE_COLOR_PROP";
     public static final String LOG_VERBOSITY                       = "LOG_VERBOSITY";
-
 
     private ConfigReader()
     {
