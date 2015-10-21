@@ -717,7 +717,7 @@ public class HiPPI {
             String currentType;
             Measure tmpMeasure;
             for (i = 0; i < requestedType.size(); i++) {
-                currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
+            	currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
                 if (currentType.toLowerCase().contains("monitoringsensor")) {
                     //tmpSensor = this.createMonitoringSensor();
                     //if(!sensors.contains(tmpSensor)) {
@@ -728,7 +728,7 @@ public class HiPPI {
                     if (currentType.toLowerCase().contains("vitalsensor")) {
 	                    List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshot().getTrafficSensor();
 	                    for(j = 0; j < trafficSensors.size(); j++) {
-	                    	tmpMeasure = this.createMeasureFromSensor(trafficSensors.get(i), "OperationalState");
+	                    	tmpMeasure = this.createMeasureFromSensor(trafficSensors.get(j), "OperationalState");
 	                    	if(!measures.contains(tmpMeasure)) {
 	                    		measures.add(tmpMeasure);
 	                    	}
@@ -1556,13 +1556,15 @@ public class HiPPI {
         SimpleDateFormat timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
-        String hiReplyTimestamp = this.hiReplySvc.getPropertyAttribute(currentSensor.getID(), property, "Timestamp");
-        Date timestamp;
-        try {
-            timestamp = timestampDateFormat.parse(hiReplyTimestamp);
-        } catch (ParseException e) {
-            this.logger.error("HiPPI - createMeasureFromSensor - ERROR PARSING DATE FROM HIREPLY TIMESTAMP");
-            throw new Exception("HiPPI - createMeasureFromSensor - ERROR PARSING DATE FROM HIREPLY TIMESTAMP");
+        Date timestamp = null;
+        if(!property.equals("OperationalState")) {
+        	String hiReplyTimestamp = this.hiReplySvc.getPropertyAttribute(currentSensor.getID(), property, "Timestamp");
+	        try {
+	            timestamp = timestampDateFormat.parse(hiReplyTimestamp);
+	        } catch (ParseException e) {
+	            this.logger.error("HiPPI - createMeasureFromSensor - ERROR PARSING DATE FROM HIREPLY TIMESTAMP");
+	            throw new Exception("HiPPI - createMeasureFromSensor - ERROR PARSING DATE FROM HIREPLY TIMESTAMP");
+	        }
         }
 
         m.setContext(contextsUri + "measurement.jsonld");
