@@ -39,6 +39,7 @@ public class HiReplySvc
 
     private String host;
     private int port;
+    private String context;
     private String getSnapshotPath;
     private String getPropNamesPath;
     private String getPropValuePath;
@@ -61,6 +62,7 @@ public class HiReplySvc
 
         host = config.get(ConfigReader.HI_HOSTNAME);
         port = Integer.parseInt(config.get(ConfigReader.HI_PORT));
+        context = config.get(ConfigReader.HI_CONTEXT);
         getSnapshotPath = config.get(ConfigReader.HI_GETSNAPSHOT_PATH);
         getPropNamesPath = config.get(ConfigReader.HI_GETPROPERTYNAMES_PATH);
         getPropValuePath = config.get(ConfigReader.HI_GETPROPERTYVALUE_PATH);
@@ -80,7 +82,7 @@ public class HiReplySvc
                     .setScheme("http")
                     .setHost(host)
                     .setPort(port)
-                    .setPath(getSnapshotPath)
+                    .setPath(context + getSnapshotPath)
                     .build();
         } catch (URISyntaxException e)
         {
@@ -144,7 +146,7 @@ public class HiReplySvc
                     .setScheme("http")
                     .setHost(host)
                     .setPort(port)
-                    .setPath("/" + serviceId + getPropNamesPath)
+                    .setPath(context + "/" + serviceId + getPropNamesPath)
                     .build();
         } catch (URISyntaxException e)
         {
@@ -188,7 +190,7 @@ public class HiReplySvc
                     .setScheme("http")
                     .setHost(host)
                     .setPort(port)
-                    .setPath("/" + serviceId + getPropValuePath)
+                    .setPath(context + "/" + serviceId + getPropValuePath)
                     .addParameter("prop", propertyName)
                     .build();
         } catch (URISyntaxException e)
@@ -223,7 +225,7 @@ public class HiReplySvc
                     .setScheme("http")
                     .setHost(host)
                     .setPort(port)
-                    .setPath("/" + serviceId + setPropValuePath)
+                    .setPath(context + "/" + serviceId + setPropValuePath)
                     .addParameter("prop", propertyName)
                     .addParameter("value", value)
                     .build();
@@ -259,7 +261,7 @@ public class HiReplySvc
                     .setScheme("http")
                     .setHost(host)
                     .setPort(port)
-                    .setPath("/" + serviceId + getPropAttrPath)
+                    .setPath(context + "/" + serviceId + getPropAttrPath)
                     .addParameter("prop", propertyName)
                     .addParameter("attribute", attributeName)
                     .build();
@@ -300,7 +302,7 @@ public class HiReplySvc
                     .setScheme("http")
                     .setHost(host)
                     .setPort(port)
-                    .setPath("/" + serviceId + getPropHistValuesPath)
+                    .setPath(context + "/" + serviceId + getPropHistValuesPath)
                     .addParameter("prop", propertyName)
                     .addParameter("starttime", startDate)
                     .addParameter("endtime", endDate)
@@ -348,7 +350,7 @@ public class HiReplySvc
                     .setScheme("http")
                     .setHost(host)
                     .setPort(port)
-                    .setPath("/" + serviceId + isServiceRunningPath)
+                    .setPath(context + "/" + serviceId + isServiceRunningPath)
                     .build();
         } catch (URISyntaxException e)
         {

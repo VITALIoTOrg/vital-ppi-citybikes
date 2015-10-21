@@ -23,6 +23,7 @@ public class ConfigReader
     public static final String SERVER_PORT                         = "SERVER_PORT";
     public static final String HI_HOSTNAME                         = "HI_HOSTNAME";
     public static final String HI_PORT                             = "HI_PORT";
+    public static final String HI_CONTEXT                          = "HI_CONTEXT";
     public static final String HI_GETSNAPSHOT_PATH                 = "HI_GETSNAPSHOT_PATH";
     public static final String HI_GETPROPERTYNAMES_PATH            = "HI_GETPROPERTYNAMES_PATH";
     public static final String HI_GETPROPERTYVALUE_PATH            = "HI_GETPROPERTYVALUE_PATH";

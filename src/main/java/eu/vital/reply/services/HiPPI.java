@@ -656,6 +656,129 @@ public class HiPPI {
     }
 
     /**
+     * Method that returns the status of the requested sensor(s). This method is optional.
+     * @param bodyRequest <br>
+     *            JSON-LD String with the body request <br>
+     *            { <br>
+     *              "id": <br>
+     *              [ <br>
+     *                  "http://www.example.com/ico/123/", <br>
+     *                  "http://www.example.com/ico/1234/", <br>
+     *                  "http://www.example.com/ico/12345/" <br>
+     *              ], <br>
+     *              "type": <br>
+     *              [ <br>
+     *                  "http://vital-iot.eu/ontology/ns/VitalSensor", <br>
+     *                  "http://vital-iot.eu/ontology/ns/MonitoringSensor" <br>
+     *              ] <br>
+     *            } <br>
+     * If the id and type fields are omitted, all the sensors are requested <br>
+     * @return Returns a serialized String with the list of the requested sensors. <br>
+     */
+    @Path("/sensor/status")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getSensorStatus(String bodyRequest) throws Exception {
+
+        int i, j;
+        SensorRequest sensorRequest;
+
+        try {
+            sensorRequest = (SensorRequest) JsonUtils.deserializeJson(bodyRequest, SensorRequest.class);
+        } catch (IOException e) {
+            this.logger.error("GET SENSOR STATUS - IOException parsing the json request");
+            return "{\n" +
+                    "\"error\": \"Malformed request body\"\n"+
+                    "}";
+        }
+
+        List<String> requestedSensor;
+        List<String> requestedType;
+
+        try {
+            requestedSensor = sensorRequest.getId();
+            requestedType = sensorRequest.getType();
+        } catch (NullPointerException e) {
+            this.logger.error("/sensor/status IO Exception - Requested Sensor");
+            throw new Exception("/sensor/status IO Exception - Requested Sensor");
+        }
+
+        ArrayList<Measure> measures = new ArrayList<>();
+
+        if ((requestedSensor.size() == 0) && (requestedType.size() == 0)) {
+            // then all the sensors must be returned
+            List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshot().getTrafficSensor();
+            for (i = 0; i < trafficSensors.size(); i++) {
+                measures.add(this.createMeasureFromSensor(trafficSensors.get(i), "OperationalState"));
+            }
+            //sensors.add(this.createMonitoringSensor());
+        } else {
+            String currentType;
+            Measure tmpMeasure;
+            for (i = 0; i < requestedType.size(); i++) {
+                currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
+                if (currentType.toLowerCase().contains("monitoringsensor")) {
+                    //tmpSensor = this.createMonitoringSensor();
+                    //if(!sensors.contains(tmpSensor)) {
+                    //    sensors.add(tmpSensor);
+                    //}
+                } else {
+                	currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
+                    if (currentType.toLowerCase().contains("vitalsensor")) {
+	                    List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshot().getTrafficSensor();
+	                    for(j = 0; j < trafficSensors.size(); j++) {
+	                    	tmpMeasure = this.createMeasureFromSensor(trafficSensors.get(i), "OperationalState");
+	                    	if(!measures.contains(tmpMeasure)) {
+	                    		measures.add(tmpMeasure);
+	                    	}
+	                    }
+                    }
+                }
+            }
+            // return only some selected sensors
+            String currentId;
+            for (i = 0; i < requestedSensor.size(); i++) {
+                currentId = requestedSensor.get(i).replaceAll(this.transfProt + this.symbolicUri + "/sensor/", "");
+
+                if (currentId.toLowerCase().contains("monitoring")) {
+                    //tmpSensor = this.createMonitoringSensor();
+                    //if(!sensors.contains(tmpSensor)) {
+                    //    sensors.add(tmpSensor);
+                    //}
+                } else {
+                    String filter = hiReplySvc.createFilter("ID", currentId);
+
+                    ServiceList.TrafficSensor currentTrafficSensor;
+
+                    try {
+                        currentTrafficSensor = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor().get(0);
+                        tmpMeasure = this.createMeasureFromSensor(currentTrafficSensor, "OperationalState");
+                    	if(!measures.contains(tmpMeasure)) {
+                    		measures.add(tmpMeasure);
+                    	}
+                    } catch (IndexOutOfBoundsException e) {
+                        logger.error("getSensorStatus ID: " + currentId + " not present.");
+                        // if not present goes on looking for the other requested sensors
+                    }
+                }
+
+            }
+        }
+
+        String out;
+
+        try {
+            out = JsonUtils.serializeJson(measures);
+        } catch (IOException e) {
+            this.logger.error("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
+        }
+
+        return out;
+    }
+
+    /**
      * Method that returns the observation about the requested ICO/ICOs. This method is mandatory.
      * @param bodyRequest <br>
      *            JSON-LD String with the body request <br>
@@ -1347,6 +1470,11 @@ public class HiPPI {
         operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "/system/status");
         operations.add(operation);
         operation = new Operation();
+        operation.setType("vital:GetSensorStatus");
+        operation.setHrestHasMethod("hrest:POST");
+        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "/sensor/status");
+        operations.add(operation);
+        operation = new Operation();
         operation.setType("vital:GetSupportedPerformanceMetrics");
         operation.setHrestHasMethod("hrest:GET");
         operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "/system/performance");
@@ -1424,6 +1552,7 @@ public class HiPPI {
     private Measure createMeasureFromSensor(ServiceList.TrafficSensor currentSensor, String property) throws Exception {
         Measure m = new Measure();
 
+        Date date = new Date();
         SimpleDateFormat timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
@@ -1437,71 +1566,104 @@ public class HiPPI {
         }
 
         m.setContext(contextsUri + "measurement.jsonld");
-        m.setId(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID() + "/observation");
+        if(property.equals("OperationalState")) {
+        	m.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        }
+        else {
+        	m.setId(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID() + "/observation");
+        }
         m.setType("ssn:Observation");
-        m.setSsnObservedBy(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID());
+        if(!property.equals("OperationalState")) {
+        	m.setSsnObservedBy(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID());
+        }
 
         SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
-        ssnObservationProperty.setType("http://" + this.ontBaseUri + property);
+        if(property.equals("OperationalState")) {
+        	ssnObservationProperty.setType("vital:" + property);
+        }
+        else {
+        	ssnObservationProperty.setType("http://" + this.ontBaseUri + property);
+        }
 
         m.setSsnObservationProperty(ssnObservationProperty);
 
         SsnObservationResultTime ssnObservationResultTime = new SsnObservationResultTime();
-        ssnObservationResultTime.setTimeInXSDDateTime(printedDateFormat.format(timestamp));
+        if(property.equals("OperationalState")) {
+        	ssnObservationResultTime.setTimeInXSDDateTime(printedDateFormat.format(date));
+        	m.setAdditionalProperty("ssn:featureOfInterest", this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID());
+        }
+        else {
+        	ssnObservationResultTime.setTimeInXSDDateTime(printedDateFormat.format(timestamp));
+        }
 
         m.setSsnObservationResultTime(ssnObservationResultTime);
 
-        DulHasLocation dulHasLocation = new DulHasLocation();
-        dulHasLocation.setType("geo:Point");
-        String[] splitted = currentSensor.getPhysicalLocation().split(";");
-        dulHasLocation.setGeoLat(splitted[1]);
-        dulHasLocation.setGeoLong(splitted[0]);
-        dulHasLocation.setGeoAlt("0.0");
-
-        m.setDulHasLocation(dulHasLocation);
+        if(!property.equals("OperationalState")) {
+	        DulHasLocation dulHasLocation = new DulHasLocation();
+	        dulHasLocation.setType("geo:Point");
+	        String[] splitted = currentSensor.getPhysicalLocation().split(";");
+	        dulHasLocation.setGeoLat(splitted[1]);
+	        dulHasLocation.setGeoLong(splitted[0]);
+	        dulHasLocation.setGeoAlt("0.0");
+	
+	        m.setDulHasLocation(dulHasLocation);
+        }
 
         SsnObservationResult ssnObservationResult = new SsnObservationResult();
         ssnObservationResult.setType("ssn:SensorOutput");
         SsnHasValue ssnHasValue = new SsnHasValue();
         ssnHasValue.setType("ssn:ObservationValue");
 
-        float speedValue;
-        int colorValue;
+        if(property.equals("OperationalState")) {
+        	int status = currentSensor.getStatus();
 
-        if (currentSensor.getDirectionCount() == 1) {
-            if (property.equals(this.speedProp)) {
-                speedValue = currentSensor.getSpeed();
-                ssnHasValue.setValue(""+speedValue);
-                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
-            } else if (property.equals(this.colorProp)) {
-                colorValue = currentSensor.getColor();
-                ssnHasValue.setValue(""+colorValue);
-                ssnHasValue.setQudtUnit("qudt:Color");
+            if (status == 1) {
+            	ssnHasValue.setValue("vital:Running");
+            } else if (status == 0) {
+            	ssnHasValue.setValue("vital:unavailable");
             } else {
-                return null;
+            	ssnHasValue.setValue("");
             }
         }
-
-        if (currentSensor.getDirectionCount() == 2) {
-            if (property.equals(this.speedProp)) {
-                speedValue = currentSensor.getSpeed();
-                ssnHasValue.setValue(""+speedValue);
-                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
-            } else if (property.equals(this.colorProp)) {
-                colorValue = currentSensor.getColor();
-                ssnHasValue.setValue(""+colorValue);
-                ssnHasValue.setQudtUnit("qudt:Color");
-            } else if (property.equals(this.reverseSpeedProp)) {
-                speedValue = currentSensor.getSpeed();
-                ssnHasValue.setValue(""+speedValue);
-                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
-            } else if (property.equals(this.reverseColorProp)) {
-                colorValue = currentSensor.getColor();
-                ssnHasValue.setValue(""+colorValue);
-                ssnHasValue.setQudtUnit("qudt:Color");
-            } else {
-                return null;
-            }
+        else {
+	        float speedValue;
+	        int colorValue;
+	
+	        if (currentSensor.getDirectionCount() == 1) {
+	            if (property.equals(this.speedProp)) {
+	                speedValue = currentSensor.getSpeed();
+	                ssnHasValue.setValue(""+speedValue);
+	                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
+	            } else if (property.equals(this.colorProp)) {
+	                colorValue = currentSensor.getColor();
+	                ssnHasValue.setValue(""+colorValue);
+	                ssnHasValue.setQudtUnit("qudt:Color");
+	            } else {
+	                return null;
+	            }
+	        }
+	
+	        if (currentSensor.getDirectionCount() == 2) {
+	            if (property.equals(this.speedProp)) {
+	                speedValue = currentSensor.getSpeed();
+	                ssnHasValue.setValue(""+speedValue);
+	                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
+	            } else if (property.equals(this.colorProp)) {
+	                colorValue = currentSensor.getColor();
+	                ssnHasValue.setValue(""+colorValue);
+	                ssnHasValue.setQudtUnit("qudt:Color");
+	            } else if (property.equals(this.reverseSpeedProp)) {
+	                speedValue = currentSensor.getSpeed();
+	                ssnHasValue.setValue(""+speedValue);
+	                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
+	            } else if (property.equals(this.reverseColorProp)) {
+	                colorValue = currentSensor.getColor();
+	                ssnHasValue.setValue(""+colorValue);
+	                ssnHasValue.setQudtUnit("qudt:Color");
+	            } else {
+	                return null;
+	            }
+	        }
         }
 
         ssnObservationResult.setSsnHasValue(ssnHasValue);
