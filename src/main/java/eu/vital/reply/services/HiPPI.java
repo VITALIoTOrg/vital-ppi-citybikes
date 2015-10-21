@@ -169,18 +169,18 @@ public class HiPPI {
         List<Metric> list = new ArrayList<>();
 
         Metric metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "MemUsed");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/memUsed");
+        metric.setType(this.transfProt + this.ontBaseUri + "UsedMem");
+        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/usedMem");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "MemAvailable");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/memAvailable");
+        metric.setType(this.transfProt + this.ontBaseUri + "AvailableMem");
+        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/availableMem");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "DiskAvailable");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/diskAvailable");
+        metric.setType(this.transfProt + this.ontBaseUri + "AvailableDisk");
+        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/availableDisk");
         list.add(metric);
 
         metric = new Metric();
@@ -189,8 +189,8 @@ public class HiPPI {
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "ServedRequest");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/servedRequest");
+        metric.setType(this.transfProt + this.ontBaseUri + "ServedRequests");
+        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/servedRequests");
         list.add(metric);
 
         metric = new Metric();
@@ -199,13 +199,13 @@ public class HiPPI {
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "SysUpTime");
+        metric.setType(this.transfProt + this.ontBaseUri + "SysUptime");
         metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/sysUptime");
         list.add(metric);
 
         metric = new Metric();
         metric.setType(this.transfProt + this.ontBaseUri + "PendingRequests");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/pendingRequest");
+        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/pendingRequests");
         list.add(metric);
 
         performaceMetricsMetadata.setMetrics(list);
@@ -248,15 +248,15 @@ public class HiPPI {
             pm = pms.get(i).replaceAll("http://" + this.ontBaseUri, "");
 
             PerformanceMetric metric;
-            if (pm.contains("memUsed")) {
+            if (pm.toLowerCase().contains("usedmem")) {
                 metric = this.getMemoryUsed();
-            } else if (pm.toLowerCase().contains("memavailable")) {
+            } else if (pm.toLowerCase().contains("availablemem")) {
                 metric = this.getMemoryAvailable();
-            } else if (pm.toLowerCase().contains("diskavailable")) {
+            } else if (pm.toLowerCase().contains("availabledisk")) {
                 metric = this.getDiskAvailable();
             } else if (pm.toLowerCase().contains("sysload")) {
                 metric = this.getCpuUsage();
-            } else if (pm.toLowerCase().contains("servedrequest")) {
+            } else if (pm.toLowerCase().contains("servedrequests")) {
                 metric = this.getServedRequest();
             } else if (pm.toLowerCase().contains("errors")) {
                 metric = this.getErrors();
@@ -839,15 +839,15 @@ public class HiPPI {
                 // get the requested property
                 String requestedProperty = observationRequest.getProperty();
                 SsnObservationProperty_ ob;
-                if (requestedProperty.toLowerCase().contains("memused")) {
+                if (requestedProperty.toLowerCase().contains("usedmem")) {
                     metric = this.getMemoryUsed();
-                } else if (requestedProperty.toLowerCase().contains("memavailable")) {
+                } else if (requestedProperty.toLowerCase().contains("availablemem")) {
                     metric = this.getMemoryAvailable();
-                } else if (requestedProperty.toLowerCase().contains("diskavailable")) {
+                } else if (requestedProperty.toLowerCase().contains("availabledisk")) {
                     metric = this.getDiskAvailable();
                 } else if (requestedProperty.toLowerCase().contains("sysload")) {
                     metric = this.getCpuUsage();
-                } else if (requestedProperty.toLowerCase().contains("servedrequest")) {
+                } else if (requestedProperty.toLowerCase().contains("servedrequests")) {
                     metric = this.getServedRequest();
                 } else if (requestedProperty.toLowerCase().contains("errors")) {
                     metric = this.getErrors();
@@ -1063,7 +1063,7 @@ public class HiPPI {
         sysUpTime.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:SysUpTime");
+        ssnObservationProperty_.setType("vital:SysUptime");
 
         sysUpTime.setSsnObservationProperty(ssnObservationProperty_);
 
@@ -1102,7 +1102,7 @@ public class HiPPI {
         servedRequest.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:ServedRequest");
+        ssnObservationProperty_.setType("vital:ServedRequests");
 
         servedRequest.setSsnObservationProperty(ssnObservationProperty_);
 
@@ -1174,7 +1174,7 @@ public class HiPPI {
         memUsed.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:MemUsed");
+        ssnObservationProperty_.setType("vital:UsedMem");
         memUsed.setSsnObservationProperty(ssnObservationProperty_);
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
@@ -1209,7 +1209,7 @@ public class HiPPI {
         memAval.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:MemAvailable");
+        ssnObservationProperty_.setType("vital:AvailableMem");
         memAval.setSsnObservationProperty(ssnObservationProperty_);
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
@@ -1283,7 +1283,7 @@ public class HiPPI {
         diskAval.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:DiskAvailable");
+        ssnObservationProperty_.setType("vital:AvailableDisk");
         diskAval.setSsnObservationProperty(ssnObservationProperty_);
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
@@ -1506,17 +1506,17 @@ public class HiPPI {
 
         SsnObserf observedProperty = new SsnObserf();
         observedProperty.setType("vital:MemUsed");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" +"memUsed");
+        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + "usedMem");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:MemAvailable");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + "memAvailable");
+        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + "availableMem");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:DiskAvailable");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + "diskAvailable");
+        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + "availableDisk");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
@@ -1526,7 +1526,7 @@ public class HiPPI {
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:ServedRequest");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" +id+ "/" + "servedRequest");
+        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" +id+ "/" + "servedRequests");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
