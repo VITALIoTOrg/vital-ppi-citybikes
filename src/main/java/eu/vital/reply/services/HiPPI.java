@@ -899,7 +899,6 @@ public class HiPPI {
 
                 if(observationRequest.getFrom() != null && observationRequest.getTo() != null) {
                     // get history range
-
                     SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
                     SimpleDateFormat hiReplyFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
@@ -936,12 +935,11 @@ public class HiPPI {
 
                 } else if(observationRequest.getFrom() != null && observationRequest.getTo() == null) {
                     // get all values since from
-
                     SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                     SimpleDateFormat hiReplyFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
                     Date fromDate;
-                    Date toDate = new Date(); // hi reply still need end date (use current date)
+                    Date toDate = new Date(); // hireply still needs end date (use current date)
                     Date fromDateHiReply;
                     Date toDateHiReply;
 

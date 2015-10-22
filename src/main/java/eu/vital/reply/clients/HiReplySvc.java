@@ -28,7 +28,7 @@ import java.util.Date;
 
 /**
  * TODO: Mapping ServiceId with machine prefix or not?
- * Es.: San11633-TrS_1 --> TrS_1 ?? --> TrS to make all methods generic. Identify the sensor type from the prefix.
+ * Example: San11633-TrS_1 --> TrS_1 ?? --> TrS to make all methods generic. Identify the sensor type from the prefix.
  * TrS: Traffic Sensor
  * Thermometer: Temperature Sensor
  */
