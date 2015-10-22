@@ -280,6 +280,16 @@ public class PerformanceMetric {
         return ToStringBuilder.reflectionToString(this);
     }
 
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return EqualsBuilder.reflectionEquals(this, other);
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -293,23 +303,6 @@ public class PerformanceMetric {
     public PerformanceMetric withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(Context).append(id).append(type).append(ssnObservedBy).append(ssnObservationProperty).append(ssnObservationResultTime).append(ssnObservationQuality).append(ssnFeatureOfInterest).append(ssnObservationResult).append(additionalProperties).toHashCode();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        }
-        if ((other instanceof PerformanceMetric) == false) {
-            return false;
-        }
-        PerformanceMetric rhs = ((PerformanceMetric) other);
-        return new EqualsBuilder().append(Context, rhs.Context).append(id, rhs.id).append(type, rhs.type).append(ssnObservedBy, rhs.ssnObservedBy).append(ssnObservationProperty, rhs.ssnObservationProperty).append(ssnObservationResultTime, rhs.ssnObservationResultTime).append(ssnObservationQuality, rhs.ssnObservationQuality).append(ssnFeatureOfInterest, rhs.ssnFeatureOfInterest).append(ssnObservationResult, rhs.ssnObservationResult).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

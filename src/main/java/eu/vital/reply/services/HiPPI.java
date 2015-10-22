@@ -117,10 +117,10 @@ public class HiPPI {
         ArrayList<String> services = new ArrayList<>();
         ArrayList<String> sensors = new ArrayList<>();
 
-        // Is it ok or it must be a real accessible file?
+        // Context must point to a real file
         ioTSystem.setContext(contextsUri + "system.jsonld");
         ioTSystem.setId(system.getIoTSystem().getUri());
-        ioTSystem.setType("vital:IoTSystem"); // is it really it?
+        ioTSystem.setType("vital:IoTSystem"); // is it really it? Think so...
         ioTSystem.setName(system.getIoTSystem().getID());
         ioTSystem.setDescription(system.getIoTSystem().getDescription());
 
@@ -164,7 +164,7 @@ public class HiPPI {
 
         String out;
 
-        PerformaceMetricsMetadata performaceMetricsMetadata = new PerformaceMetricsMetadata();
+        PerformanceMetricsMetadata performanceMetricsMetadata = new PerformanceMetricsMetadata();
 
         List<Metric> list = new ArrayList<>();
 
@@ -208,10 +208,10 @@ public class HiPPI {
         metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/pendingRequests");
         list.add(metric);
 
-        performaceMetricsMetadata.setMetrics(list);
+        performanceMetricsMetadata.setMetrics(list);
 
         try {
-            out = JsonUtils.serializeJson(performaceMetricsMetadata);
+            out = JsonUtils.serializeJson(performanceMetricsMetadata);
         } catch (IOException e) {
             this.logger.error("JSON UTILS IO EXCEPTION - getPerformanceMetric information");
             throw new Exception("JSON UTILS IO EXCEPTION - getPerformanceMetric information");
@@ -434,10 +434,10 @@ public class HiPPI {
     public String getServiceMetadata(String bodyRequest) throws Exception {
 
         int i;
-        SensorRequest serviceRequest; // TODO rename type, it's the same
+        IdTypeRequest serviceRequest;
 
         try {
-            serviceRequest = (SensorRequest) JsonUtils.deserializeJson(bodyRequest, SensorRequest.class);
+            serviceRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
         } catch (IOException e) {
             this.logger.error("GET SERVICE METADATA - IOException parsing the json request");
             return "{\n" +
@@ -556,13 +556,13 @@ public class HiPPI {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String getIcoMetadata(String bodyRequest) throws Exception {
+    public String getSensorMetadata(String bodyRequest) throws Exception {
 
         int i, j;
-        SensorRequest sensorRequest;
+        IdTypeRequest sensorRequest;
 
         try {
-            sensorRequest = (SensorRequest) JsonUtils.deserializeJson(bodyRequest, SensorRequest.class);
+            sensorRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
         } catch (IOException e) {
             this.logger.error("GET SENSOR METADATA - IOException parsing the json request");
             return "{\n" +
@@ -682,10 +682,10 @@ public class HiPPI {
     public String getSensorStatus(String bodyRequest) throws Exception {
 
         int i, j;
-        SensorRequest sensorRequest;
+        IdTypeRequest sensorRequest;
 
         try {
-            sensorRequest = (SensorRequest) JsonUtils.deserializeJson(bodyRequest, SensorRequest.class);
+            sensorRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
         } catch (IOException e) {
             this.logger.error("GET SENSOR STATUS - IOException parsing the json request");
             return "{\n" +
@@ -1315,15 +1315,11 @@ public class HiPPI {
             this.value = value;
             this.date = date;
         }
-        public void setValue(float value) {
-            this.value = value;
-        }
-        public void setDate(Date date) {
-            this.date = date;
-        }
+
         public float getValue() {
             return this.value;
         }
+
         public Date getDate() {
             return this.date;
         }

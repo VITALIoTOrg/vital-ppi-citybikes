@@ -21,7 +21,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonPropertyOrder({
     "metrics"
 })
-public class PerformaceMetricsMetadata {
+public class PerformanceMetricsMetadata {
 
     @JsonProperty("metrics")
     private List<Metric> metrics = new ArrayList<Metric>();
@@ -48,7 +48,7 @@ public class PerformaceMetricsMetadata {
         this.metrics = metrics;
     }
 
-    public PerformaceMetricsMetadata withMetrics(List<Metric> metrics) {
+    public PerformanceMetricsMetadata withMetrics(List<Metric> metrics) {
         this.metrics = metrics;
         return this;
     }
@@ -56,6 +56,16 @@ public class PerformaceMetricsMetadata {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return EqualsBuilder.reflectionEquals(this, other);
     }
 
     @JsonAnyGetter
@@ -68,26 +78,9 @@ public class PerformaceMetricsMetadata {
         this.additionalProperties.put(name, value);
     }
 
-    public PerformaceMetricsMetadata withAdditionalProperty(String name, Object value) {
+    public PerformanceMetricsMetadata withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(metrics).append(additionalProperties).toHashCode();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        }
-        if ((other instanceof PerformaceMetricsMetadata) == false) {
-            return false;
-        }
-        PerformaceMetricsMetadata rhs = ((PerformaceMetricsMetadata) other);
-        return new EqualsBuilder().append(metrics, rhs.metrics).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

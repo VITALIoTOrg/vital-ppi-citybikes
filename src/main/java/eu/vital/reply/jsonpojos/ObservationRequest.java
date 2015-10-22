@@ -142,6 +142,16 @@ public class ObservationRequest {
         return ToStringBuilder.reflectionToString(this);
     }
 
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return EqualsBuilder.reflectionEquals(this, other);
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -155,23 +165,6 @@ public class ObservationRequest {
     public ObservationRequest withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(sensor).append(property).append(from).append(to).append(additionalProperties).toHashCode();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        }
-        if ((other instanceof ObservationRequest) == false) {
-            return false;
-        }
-        ObservationRequest rhs = ((ObservationRequest) other);
-        return new EqualsBuilder().append(sensor, rhs.sensor).append(property, rhs.property).append(from, rhs.from).append(to, rhs.to).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

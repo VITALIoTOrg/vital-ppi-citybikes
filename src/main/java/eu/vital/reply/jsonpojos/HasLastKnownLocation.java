@@ -112,6 +112,16 @@ public class HasLastKnownLocation {
         return ToStringBuilder.reflectionToString(this);
     }
 
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return EqualsBuilder.reflectionEquals(this, other);
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -125,23 +135,6 @@ public class HasLastKnownLocation {
     public HasLastKnownLocation withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(type).append(geoLat).append(geoLong).append(additionalProperties).toHashCode();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        }
-        if ((other instanceof HasLastKnownLocation) == false) {
-            return false;
-        }
-        HasLastKnownLocation rhs = ((HasLastKnownLocation) other);
-        return new EqualsBuilder().append(type, rhs.type).append(geoLat, rhs.geoLat).append(geoLong, rhs.geoLong).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

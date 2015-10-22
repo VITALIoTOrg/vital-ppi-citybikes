@@ -254,6 +254,16 @@ public class Sensor {
         return ToStringBuilder.reflectionToString(this);
     }
 
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return EqualsBuilder.reflectionEquals(this, other);
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -267,23 +277,6 @@ public class Sensor {
     public Sensor withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(Context).append(id).append(type).append(name).append(description).append(status).append(hasLastKnownLocation).append(ssnObserves).append(additionalProperties).toHashCode();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        }
-        if ((other instanceof Sensor) == false) {
-            return false;
-        }
-        Sensor rhs = ((Sensor) other);
-        return new EqualsBuilder().append(Context, rhs.Context).append(id, rhs.id).append(type, rhs.type).append(name, rhs.name).append(description, rhs.description).append(status, rhs.status).append(hasLastKnownLocation, rhs.hasLastKnownLocation).append(ssnObserves, rhs.ssnObserves).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

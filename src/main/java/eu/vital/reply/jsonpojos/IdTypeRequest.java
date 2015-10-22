@@ -22,7 +22,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
     "id",
     "type"
 })
-public class SensorRequest {
+public class IdTypeRequest {
 
     @JsonProperty("id")
     private List<String> id = new ArrayList<String>();
@@ -51,7 +51,7 @@ public class SensorRequest {
         this.id = id;
     }
 
-    public SensorRequest withId(List<String> id) {
+    public IdTypeRequest withId(List<String> id) {
         this.id = id;
         return this;
     }
@@ -76,7 +76,7 @@ public class SensorRequest {
         this.type = type;
     }
 
-    public SensorRequest withType(List<String> type) {
+    public IdTypeRequest withType(List<String> type) {
         this.type = type;
         return this;
     }
@@ -84,6 +84,16 @@ public class SensorRequest {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return EqualsBuilder.reflectionEquals(this, other);
     }
 
     @JsonAnyGetter
@@ -96,26 +106,9 @@ public class SensorRequest {
         this.additionalProperties.put(name, value);
     }
 
-    public SensorRequest withAdditionalProperty(String name, Object value) {
+    public IdTypeRequest withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(id).append(type).append(additionalProperties).toHashCode();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        }
-        if ((other instanceof SensorRequest) == false) {
-            return false;
-        }
-        SensorRequest rhs = ((SensorRequest) other);
-        return new EqualsBuilder().append(id, rhs.id).append(type, rhs.type).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

@@ -58,6 +58,16 @@ public class MetricRequest {
         return ToStringBuilder.reflectionToString(this);
     }
 
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return EqualsBuilder.reflectionEquals(this, other);
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -71,23 +81,6 @@ public class MetricRequest {
     public MetricRequest withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(metric).append(additionalProperties).toHashCode();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        }
-        if ((other instanceof MetricRequest) == false) {
-            return false;
-        }
-        MetricRequest rhs = ((MetricRequest) other);
-        return new EqualsBuilder().append(metric, rhs.metric).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

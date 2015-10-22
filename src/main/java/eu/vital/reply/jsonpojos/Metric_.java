@@ -1,9 +1,7 @@
 
 package eu.vital.reply.jsonpojos;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -19,45 +17,17 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "@context",
     "type",
-    "msm:hasOperation"
+    "id"
 })
-public class ProvidesService {
+public class Metric_ {
 
-    @JsonProperty("@context")
-    private String Context;
     @JsonProperty("type")
     private String type;
-    @JsonProperty("msm:hasOperation")
-    private List<MsmHasOperation> msmHasOperation = new ArrayList<MsmHasOperation>();
+    @JsonProperty("id")
+    private String id;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    /**
-     * 
-     * @return
-     *     The Context
-     */
-    @JsonProperty("@context")
-    public String getContext() {
-        return Context;
-    }
-
-    /**
-     * 
-     * @param Context
-     *     The @context
-     */
-    @JsonProperty("@context")
-    public void setContext(String Context) {
-        this.Context = Context;
-    }
-
-    public ProvidesService withContext(String Context) {
-        this.Context = Context;
-        return this;
-    }
 
     /**
      * 
@@ -79,7 +49,7 @@ public class ProvidesService {
         this.type = type;
     }
 
-    public ProvidesService withType(String type) {
+    public Metric_ withType(String type) {
         this.type = type;
         return this;
     }
@@ -87,25 +57,25 @@ public class ProvidesService {
     /**
      * 
      * @return
-     *     The msmHasOperation
+     *     The id
      */
-    @JsonProperty("msm:hasOperation")
-    public List<MsmHasOperation> getMsmHasOperation() {
-        return msmHasOperation;
+    @JsonProperty("id")
+    public String getId() {
+        return id;
     }
 
     /**
      * 
-     * @param msmHasOperation
-     *     The msm:hasOperation
+     * @param id
+     *     The id
      */
-    @JsonProperty("msm:hasOperation")
-    public void setMsmHasOperation(List<MsmHasOperation> msmHasOperation) {
-        this.msmHasOperation = msmHasOperation;
+    @JsonProperty("id")
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public ProvidesService withMsmHasOperation(List<MsmHasOperation> msmHasOperation) {
-        this.msmHasOperation = msmHasOperation;
+    public Metric_ withId(String id) {
+        this.id = id;
         return this;
     }
 
@@ -134,7 +104,7 @@ public class ProvidesService {
         this.additionalProperties.put(name, value);
     }
 
-    public ProvidesService withAdditionalProperty(String name, Object value) {
+    public Metric_ withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }

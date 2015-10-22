@@ -58,6 +58,16 @@ public class ConfigurationReqBody {
         return ToStringBuilder.reflectionToString(this);
     }
 
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return EqualsBuilder.reflectionEquals(this, other);
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -71,23 +81,6 @@ public class ConfigurationReqBody {
     public ConfigurationReqBody withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(parameters).append(additionalProperties).toHashCode();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        }
-        if ((other instanceof ConfigurationReqBody) == false) {
-            return false;
-        }
-        ConfigurationReqBody rhs = ((ConfigurationReqBody) other);
-        return new EqualsBuilder().append(parameters, rhs.parameters).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }
