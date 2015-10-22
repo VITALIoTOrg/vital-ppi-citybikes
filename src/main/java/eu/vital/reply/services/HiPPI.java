@@ -16,9 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -978,30 +976,6 @@ public class HiPPI {
         } catch (IOException e) {
             this.logger.error("GET OBSERVATION - serialize to json response IO Exception");
             throw new Exception("GET OBSERVATION - serialize to json response IO Exception");
-        }
-
-        return out;
-    }
-
-    @Path("/contexts/{id}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getContext(@PathParam("id") String context) throws Exception {
-
-        String out = null;
-        byte[] b = new byte[4096];
-        int size;
-
-        InputStream is = this.getClass().getResourceAsStream("/contexts/" + context);
-        try
-        {
-            size = is.read(b);
-            out = new String(b, 0, size, StandardCharsets.UTF_8);
-        }
-        catch (IOException e)
-        {
-            logger.error("ConfigReader - IO EXCEPTION");
-            e.printStackTrace();
         }
 
         return out;
