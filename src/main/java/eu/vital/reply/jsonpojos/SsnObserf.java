@@ -84,16 +84,6 @@ public class SsnObserf {
         return ToStringBuilder.reflectionToString(this);
     }
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return EqualsBuilder.reflectionEquals(this, other);
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -107,6 +97,23 @@ public class SsnObserf {
     public SsnObserf withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(type).append(id).append(additionalProperties).toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+        if ((other instanceof SsnObserf) == false) {
+            return false;
+        }
+        SsnObserf rhs = ((SsnObserf) other);
+        return new EqualsBuilder().append(type, rhs.type).append(id, rhs.id).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

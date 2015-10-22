@@ -310,16 +310,6 @@ public class IoTSystem {
         return ToStringBuilder.reflectionToString(this);
     }
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return EqualsBuilder.reflectionEquals(this, other);
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -333,6 +323,23 @@ public class IoTSystem {
     public IoTSystem withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(Context).append(id).append(type).append(name).append(description).append(operator).append(serviceArea).append(sensors).append(services).append(status).append(additionalProperties).toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+        if ((other instanceof IoTSystem) == false) {
+            return false;
+        }
+        IoTSystem rhs = ((IoTSystem) other);
+        return new EqualsBuilder().append(Context, rhs.Context).append(id, rhs.id).append(type, rhs.type).append(name, rhs.name).append(description, rhs.description).append(operator, rhs.operator).append(serviceArea, rhs.serviceArea).append(sensors, rhs.sensors).append(services, rhs.services).append(status, rhs.status).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

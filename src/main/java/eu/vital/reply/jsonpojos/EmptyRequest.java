@@ -28,16 +28,6 @@ public class EmptyRequest {
         return ToStringBuilder.reflectionToString(this);
     }
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return EqualsBuilder.reflectionEquals(this, other);
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -51,6 +41,23 @@ public class EmptyRequest {
     public EmptyRequest withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(additionalProperties).toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+        if ((other instanceof EmptyRequest) == false) {
+            return false;
+        }
+        EmptyRequest rhs = ((EmptyRequest) other);
+        return new EqualsBuilder().append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }
