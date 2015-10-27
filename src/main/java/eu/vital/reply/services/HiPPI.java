@@ -361,16 +361,17 @@ public class HiPPI {
     @Path("/system/status")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public String getLifecycleInformation(String bodyRequest) throws Exception {
+    public String getSystemStatus(String bodyRequest) throws Exception {
 
         ServiceList system = hiReplySvc.getSnapshot();
         PerformanceMetric lifecycleInformation = new PerformanceMetric();
 
-        Date date = new Date();
+        Date now = new Date();
+        String id = Long.toHexString(now.getTime());
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         lifecycleInformation.setContext(contextsUri + "measurement.jsonld");
-        lifecycleInformation.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        lifecycleInformation.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         lifecycleInformation.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -379,7 +380,7 @@ public class HiPPI {
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
 
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         lifecycleInformation.setSsnObservationResultTime(ssnObservationResultTime_);
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
@@ -987,13 +988,14 @@ public class HiPPI {
 
         int pendingRequest = StatCounter.getPendingRequest() - 1;
 
-        Date date = new Date();
+        Date now = new Date();
+        String id = Long.toHexString(now.getTime());
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         PerformanceMetric pendingReq = new PerformanceMetric();
 
         pendingReq.setContext(contextsUri + "measurement.jsonld");
-        pendingReq.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        pendingReq.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         pendingReq.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -1003,7 +1005,7 @@ public class HiPPI {
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
 
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         pendingReq.setSsnObservationResultTime(ssnObservationResultTime_);
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
@@ -1021,6 +1023,7 @@ public class HiPPI {
     private PerformanceMetric getUpTime() throws Exception {
 
         Date now = new Date();
+        String id = Long.toHexString(now.getTime());
 
         Date hiReplyStartTime = this.hiReplySvc.getSnapshot().getTaskManager().getLastStartTime().toGregorianCalendar().getTime();
 
@@ -1031,7 +1034,7 @@ public class HiPPI {
         PerformanceMetric sysUpTime = new PerformanceMetric();
 
         sysUpTime.setContext(contextsUri + "measurement.jsonld");
-        sysUpTime.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        sysUpTime.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         sysUpTime.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -1062,15 +1065,16 @@ public class HiPPI {
 
         requestCount = StatCounter.getRequestNumber();
         int auxCount = requestCount.get();
-        requestCount.set(auxCount+1);
+        requestCount.set(auxCount + 1);
 
-        Date date = new Date();
+        Date now = new Date();
+        String id = Long.toHexString(now.getTime());
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         PerformanceMetric servedRequest = new PerformanceMetric();
 
         servedRequest.setContext(contextsUri + "measurement.jsonld");
-        servedRequest.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        servedRequest.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         servedRequest.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -1080,7 +1084,7 @@ public class HiPPI {
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
 
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         servedRequest.setSsnObservationResultTime(ssnObservationResultTime_);
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
@@ -1099,13 +1103,14 @@ public class HiPPI {
 
         requestError = StatCounter.getErrorNumber();
 
-        Date date = new Date();
+        Date now = new Date();
+        String id = Long.toHexString(now.getTime());
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         PerformanceMetric errors = new PerformanceMetric();
 
         errors.setContext(contextsUri + "measurement.jsonld");
-        errors.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        errors.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         errors.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -1115,7 +1120,7 @@ public class HiPPI {
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
 
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         errors.setSsnObservationResultTime(ssnObservationResultTime_);
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
@@ -1135,14 +1140,15 @@ public class HiPPI {
         ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
 
         BigInteger memoryUsed = tm.getMemoryConsumption();
-        Date date = new Date();
+        Date now = new Date();
+        String id = Long.toHexString(now.getTime());
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
 
         PerformanceMetric memUsed = new PerformanceMetric();
 
         memUsed.setContext(contextsUri + "measurement.jsonld");
-        memUsed.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        memUsed.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         memUsed.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -1151,7 +1157,7 @@ public class HiPPI {
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
 
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         memUsed.setSsnObservationResultTime(ssnObservationResultTime_);
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
@@ -1171,13 +1177,14 @@ public class HiPPI {
         ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
 
         BigInteger memAvailable = tm.getAvailMemoryCounter();
-        Date date = new Date();
+        Date now = new Date();
+        String id = Long.toHexString(now.getTime());
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         PerformanceMetric memAval = new PerformanceMetric();
 
         memAval.setContext(contextsUri + "measurement.jsonld");
-        memAval.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        memAval.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         memAval.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -1186,7 +1193,7 @@ public class HiPPI {
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
 
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         memAval.setSsnObservationResultTime(ssnObservationResultTime_);
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
@@ -1206,13 +1213,14 @@ public class HiPPI {
         ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
 
         float cpuUsage = tm.getCPUTotalCounter();
-        Date date = new Date();
+        Date now = new Date();
+        String id = Long.toHexString(now.getTime());
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         PerformanceMetric load = new PerformanceMetric();
 
         load.setContext(contextsUri + "measurement.jsonld");
-        load.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        load.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         load.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -1221,7 +1229,7 @@ public class HiPPI {
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
 
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         load.setSsnObservationResultTime(ssnObservationResultTime_);
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
@@ -1245,13 +1253,14 @@ public class HiPPI {
         int bkSlashIndex = strDiskAvailable.indexOf("\\");
         int freeDiskSpace = Integer.parseInt (strDiskAvailable.substring(bkSlashIndex+2).replaceAll("\\s+",""));
 
-        Date date = new Date();
+        Date now = new Date();
+        String id = Long.toHexString(now.getTime());
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         PerformanceMetric diskAval = new PerformanceMetric();
 
         diskAval.setContext(contextsUri + "measurement.jsonld");
-        diskAval.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        diskAval.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         diskAval.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -1260,7 +1269,7 @@ public class HiPPI {
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
 
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         diskAval.setSsnObservationResultTime(ssnObservationResultTime_);
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
@@ -1537,10 +1546,12 @@ public class HiPPI {
 
         m.setContext(contextsUri + "measurement.jsonld");
         if(property.equals("OperationalState")) {
-        	m.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        	String id = Long.toHexString(date.getTime());
+        	m.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         }
         else {
-        	m.setId(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID() + "/observation");
+        	String id = Long.toHexString(timestamp.getTime());
+        	m.setId(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID() + "/observation/" + id);
         }
         m.setType("ssn:Observation");
         if(!property.equals("OperationalState")) {
@@ -1649,7 +1660,8 @@ public class HiPPI {
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         m.setContext(contextsUri + "measurement.jsonld");
-        m.setId(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID() + "/observation");
+        String id = Long.toHexString(historyMeasure.getDate().getTime());
+        m.setId(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID() + "/observation/" + id);
         m.setType("ssn:Observation");
 
         SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
