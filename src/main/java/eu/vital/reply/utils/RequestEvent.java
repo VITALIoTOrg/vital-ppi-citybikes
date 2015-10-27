@@ -21,6 +21,6 @@ public class RequestEvent implements ContainerRequestFilter {
 
 	@Override
 	public void filter(ContainerRequestContext arg0) throws IOException {
-		logger.info("Request " + StatCounter.getRequestNumber().addAndGet(1) + " started.");
+		logger.info("Request " + StatCounter.getRequestNumber().addAndGet(1) + " started [" + arg0.getUriInfo().getPath() + "].");
 	}
 }
