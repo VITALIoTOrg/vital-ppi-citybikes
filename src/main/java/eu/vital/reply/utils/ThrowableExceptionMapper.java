@@ -10,7 +10,7 @@ public class ThrowableExceptionMapper implements ExceptionMapper<Throwable> {
 
     @Override
     public Response toResponse(Throwable t) {
-    	StatCounter.incrementErrorNumeber();
+    	StatCounter.incrementErrorNumber();
     	return Response.status(Status.INTERNAL_SERVER_ERROR).entity(t.getMessage()).build();
     }
 }

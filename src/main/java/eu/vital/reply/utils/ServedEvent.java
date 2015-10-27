@@ -12,21 +12,21 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Created by f.deceglia on 24/03/2015.
- * Update by l.bracco on 14/10/2015.
+ * Updated by l.bracco on 14/10/2015.
  */
 
 @Provider
-public class PpiApplicationEventListener implements ContainerResponseFilter {
+public class ServedEvent implements ContainerResponseFilter {
 
     private volatile int requestCount = 0;
 
-    private Logger logger = LogManager.getLogger(PpiApplicationEventListener.class);
+    private Logger logger = LogManager.getLogger(ServedEvent.class);
 
 	@Override
 	public void filter(ContainerRequestContext arg0, ContainerResponseContext arg1) throws IOException {
 		if(arg1.getStatus() != 500) {
 	        requestCount++;
-	        logger.info("Request " + requestCount + " started.");
+	        logger.info("Request " + requestCount + " served.");
 	        StatCounter.setRequestedNumber(requestCount);
 		}
 	}
