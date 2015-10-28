@@ -1345,7 +1345,7 @@ public class HiPPI {
         if (status == 1) {
             sensor.setStatus("vital:Running");
         } else if (status == 0) {
-            sensor.setStatus("vital:unavailable");
+            sensor.setStatus("vital:Unavailable");
         } else {
             sensor.setStatus("");
         }
@@ -1565,7 +1565,7 @@ public class HiPPI {
             if (status == 1) {
             	ssnHasValue.setValue("vital:Running");
             } else if (status == 0) {
-            	ssnHasValue.setValue("vital:unavailable");
+            	ssnHasValue.setValue("vital:Unavailable");
             } else {
             	ssnHasValue.setValue("");
             }
