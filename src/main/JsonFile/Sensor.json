@@ -7,8 +7,8 @@
    "status":"vital:Running",
    "hasLastKnownLocation":{  
       "type":"geo:Point",
-      "geo:lat":"53.2719",
-      "geo:long":"-9.0489"
+      "geo:lat":53.2719,
+      "geo:long":-9.0489
    },
    "ssn:observes":[  
       {  

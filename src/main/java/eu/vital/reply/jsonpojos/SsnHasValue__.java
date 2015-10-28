@@ -18,17 +18,17 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "type",
-    "geo:lat",
-    "geo:long"
+    "value",
+    "qudt:unit"
 })
-public class HasLastKnownLocation {
+public class SsnHasValue__ {
 
     @JsonProperty("type")
     private String type;
-    @JsonProperty("geo:lat")
-    private Double geoLat;
-    @JsonProperty("geo:long")
-    private Double geoLong;
+    @JsonProperty("value")
+    private String value;
+    @JsonProperty("qudt:unit")
+    private String qudtUnit;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -52,7 +52,7 @@ public class HasLastKnownLocation {
         this.type = type;
     }
 
-    public HasLastKnownLocation withType(String type) {
+    public SsnHasValue__ withType(String type) {
         this.type = type;
         return this;
     }
@@ -60,50 +60,50 @@ public class HasLastKnownLocation {
     /**
      * 
      * @return
-     *     The geoLat
+     *     The value
      */
-    @JsonProperty("geo:lat")
-    public Double getGeoLat() {
-        return geoLat;
+    @JsonProperty("value")
+    public String getValue() {
+        return value;
     }
 
     /**
      * 
-     * @param geoLat
-     *     The geo:lat
+     * @param value
+     *     The value
      */
-    @JsonProperty("geo:lat")
-    public void setGeoLat(Double geoLat) {
-        this.geoLat = geoLat;
+    @JsonProperty("value")
+    public void setValue(String value) {
+        this.value = value;
     }
 
-    public HasLastKnownLocation withGeoLat(Double geoLat) {
-        this.geoLat = geoLat;
+    public SsnHasValue__ withValue(String value) {
+        this.value = value;
         return this;
     }
 
     /**
      * 
      * @return
-     *     The geoLong
+     *     The qudtUnit
      */
-    @JsonProperty("geo:long")
-    public Double getGeoLong() {
-        return geoLong;
+    @JsonProperty("qudt:unit")
+    public String getQudtUnit() {
+        return qudtUnit;
     }
 
     /**
      * 
-     * @param geoLong
-     *     The geo:long
+     * @param qudtUnit
+     *     The qudt:unit
      */
-    @JsonProperty("geo:long")
-    public void setGeoLong(Double geoLong) {
-        this.geoLong = geoLong;
+    @JsonProperty("qudt:unit")
+    public void setQudtUnit(String qudtUnit) {
+        this.qudtUnit = qudtUnit;
     }
 
-    public HasLastKnownLocation withGeoLong(Double geoLong) {
-        this.geoLong = geoLong;
+    public SsnHasValue__ withQudtUnit(String qudtUnit) {
+        this.qudtUnit = qudtUnit;
         return this;
     }
 
@@ -122,14 +122,14 @@ public class HasLastKnownLocation {
         this.additionalProperties.put(name, value);
     }
 
-    public HasLastKnownLocation withAdditionalProperty(String name, Object value) {
+    public SsnHasValue__ withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(type).append(geoLat).append(geoLong).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(type).append(value).append(qudtUnit).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -137,11 +137,11 @@ public class HasLastKnownLocation {
         if (other == this) {
             return true;
         }
-        if ((other instanceof HasLastKnownLocation) == false) {
+        if ((other instanceof SsnHasValue__) == false) {
             return false;
         }
-        HasLastKnownLocation rhs = ((HasLastKnownLocation) other);
-        return new EqualsBuilder().append(type, rhs.type).append(geoLat, rhs.geoLat).append(geoLong, rhs.geoLong).append(additionalProperties, rhs.additionalProperties).isEquals();
+        SsnHasValue__ rhs = ((SsnHasValue__) other);
+        return new EqualsBuilder().append(type, rhs.type).append(value, rhs.value).append(qudtUnit, rhs.qudtUnit).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

@@ -18,17 +18,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "type",
-    "geo:lat",
-    "geo:long"
+    "hasValue"
 })
-public class HasLastKnownLocation {
+public class SsnHasMeasurementProperty__ {
 
     @JsonProperty("type")
     private String type;
-    @JsonProperty("geo:lat")
-    private Double geoLat;
-    @JsonProperty("geo:long")
-    private Double geoLong;
+    @JsonProperty("hasValue")
+    private String hasValue;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -52,7 +49,7 @@ public class HasLastKnownLocation {
         this.type = type;
     }
 
-    public HasLastKnownLocation withType(String type) {
+    public SsnHasMeasurementProperty__ withType(String type) {
         this.type = type;
         return this;
     }
@@ -60,50 +57,25 @@ public class HasLastKnownLocation {
     /**
      * 
      * @return
-     *     The geoLat
+     *     The hasValue
      */
-    @JsonProperty("geo:lat")
-    public Double getGeoLat() {
-        return geoLat;
+    @JsonProperty("hasValue")
+    public String getHasValue() {
+        return hasValue;
     }
 
     /**
      * 
-     * @param geoLat
-     *     The geo:lat
+     * @param hasValue
+     *     The hasValue
      */
-    @JsonProperty("geo:lat")
-    public void setGeoLat(Double geoLat) {
-        this.geoLat = geoLat;
+    @JsonProperty("hasValue")
+    public void setHasValue(String hasValue) {
+        this.hasValue = hasValue;
     }
 
-    public HasLastKnownLocation withGeoLat(Double geoLat) {
-        this.geoLat = geoLat;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The geoLong
-     */
-    @JsonProperty("geo:long")
-    public Double getGeoLong() {
-        return geoLong;
-    }
-
-    /**
-     * 
-     * @param geoLong
-     *     The geo:long
-     */
-    @JsonProperty("geo:long")
-    public void setGeoLong(Double geoLong) {
-        this.geoLong = geoLong;
-    }
-
-    public HasLastKnownLocation withGeoLong(Double geoLong) {
-        this.geoLong = geoLong;
+    public SsnHasMeasurementProperty__ withHasValue(String hasValue) {
+        this.hasValue = hasValue;
         return this;
     }
 
@@ -122,14 +94,14 @@ public class HasLastKnownLocation {
         this.additionalProperties.put(name, value);
     }
 
-    public HasLastKnownLocation withAdditionalProperty(String name, Object value) {
+    public SsnHasMeasurementProperty__ withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(type).append(geoLat).append(geoLong).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(type).append(hasValue).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -137,11 +109,11 @@ public class HasLastKnownLocation {
         if (other == this) {
             return true;
         }
-        if ((other instanceof HasLastKnownLocation) == false) {
+        if ((other instanceof SsnHasMeasurementProperty__) == false) {
             return false;
         }
-        HasLastKnownLocation rhs = ((HasLastKnownLocation) other);
-        return new EqualsBuilder().append(type, rhs.type).append(geoLat, rhs.geoLat).append(geoLong, rhs.geoLong).append(additionalProperties, rhs.additionalProperties).isEquals();
+        SsnHasMeasurementProperty__ rhs = ((SsnHasMeasurementProperty__) other);
+        return new EqualsBuilder().append(type, rhs.type).append(hasValue, rhs.hasValue).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

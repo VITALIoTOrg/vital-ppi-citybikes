@@ -19,9 +19,10 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @JsonPropertyOrder({
     "type",
     "geo:lat",
-    "geo:long"
+    "geo:long",
+    "geo:alt"
 })
-public class HasLastKnownLocation {
+public class DulHasLocation_ {
 
     @JsonProperty("type")
     private String type;
@@ -29,6 +30,8 @@ public class HasLastKnownLocation {
     private Double geoLat;
     @JsonProperty("geo:long")
     private Double geoLong;
+    @JsonProperty("geo:alt")
+    private Double geoAlt;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -52,7 +55,7 @@ public class HasLastKnownLocation {
         this.type = type;
     }
 
-    public HasLastKnownLocation withType(String type) {
+    public DulHasLocation_ withType(String type) {
         this.type = type;
         return this;
     }
@@ -77,7 +80,7 @@ public class HasLastKnownLocation {
         this.geoLat = geoLat;
     }
 
-    public HasLastKnownLocation withGeoLat(Double geoLat) {
+    public DulHasLocation_ withGeoLat(Double geoLat) {
         this.geoLat = geoLat;
         return this;
     }
@@ -102,8 +105,33 @@ public class HasLastKnownLocation {
         this.geoLong = geoLong;
     }
 
-    public HasLastKnownLocation withGeoLong(Double geoLong) {
+    public DulHasLocation_ withGeoLong(Double geoLong) {
         this.geoLong = geoLong;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The geoAlt
+     */
+    @JsonProperty("geo:alt")
+    public Double getGeoAlt() {
+        return geoAlt;
+    }
+
+    /**
+     * 
+     * @param geoAlt
+     *     The geo:alt
+     */
+    @JsonProperty("geo:alt")
+    public void setGeoAlt(Double geoAlt) {
+        this.geoAlt = geoAlt;
+    }
+
+    public DulHasLocation_ withGeoAlt(Double geoAlt) {
+        this.geoAlt = geoAlt;
         return this;
     }
 
@@ -122,14 +150,14 @@ public class HasLastKnownLocation {
         this.additionalProperties.put(name, value);
     }
 
-    public HasLastKnownLocation withAdditionalProperty(String name, Object value) {
+    public DulHasLocation_ withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(type).append(geoLat).append(geoLong).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(type).append(geoLat).append(geoLong).append(geoAlt).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -137,11 +165,11 @@ public class HasLastKnownLocation {
         if (other == this) {
             return true;
         }
-        if ((other instanceof HasLastKnownLocation) == false) {
+        if ((other instanceof DulHasLocation_) == false) {
             return false;
         }
-        HasLastKnownLocation rhs = ((HasLastKnownLocation) other);
-        return new EqualsBuilder().append(type, rhs.type).append(geoLat, rhs.geoLat).append(geoLong, rhs.geoLong).append(additionalProperties, rhs.additionalProperties).isEquals();
+        DulHasLocation_ rhs = ((DulHasLocation_) other);
+        return new EqualsBuilder().append(type, rhs.type).append(geoLat, rhs.geoLat).append(geoLong, rhs.geoLong).append(geoAlt, rhs.geoAlt).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }
