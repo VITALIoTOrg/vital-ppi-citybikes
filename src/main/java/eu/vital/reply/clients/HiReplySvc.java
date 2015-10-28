@@ -86,7 +86,7 @@ public class HiReplySvc
                     .build();
         } catch (URISyntaxException e)
         {
-            this.logger.error("getSnapshot - URI syntax exception");
+            this.logger.error("getSnapshot - URI syntax exception: " + e.getMessage());
             return null;
         }
 
@@ -99,7 +99,7 @@ public class HiReplySvc
                         .build();
             } catch (URISyntaxException e)
             {
-                this.logger.error("getSnapshot - URI syntax exception");
+                this.logger.error("getSnapshot - URI syntax exception: " + e.getMessage());
                 return null;
             }
         }
@@ -113,7 +113,7 @@ public class HiReplySvc
             respString = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
         } catch (IOException e)
         {
-            this.logger.error("getSnapshot - HTTP IO exception");
+            this.logger.error("getSnapshot - HTTP IO exception: " + e.getMessage());
             return null;
         }
 
@@ -150,7 +150,7 @@ public class HiReplySvc
                     .build();
         } catch (URISyntaxException e)
         {
-            this.logger.error("getPropertyNames - Uri builder");
+            this.logger.error("getPropertyNames - Uri builder: " + e.getMessage());
             return null;
         }
 
@@ -163,7 +163,7 @@ public class HiReplySvc
             respString = EntityUtils.toString(resp.getEntity());
         } catch (IOException e)
         {
-            this.logger.error("getPropertyNames - HTTP get IO Exception");
+            this.logger.error("getPropertyNames - HTTP get IO Exception: " + e.getMessage());
             return null;
         }
 
@@ -195,7 +195,7 @@ public class HiReplySvc
                     .build();
         } catch (URISyntaxException e)
         {
-            this.logger.error("getPropertyValue - Uri builder");
+            this.logger.error("getPropertyValue - Uri builder: " + e.getMessage());
             return null;
         }
 
@@ -208,7 +208,7 @@ public class HiReplySvc
             respString = EntityUtils.toString(resp.getEntity());
         } catch (IOException e)
         {
-            this.logger.error("getPropertyValue - HTTP get execute IO Exception");
+            this.logger.error("getPropertyValue - HTTP get execute IO Exception: " + e.getMessage());
             return null;
         }
 
@@ -231,7 +231,7 @@ public class HiReplySvc
                     .build();
         } catch (URISyntaxException e)
         {
-            this.logger.error("setPropertyValue - Uri builder");
+            this.logger.error("setPropertyValue - Uri builder: " + e.getMessage());
             return false;
         }
 
@@ -244,7 +244,7 @@ public class HiReplySvc
             respString = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
         } catch (IOException e)
         {
-            this.logger.error("setPropertyValue - HTTP Get IO Exception");
+            this.logger.error("setPropertyValue - HTTP Get IO Exception: " + e.getMessage());
             return false;
         }
 
@@ -267,7 +267,7 @@ public class HiReplySvc
                     .build();
         } catch (URISyntaxException e)
         {
-            this.logger.error("setPropertyAttribute - Uri builder");
+            this.logger.error("setPropertyAttribute - Uri builder: " + e.getMessage());
             return null;
         }
 
@@ -280,7 +280,7 @@ public class HiReplySvc
             respString = EntityUtils.toString(resp.getEntity());
         } catch (IOException e)
         {
-            this.logger.error("setPropertyAttribute - HTTP Get IO Exception");
+            this.logger.error("setPropertyAttribute - HTTP Get IO Exception: " + e.getMessage());
             return null;
         }
 
@@ -308,7 +308,7 @@ public class HiReplySvc
                     .addParameter("endtime", endDate)
                     .build();
         } catch (URISyntaxException e) {
-            this.logger.error("getPropertyHistoricalValues - Uri builder");
+            this.logger.error("getPropertyHistoricalValues - Uri builder: " + e.getMessage());
             return null;
         }
 
@@ -321,7 +321,7 @@ public class HiReplySvc
             respString = EntityUtils.toString(resp.getEntity());
         } catch (IOException e)
         {
-            this.logger.error("getPropertyHistoricalValues - HTTP Get IO Exception");
+            this.logger.error("getPropertyHistoricalValues - HTTP Get IO Exception: " + e.getMessage());
             return null;
         }
 
@@ -354,7 +354,7 @@ public class HiReplySvc
                     .build();
         } catch (URISyntaxException e)
         {
-            this.logger.error("isServiceRunning - Uri builder");
+            this.logger.error("isServiceRunning - Uri builder: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -366,7 +366,7 @@ public class HiReplySvc
             resp = http.execute(get);
         } catch (IOException e)
         {
-            this.logger.error("isServiceRunning - HTTP Get Exception");
+            this.logger.error("isServiceRunning - HTTP Get Exception: " + e.getMessage());
             e.printStackTrace();
         }
         try
@@ -374,7 +374,7 @@ public class HiReplySvc
             respString = EntityUtils.toString(resp.getEntity());
         } catch (IOException e)
         {
-            this.logger.error("isServiceRunning - HTTP Response Exception");
+            this.logger.error("isServiceRunning - HTTP Response Exception: " + e.getMessage());
             e.printStackTrace();
         }
 
