@@ -118,7 +118,7 @@ public class HiPPI {
         // Context must point to a real file
         ioTSystem.setContext(contextsUri + "system.jsonld");
         ioTSystem.setId(system.getIoTSystem().getUri());
-        ioTSystem.setType("vital:IoTSystem"); // is it really it? Think so...
+        ioTSystem.setType("vital:VitalSystem"); // is it really it? Think so...
         ioTSystem.setName(system.getIoTSystem().getName());
         ioTSystem.setDescription(system.getIoTSystem().getDescription());
 
