@@ -126,7 +126,7 @@ public class HiPPI {
         ioTSystem.setOperator(system.getIoTSystem().getOperator());
         ioTSystem.setServiceArea("http://dbpedia.org/page/" + system.getIoTSystem().getServiceArea());
 
-        List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshot().getTrafficSensor();
+        List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
         for(i = 0; i < trafficSensors.size(); i++) {
             sensors.add(this.createSensorFromTraffic(trafficSensors.get(i)).getId());
         }
@@ -560,6 +560,7 @@ public class HiPPI {
 
         int i, j;
         IdTypeRequest sensorRequest;
+        ServiceList system = null;
 
         try {
             sensorRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
@@ -585,7 +586,10 @@ public class HiPPI {
 
         if ((requestedSensor.size() == 0) && (requestedType.size() == 0)) {
             // then all the sensors must be returned
-            List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshot().getTrafficSensor();
+        	if(system == null) {
+        		system = hiReplySvc.getSnapshot();
+        	}
+            List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
             for (i = 0; i < trafficSensors.size(); i++) {
                 sensors.add(this.createSensorFromTraffic(trafficSensors.get(i)));
             }
@@ -603,7 +607,10 @@ public class HiPPI {
                 } else {
                 	currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
                     if (currentType.toLowerCase().contains("vitalsensor")) {
-	                    List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshot().getTrafficSensor();
+                    	if(system == null) {
+                    		system = hiReplySvc.getSnapshot();
+                    	}
+	                    List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
 	                    for(j = 0; j < trafficSensors.size(); j++) {
 	                        tmpSensor = this.createSensorFromTraffic(trafficSensors.get(j));
 	                        if(!sensors.contains(tmpSensor)) {
@@ -683,6 +690,8 @@ public class HiPPI {
 
         int i, j;
         IdTypeRequest sensorRequest;
+        ServiceList system = null;
+        
 
         try {
             sensorRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
@@ -708,7 +717,10 @@ public class HiPPI {
 
         if ((requestedSensor.size() == 0) && (requestedType.size() == 0)) {
             // then all the sensors must be returned
-            List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshot().getTrafficSensor();
+        	if(system == null) {
+        		system = hiReplySvc.getSnapshot();
+        	}
+            List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
             for (i = 0; i < trafficSensors.size(); i++) {
                 measures.add(this.createStatusMeasureFromSensor(trafficSensors.get(i), "OperationalState"));
             }
@@ -726,7 +738,10 @@ public class HiPPI {
                 } else {
                 	currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
                     if (currentType.toLowerCase().contains("vitalsensor")) {
-	                    List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshot().getTrafficSensor();
+                    	if(system == null) {
+                    		system = hiReplySvc.getSnapshot();
+                    	}
+	                    List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
 	                    for(j = 0; j < trafficSensors.size(); j++) {
 	                    	tmpMeasure = this.createStatusMeasureFromSensor(trafficSensors.get(j), "OperationalState");
 	                    	if(!measures.contains(tmpMeasure)) {

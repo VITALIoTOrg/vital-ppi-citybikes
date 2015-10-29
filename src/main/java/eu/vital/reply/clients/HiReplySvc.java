@@ -8,6 +8,8 @@ import eu.vital.reply.xmlpojos.ValueList;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -105,6 +107,9 @@ public class HiReplySvc
         }
 
         HttpGet get = new HttpGet(uri);
+    	Builder requestConfigBuilder = RequestConfig.custom();
+    	requestConfigBuilder.setConnectionRequestTimeout(10000).setConnectTimeout(10000).setSocketTimeout(10000);
+    	get.setConfig(requestConfigBuilder.build());
 
         HttpResponse resp;
         try
@@ -113,8 +118,17 @@ public class HiReplySvc
             respString = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
         } catch (IOException e)
         {
-            this.logger.error("getSnapshot - HTTP IO exception: " + e.getMessage());
-            return null;
+        	// HttpClient should have already tried multiple times, but let's give it another shot
+            this.logger.error("getSnapshot - HTTP IO exception: " + e.getMessage() + " - Trying again...");
+            try
+            {
+                resp = http.execute(get);
+                respString = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
+            } catch (IOException ea)
+            {
+                this.logger.error("getSnapshot - HTTP IO exception: " + ea.getMessage());
+                return null;
+            }
         }
 
         ServiceList serviceList;
