@@ -631,19 +631,18 @@ public class HiPPI {
                         sensors.add(tmpSensor);
                     }
                 } else {
-                    String filter = hiReplySvc.createFilter("ID", currentId);
-
-                    ServiceList.TrafficSensor currentTrafficSensor;
-
-                    try {
-                        currentTrafficSensor = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor().get(0);
-                        tmpSensor = this.createSensorFromTraffic(currentTrafficSensor);
-                        if(!sensors.contains(tmpSensor)) {
-                            sensors.add(tmpSensor);
-                        }
-                    } catch (IndexOutOfBoundsException e) {
-                        logger.error("getSensorMetadata ID: " + currentId + " not present.");
-                        // if not present goes on looking for the other requested sensors
+                	if(system == null) {
+                		system = hiReplySvc.getSnapshot();
+                	}
+                	List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
+                    for(j = 0; j < trafficSensors.size(); j++) {
+                    	ServiceList.TrafficSensor ts = trafficSensors.get(j);
+                    	if(ts.getID().equals(currentId)) {
+	                        tmpSensor = this.createSensorFromTraffic(trafficSensors.get(j));
+	                        if(!sensors.contains(tmpSensor)) {
+	                            sensors.add(tmpSensor);
+	                        }
+                    	}
                     }
                 }
 
@@ -1660,7 +1659,7 @@ public class HiPPI {
 	        m.setSsnObservedBy(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID());
 	
 	        SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
-	        ssnObservationProperty.setType("http://" + this.ontBaseUri + property);
+	        ssnObservationProperty.setType("vital:" + property);
 	
 	        m.setSsnObservationProperty(ssnObservationProperty);
 	
@@ -1745,7 +1744,7 @@ public class HiPPI {
 	        m.setType("ssn:Observation");
 	
 	        SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
-	        ssnObservationProperty.setType("http://" + this.ontBaseUri + property);
+	        ssnObservationProperty.setType("vital:" + property);
 	        m.setSsnObservedBy(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID());
 	
 	        m.setSsnObservationProperty(ssnObservationProperty);
