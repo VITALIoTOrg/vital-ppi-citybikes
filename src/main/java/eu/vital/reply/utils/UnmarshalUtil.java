@@ -19,11 +19,10 @@ import java.io.StringReader;
 
 public class UnmarshalUtil
 {
-    private static UnmarshalUtil instance;
     private XMLFilter xmlFilter;
     private UnmarshallerHandler unmarshallerHandler;
 
-    private UnmarshalUtil()
+    public UnmarshalUtil()
     {
         try
         {
@@ -41,13 +40,6 @@ public class UnmarshalUtil
         {
             e.printStackTrace();
         }
-    }
-
-    public static UnmarshalUtil getInstance()
-    {
-        if(instance == null)
-            instance = new UnmarshalUtil();
-        return instance;
     }
 
     public Object unmarshal(String xml) throws IOException, SAXException, JAXBException

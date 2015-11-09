@@ -135,7 +135,7 @@ public class HiReplySvc
 
         try
         {
-            serviceList = (ServiceList) UnmarshalUtil.getInstance().unmarshal(respString);
+            serviceList = (ServiceList) (new UnmarshalUtil()).unmarshal(respString);
         } catch(Exception e)
         {
             this.logger.error("getSnapshot - Unmarshalling exception: " + e.getMessage());
@@ -195,7 +195,7 @@ public class HiReplySvc
         PropertyList props;
         try
         {
-            props = (PropertyList) UnmarshalUtil.getInstance().unmarshal(respString);
+            props = (PropertyList) (new UnmarshalUtil()).unmarshal(respString);
         } catch(Exception e)
         {
             this.logger.error("getPropertyNames - Unmarshalling exception: " + e.getMessage());
@@ -399,7 +399,7 @@ public class HiReplySvc
         respString = cleanOutput(respString);
         try
         {
-            values = (ValueList) UnmarshalUtil.getInstance().unmarshal(respString);
+            values = (ValueList) (new UnmarshalUtil()).unmarshal(respString);
         } catch (Exception e)
         {
             this.logger.error("getPropertyHistoricalValues - Unmarshalling exception: " + e.getMessage());
