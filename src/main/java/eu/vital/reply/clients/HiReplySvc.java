@@ -7,6 +7,7 @@ import eu.vital.reply.xmlpojos.ServiceList;
 import eu.vital.reply.xmlpojos.ValueList;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.config.RequestConfig.Builder;
@@ -74,6 +75,41 @@ public class HiReplySvc
         isServiceRunningPath = config.get(ConfigReader.HI_ISSERVICERUNNING_PATH);
     }
 
+    private String performRequest(URI uri) throws ClientProtocolException, IOException {
+    	String response;
+    	
+    	HttpGet get = new HttpGet(uri);
+    	Builder requestConfigBuilder = RequestConfig.custom();
+    	requestConfigBuilder.setConnectionRequestTimeout(3000).setConnectTimeout(3000).setSocketTimeout(3000);
+    	get.setConfig(requestConfigBuilder.build());
+
+        HttpResponse resp;
+        try
+        {
+            resp = http.execute(get);
+            response = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
+        } catch (Exception e)
+        {
+        	// Try again with a higher timeout
+            try
+            {
+            	requestConfigBuilder.setConnectionRequestTimeout(7000).setConnectTimeout(7000).setSocketTimeout(7000);
+            	get.setConfig(requestConfigBuilder.build());
+                resp = http.execute(get);
+                response = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
+            } catch (IOException ea)
+            {
+            	// Try again with an even higher timeout
+            	requestConfigBuilder.setConnectionRequestTimeout(12000).setConnectTimeout(12000).setSocketTimeout(12000);
+            	get.setConfig(requestConfigBuilder.build());
+                resp = http.execute(get);
+                response = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
+            }
+        }
+    	
+    	return response;
+    }
+    
     public ServiceList getSnapshotFiltered(String filter)
     {
         String respString;
@@ -106,29 +142,13 @@ public class HiReplySvc
             }
         }
 
-        HttpGet get = new HttpGet(uri);
-    	Builder requestConfigBuilder = RequestConfig.custom();
-    	requestConfigBuilder.setConnectionRequestTimeout(10000).setConnectTimeout(10000).setSocketTimeout(10000);
-    	get.setConfig(requestConfigBuilder.build());
-
-        HttpResponse resp;
         try
         {
-            resp = http.execute(get);
-            respString = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
+            respString = performRequest(uri);
         } catch (IOException e)
         {
-        	// HttpClient should have already tried multiple times, but let's give it another shot
-            this.logger.error("getSnapshot - HTTP IO exception: " + e.getMessage() + " - Trying again...");
-            try
-            {
-                resp = http.execute(get);
-                respString = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
-            } catch (IOException ea)
-            {
-                this.logger.error("getSnapshot - HTTP IO exception: " + ea.getMessage());
-                return null;
-            }
+            this.logger.error("getSnapshot - HTTP IO exception: " + e.getMessage());
+            return null;
         }
 
         ServiceList serviceList;
@@ -168,28 +188,13 @@ public class HiReplySvc
             return null;
         }
 
-        HttpGet get = new HttpGet(uri);
-    	Builder requestConfigBuilder = RequestConfig.custom();
-    	requestConfigBuilder.setConnectionRequestTimeout(10000).setConnectTimeout(10000).setSocketTimeout(10000);
-    	get.setConfig(requestConfigBuilder.build());
-
-        HttpResponse resp;
         try
         {
-            resp = http.execute(get);
-            respString = EntityUtils.toString(resp.getEntity());
+        	respString = performRequest(uri);
         } catch (IOException e)
         {
-            this.logger.error("getPropertyNames - HTTP get IO Exception: " + e.getMessage() + " - Trying again...");
-            try
-            {
-                resp = http.execute(get);
-                respString = EntityUtils.toString(resp.getEntity());
-            } catch (IOException ea)
-            {
-                this.logger.error("getPropertyNames - HTTP get IO Exception: " + ea.getMessage());
-                return null;
-            }
+            this.logger.error("getPropertyNames - HTTP get IO Exception: " + e.getMessage());
+            return null;
         }
 
         PropertyList props;
@@ -224,28 +229,13 @@ public class HiReplySvc
             return null;
         }
 
-        HttpGet get = new HttpGet(uri);
-    	Builder requestConfigBuilder = RequestConfig.custom();
-    	requestConfigBuilder.setConnectionRequestTimeout(10000).setConnectTimeout(10000).setSocketTimeout(10000);
-    	get.setConfig(requestConfigBuilder.build());
-
-        HttpResponse resp;
         try
         {
-            resp = http.execute(get);
-            respString = EntityUtils.toString(resp.getEntity());
+        	respString = performRequest(uri);
         } catch (IOException e)
         {
-            this.logger.error("getPropertyValue - HTTP get execute IO Exception: " + e.getMessage() + " - Trying again...");
-            try
-            {
-                resp = http.execute(get);
-                respString = EntityUtils.toString(resp.getEntity());
-            } catch (IOException ea)
-            {
-                this.logger.error("getPropertyValue - HTTP get execute IO Exception: " + ea.getMessage());
-                return null;
-            }
+            this.logger.error("getPropertyValue - HTTP get execute IO Exception: " + e.getMessage());
+            return null;
         }
 
         return cleanOutput(respString);
@@ -271,28 +261,13 @@ public class HiReplySvc
             return false;
         }
 
-        HttpGet get = new HttpGet(uri);
-    	Builder requestConfigBuilder = RequestConfig.custom();
-    	requestConfigBuilder.setConnectionRequestTimeout(20000).setConnectTimeout(20000).setSocketTimeout(20000);
-    	get.setConfig(requestConfigBuilder.build());
-
-        HttpResponse resp;
         try
         {
-            resp = http.execute(get);
-            respString = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
+        	respString = performRequest(uri);
         } catch (IOException e)
         {
-            this.logger.error("setPropertyValue - HTTP Get IO Exception: " + e.getMessage() + " - Trying again...");
-            try
-            {
-                resp = http.execute(get);
-                respString = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
-            } catch (IOException ea)
-            {
-                this.logger.error("setPropertyValue - HTTP Get IO Exception: " + ea.getMessage());
-                return false;
-            }
+            this.logger.error("setPropertyValue - HTTP Get IO Exception: " + e.getMessage());
+            return false;
         }
 
         return respString.contains("correctly");
@@ -318,28 +293,13 @@ public class HiReplySvc
             return null;
         }
 
-        HttpGet get = new HttpGet(uri);
-    	Builder requestConfigBuilder = RequestConfig.custom();
-    	requestConfigBuilder.setConnectionRequestTimeout(10000).setConnectTimeout(10000).setSocketTimeout(10000);
-    	get.setConfig(requestConfigBuilder.build());
-
-        HttpResponse resp;
         try
         {
-            resp = http.execute(get);
-            respString = EntityUtils.toString(resp.getEntity());
+        	respString = performRequest(uri);
         } catch (IOException e)
         {
-            this.logger.error("setPropertyAttribute - HTTP Get IO Exception: " + e.getMessage() + " - Trying again...");
-            try
-            {
-                resp = http.execute(get);
-                respString = EntityUtils.toString(resp.getEntity());
-            } catch (IOException ea)
-            {
-                this.logger.error("setPropertyAttribute - HTTP Get IO Exception: " + ea.getMessage());
-                return null;
-            }
+            this.logger.error("setPropertyAttribute - HTTP Get IO Exception: " + e.getMessage());
+            return null;
         }
 
         return cleanOutput(respString);
@@ -370,28 +330,13 @@ public class HiReplySvc
             return null;
         }
 
-        HttpGet get = new HttpGet(uri);
-    	Builder requestConfigBuilder = RequestConfig.custom();
-    	requestConfigBuilder.setConnectionRequestTimeout(10000).setConnectTimeout(10000).setSocketTimeout(10000);
-    	get.setConfig(requestConfigBuilder.build());
-
-        HttpResponse resp;
         try
         {
-            resp = http.execute(get);
-            respString = EntityUtils.toString(resp.getEntity());
+        	respString = performRequest(uri);
         } catch (IOException e)
         {
-            this.logger.error("getPropertyHistoricalValues - HTTP Get IO Exception: " + e.getMessage() + " - Trying again...");
-            try
-            {
-                resp = http.execute(get);
-                respString = EntityUtils.toString(resp.getEntity());
-            } catch (IOException ea)
-            {
-                this.logger.error("getPropertyHistoricalValues - HTTP Get IO Exception: " + ea.getMessage());
-                return null;
-            }
+            this.logger.error("getPropertyHistoricalValues - HTTP Get IO Exception: " + e.getMessage());
+            return null;
         }
 
         ValueList values;
@@ -427,36 +372,15 @@ public class HiReplySvc
             e.printStackTrace();
         }
 
-        HttpGet get = new HttpGet(uri);
-    	Builder requestConfigBuilder = RequestConfig.custom();
-    	requestConfigBuilder.setConnectionRequestTimeout(10000).setConnectTimeout(10000).setSocketTimeout(10000);
-    	get.setConfig(requestConfigBuilder.build());
-
-        HttpResponse resp = null;
         try
         {
-            resp = http.execute(get);
+        	respString = performRequest(uri);
         } catch (IOException e)
         {
-            this.logger.error("isServiceRunning - HTTP Get Exception: " + e.getMessage() + " - Trying again...");
-            try
-            {
-                resp = http.execute(get);
-            } catch (IOException ea)
-            {
-                this.logger.error("isServiceRunning - HTTP Get Exception: " + ea.getMessage());
-                e.printStackTrace();
-            }
+            this.logger.error("isServiceRunning - HTTP Get Exception: " + e.getMessage());
         }
         
-        try
-        {
-            respString = EntityUtils.toString(resp.getEntity());
-        } catch (IOException e)
-        {
-            this.logger.error("isServiceRunning - HTTP Response Exception: " + e.getMessage());
-            e.printStackTrace();
-        }
+        //respString = EntityUtils.toString(resp.getEntity()); // was doing this -> look into it, but it's not used now
 
         // TODO: XML: returns timestamp of start time. turn to boolean?
         return cleanOutput(respString);
