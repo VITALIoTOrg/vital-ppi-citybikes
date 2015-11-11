@@ -77,28 +77,24 @@ public class HiReplySvc
 
     private String performRequest(URI uri) throws ClientProtocolException, IOException {
     	String response;
-    	
+
     	HttpGet get = new HttpGet(uri);
     	Builder requestConfigBuilder = RequestConfig.custom();
     	requestConfigBuilder.setConnectionRequestTimeout(3000).setConnectTimeout(3000).setSocketTimeout(3000);
     	get.setConfig(requestConfigBuilder.build());
 
         HttpResponse resp;
-        try
-        {
+        try {
             resp = http.execute(get);
             response = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
         	// Try again with a higher timeout
-            try
-            {
+            try {
             	requestConfigBuilder.setConnectionRequestTimeout(7000).setConnectTimeout(7000).setSocketTimeout(7000);
             	get.setConfig(requestConfigBuilder.build());
                 resp = http.execute(get);
                 response = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
-            } catch (IOException ea)
-            {
+            } catch (IOException ea) {
             	// Try again with an even higher timeout
             	requestConfigBuilder.setConnectionRequestTimeout(12000).setConnectTimeout(12000).setSocketTimeout(12000);
             	get.setConfig(requestConfigBuilder.build());
@@ -106,7 +102,7 @@ public class HiReplySvc
                 response = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
             }
         }
-    	
+
     	return response;
     }
     
