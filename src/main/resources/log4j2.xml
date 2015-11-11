@@ -13,7 +13,7 @@
                 <SizeBasedTriggeringPolicy size="75 MB" />
                 <TimeBasedTriggeringPolicy />
             </Policies>
-            <DefaultRolloverStrategy max="4" />
+            <DefaultRolloverStrategy max="5" />
         </RollingFile>
 
         <RollingFile name="file_error" fileName="logs/ERROR.log" filePattern="logs/ERROR-%d{yyyy-MM-dd}-%i.log">
@@ -25,7 +25,7 @@
                 <SizeBasedTriggeringPolicy size="75 MB" />
                 <TimeBasedTriggeringPolicy />
             </Policies>
-            <DefaultRolloverStrategy max="4" />
+            <DefaultRolloverStrategy max="5" />
         </RollingFile>
 
         <Console name="STDOUT" target="SYSTEM_OUT">
