@@ -89,17 +89,27 @@ public class HiReplySvc
         } catch (Exception e) {
         	// Try again with a higher timeout
             try {
+            	try {
+					Thread.sleep(1000); // experimental: do not retry immediately
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
             	requestConfigBuilder.setConnectionRequestTimeout(7000).setConnectTimeout(7000).setSocketTimeout(7000);
             	get.setConfig(requestConfigBuilder.build());
                 resp = http.execute(get);
             } catch (IOException ea) {
             	// Try again with an even higher timeout
+            	try {
+					Thread.sleep(1000); // experimental: do not retry immediately
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
             	requestConfigBuilder.setConnectionRequestTimeout(12000).setConnectTimeout(12000).setSocketTimeout(12000);
             	get.setConfig(requestConfigBuilder.build());
                 resp = http.execute(get);
             }
         }
-        
+
         //String tmp = EntityUtils.toString(resp.getEntity());
         //this.logger.error("Message received - " + tmp);
         response = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
