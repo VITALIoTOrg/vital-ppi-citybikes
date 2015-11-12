@@ -26,8 +26,11 @@ public class ServedEvent implements ContainerResponseFilter {
 	public void filter(ContainerRequestContext arg0, ContainerResponseContext arg1) throws IOException {
 		if(arg1.getStatus() != 500) {
 	        requestCount++;
-	        logger.info("Request " + requestCount + " served.");
+	        //logger.info("Request " + requestCount + " served.");
 	        StatCounter.setRequestedNumber(requestCount);
+		}
+		else {
+			logger.error("Request " + requestCount + " failed!");
 		}
 	}
 }
