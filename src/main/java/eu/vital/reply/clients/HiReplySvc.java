@@ -86,22 +86,23 @@ public class HiReplySvc
         HttpResponse resp;
         try {
             resp = http.execute(get);
-            response = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
         } catch (Exception e) {
         	// Try again with a higher timeout
             try {
             	requestConfigBuilder.setConnectionRequestTimeout(7000).setConnectTimeout(7000).setSocketTimeout(7000);
             	get.setConfig(requestConfigBuilder.build());
                 resp = http.execute(get);
-                response = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
             } catch (IOException ea) {
             	// Try again with an even higher timeout
             	requestConfigBuilder.setConnectionRequestTimeout(12000).setConnectTimeout(12000).setSocketTimeout(12000);
             	get.setConfig(requestConfigBuilder.build());
                 resp = http.execute(get);
-                response = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
             }
         }
+        
+        //String tmp = EntityUtils.toString(resp.getEntity());
+        //this.logger.error("Message received - " + tmp);
+        response = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
 
     	return response;
     }
@@ -411,7 +412,12 @@ public class HiReplySvc
         int start = msXml.indexOf(tagBeg) + tagBeg.length();
         int stop = msXml.indexOf(tagEnd);
 
-        return //"<?xml version=\"1.0\"?>\n" +
+        if(start != -1 && stop != -1) {
+        	return //"<?xml version=\"1.0\"?>\n" +
                 StringEscapeUtils.unescapeXml(msXml.substring(start, stop));
+        }
+        else {
+        	return msXml;
+        }
     }
 }

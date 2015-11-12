@@ -1824,6 +1824,7 @@ public class HiPPI {
         try {
             currentSensor = trafficSensors.get(0);
         } catch (IndexOutOfBoundsException e) {
+        	logger.error("retrieveSensor ID: " + id + " not present.");
             return null;
         }
 
