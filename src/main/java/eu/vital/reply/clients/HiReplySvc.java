@@ -80,7 +80,7 @@ public class HiReplySvc
 
     	HttpGet get = new HttpGet(uri);
     	Builder requestConfigBuilder = RequestConfig.custom();
-    	requestConfigBuilder.setConnectionRequestTimeout(3000).setConnectTimeout(3000).setSocketTimeout(3000);
+    	requestConfigBuilder.setConnectionRequestTimeout(5000).setConnectTimeout(5000).setSocketTimeout(5000);
     	get.setConfig(requestConfigBuilder.build());
 
         HttpResponse resp;
@@ -94,7 +94,7 @@ public class HiReplySvc
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
 				}
-            	requestConfigBuilder.setConnectionRequestTimeout(7000).setConnectTimeout(7000).setSocketTimeout(7000);
+            	requestConfigBuilder.setConnectionRequestTimeout(9000).setConnectTimeout(9000).setSocketTimeout(9000);
             	get.setConfig(requestConfigBuilder.build());
                 resp = http.execute(get);
             } catch (IOException ea) {
@@ -104,7 +104,7 @@ public class HiReplySvc
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
 				}
-            	requestConfigBuilder.setConnectionRequestTimeout(12000).setConnectTimeout(12000).setSocketTimeout(12000);
+            	requestConfigBuilder.setConnectionRequestTimeout(14000).setConnectTimeout(14000).setSocketTimeout(14000);
             	get.setConfig(requestConfigBuilder.build());
                 resp = http.execute(get);
             }
