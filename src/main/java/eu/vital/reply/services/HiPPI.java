@@ -895,15 +895,19 @@ public class HiPPI {
 
             } else {
                 // check if the sensor exists
-            	if(system == null) {
-            		system = hiReplySvc.getSnapshot();
-            	}
-            	ServiceList.TrafficSensor currentSensor = null;
-            	for (ServiceList.TrafficSensor tmpSensor : system.getTrafficSensor()) {
-                    if (tmpSensor.getID().equals(id)) {
-                        currentSensor = tmpSensor;
-                    }
-                }
+            	/*ServiceList.TrafficSensor currentSensor = null;
+            	if (len > 100) {
+	            	if(system == null) {
+	            		system = hiReplySvc.getSnapshot();
+	            	}
+	            	currentSensor = null;
+	            	for (ServiceList.TrafficSensor tmpSensor : system.getTrafficSensor()) {
+	                    if (tmpSensor.getID().equals(id)) {
+	                        currentSensor = tmpSensor;
+	                    }
+	                }
+            	}*/
+            	ServiceList.TrafficSensor currentSensor = this.retrieveSensor(id);
 
                 if(currentSensor == null) {
                     return "{\n" +
@@ -1822,7 +1826,7 @@ public class HiPPI {
 
         return m;
     }
-/*
+
     private ServiceList.TrafficSensor retrieveSensor(String id) {
 
         String filter = hiReplySvc.createFilter("ID", id);
@@ -1839,7 +1843,7 @@ public class HiPPI {
 
         return currentSensor;
     }
-*/
+
     private boolean checkTrafficProperty(ServiceList.TrafficSensor currentSensor, String property) {
         if (currentSensor.getDirectionCount() == 1) {
             if (!property.equals(this.speedProp) && !property.equals(this.colorProp)) {
