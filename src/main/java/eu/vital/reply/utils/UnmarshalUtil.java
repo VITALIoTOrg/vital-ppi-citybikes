@@ -54,7 +54,6 @@ public class UnmarshalUtil
      */
     private static class IoTXMLFilter extends XMLFilterImpl
     {
-
         public IoTXMLFilter(XMLReader xmlReader) {
             super(xmlReader);
         }
@@ -72,6 +71,5 @@ public class UnmarshalUtil
         {
             super.endElement(uri, localName, qName);
         }
-
     }
 }

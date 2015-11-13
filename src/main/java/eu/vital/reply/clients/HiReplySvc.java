@@ -76,7 +76,7 @@ public class HiReplySvc
     }
 
     private String performRequest(URI uri) throws ClientProtocolException, IOException {
-    	String response;
+    	String response = null;
 
     	HttpGet get = new HttpGet(uri);
     	Builder requestConfigBuilder = RequestConfig.custom();
@@ -110,9 +110,11 @@ public class HiReplySvc
             }
         }
 
-        //String tmp = EntityUtils.toString(resp.getEntity());
+        String tmp = EntityUtils.toString(resp.getEntity());
         //this.logger.error("Message received - " + tmp);
-        response = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
+        if(!tmp.contains("502 Proxy Error")) {
+        	response = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
+        }
 
     	return response;
     }
@@ -166,6 +168,8 @@ public class HiReplySvc
         } catch(Exception e)
         {
             this.logger.error("getSnapshot - Unmarshalling exception: " + e.getMessage());
+            //this.logger.error("Faulty string: " + respString);
+            //this.logger.error("Full error", e);
             return null;
         }
 

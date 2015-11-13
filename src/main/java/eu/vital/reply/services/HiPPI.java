@@ -826,6 +826,7 @@ public class HiPPI {
     @Produces(MediaType.APPLICATION_JSON)
     public String getObservation(String bodyRequest) throws Exception {
         int i, s, len;
+        ServiceList system = null;
         ObservationRequest observationRequest;
         ArrayList<Measure> measures = new ArrayList<>();
         ArrayList<PerformanceMetric> metrics = new ArrayList<>();
@@ -894,7 +895,15 @@ public class HiPPI {
 
             } else {
                 // check if the sensor exists
-                ServiceList.TrafficSensor currentSensor = this.retrieveSensor(id);
+            	if(system == null) {
+            		system = hiReplySvc.getSnapshot();
+            	}
+            	ServiceList.TrafficSensor currentSensor = null;
+            	for (ServiceList.TrafficSensor tmpSensor : system.getTrafficSensor()) {
+                    if (tmpSensor.getID().equals(id)) {
+                        currentSensor = tmpSensor;
+                    }
+                }
 
                 if(currentSensor == null) {
                     return "{\n" +
@@ -1640,7 +1649,7 @@ public class HiPPI {
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         Date timestamp = null;
-    	String hiReplyTimestamp = this.hiReplySvc.getPropertyAttribute(currentSensor.getID(), property, "Timestamp");
+        String hiReplyTimestamp = currentSensor.getMeasureTime().toString();
         try {
             timestamp = timestampDateFormat.parse(hiReplyTimestamp);
         } catch (ParseException e) {
@@ -1813,7 +1822,7 @@ public class HiPPI {
 
         return m;
     }
-
+/*
     private ServiceList.TrafficSensor retrieveSensor(String id) {
 
         String filter = hiReplySvc.createFilter("ID", id);
@@ -1830,7 +1839,7 @@ public class HiPPI {
 
         return currentSensor;
     }
-
+*/
     private boolean checkTrafficProperty(ServiceList.TrafficSensor currentSensor, String property) {
         if (currentSensor.getDirectionCount() == 1) {
             if (!property.equals(this.speedProp) && !property.equals(this.colorProp)) {
