@@ -1346,7 +1346,7 @@ public class HiPPI {
 
         ArrayList<HistoryMeasure> historyMeasures = new ArrayList<>();
         List<String> values = valueList.getValue();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa");
 
         for(String currentValue : values) {
             String[] splitted = currentValue.split(","); // splitted[0] = value --- splitted[1] data

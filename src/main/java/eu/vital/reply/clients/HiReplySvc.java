@@ -113,7 +113,7 @@ public class HiReplySvc
         String tmp = EntityUtils.toString(resp.getEntity());
         //this.logger.error("Message received - " + tmp);
         if(!tmp.contains("502 Proxy Error")) {
-        	response = this.cleanOutput(EntityUtils.toString(resp.getEntity()));
+        	response = this.cleanOutput(tmp);
         }
 
     	return response;
