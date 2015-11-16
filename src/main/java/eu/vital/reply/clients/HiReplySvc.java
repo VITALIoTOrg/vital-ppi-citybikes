@@ -87,8 +87,8 @@ public class HiReplySvc
         try {
             resp = http.execute(get);
         } catch (Exception e) {
-        	// Try again with a higher timeout
             try {
+            	// Try again with a higher timeout
             	try {
 					Thread.sleep(1000); // experimental: do not retry immediately
 				} catch (InterruptedException e1) {

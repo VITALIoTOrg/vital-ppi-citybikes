@@ -631,7 +631,7 @@ public class HiPPI {
                         sensors.add(tmpSensor);
                     }
                 } else {
-                	if(system == null) {
+                	/*if(system == null) {
                 		system = hiReplySvc.getSnapshot();
                 	}
                 	List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
@@ -643,9 +643,24 @@ public class HiPPI {
 	                            sensors.add(tmpSensor);
 	                        }
                     	}
+                    }*/
+                	// The above would mean one call for multiple sensors, but would degrade performance in cases with
+                	// a few sensors only and would move some computation load on the PPI server which is not powerful
+                    String filter = hiReplySvc.createFilter("ID", currentId);
+
+                    ServiceList.TrafficSensor currentTrafficSensor;
+
+                    try {
+                        currentTrafficSensor = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor().get(0);
+                        tmpSensor = this.createSensorFromTraffic(currentTrafficSensor);
+                        if(!sensors.contains(tmpSensor)) {
+                            sensors.add(tmpSensor);
+                        }
+                    } catch (IndexOutOfBoundsException e) {
+                        logger.error("getSensorMetadata ID: " + currentId + " not present.");
+                        // if not present goes on looking for the other requested sensors
                     }
                 }
-
             }
         }
 
@@ -826,7 +841,7 @@ public class HiPPI {
     @Produces(MediaType.APPLICATION_JSON)
     public String getObservation(String bodyRequest) throws Exception {
         int i, s, len;
-        ServiceList system = null;
+        //ServiceList system = null;
         ObservationRequest observationRequest;
         ArrayList<Measure> measures = new ArrayList<>();
         ArrayList<PerformanceMetric> metrics = new ArrayList<>();
