@@ -36,7 +36,7 @@
 
     <Loggers>
         <Root level="trace">
-            <AppenderRef ref="file_all" level="INFO"/>
+            <!-- <AppenderRef ref="file_all" level="INFO"/> -->
             <AppenderRef ref="file_error" level="ERROR"/>
             <!-- <AppenderRef ref="STDOUT" level="INFO"/> --> <!-- I think stdout goes into wildfly logs, duplicate is not a great idea -->
         </Root>
