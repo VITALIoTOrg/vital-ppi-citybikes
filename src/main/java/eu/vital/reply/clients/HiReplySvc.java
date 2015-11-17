@@ -110,10 +110,12 @@ public class HiReplySvc
             }
         }
 
-        String tmp = EntityUtils.toString(resp.getEntity());
-        //this.logger.error("Message received - " + tmp);
-        if(!tmp.contains("502 Proxy Error")) {
-        	response = this.cleanOutput(tmp);
+        if(resp.getStatusLine().getStatusCode() != 404) {
+	        String tmp = EntityUtils.toString(resp.getEntity());
+	        //this.logger.error("Message received - " + tmp);
+	        if(!tmp.contains("502 Proxy Error")) {
+	        	response = this.cleanOutput(tmp);
+	        }
         }
 
     	return response;
@@ -352,12 +354,12 @@ public class HiReplySvc
             return null;
         }
 
-        ValueList values;
+        ValueList values = null;
 
-        respString = cleanOutput(respString);
         try
         {
-            values = (ValueList) (new UnmarshalUtil()).unmarshal(respString);
+        	if(respString != null)
+        		values = (ValueList) (new UnmarshalUtil()).unmarshal(respString);
         } catch (Exception e)
         {
             this.logger.error("getPropertyHistoricalValues - Unmarshalling exception: " + e.getMessage());
