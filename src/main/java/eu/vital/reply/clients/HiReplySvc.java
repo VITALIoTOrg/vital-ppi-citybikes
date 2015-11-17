@@ -160,11 +160,13 @@ public class HiReplySvc
             return null;
         }
 
-        ServiceList serviceList;
+        ServiceList serviceList = null;
 
         try
         {
-            serviceList = (ServiceList) (new UnmarshalUtil()).unmarshal(respString);
+            if(respString != null) {
+            	serviceList = (ServiceList) (new UnmarshalUtil()).unmarshal(respString);
+            }
         } catch(Exception e)
         {
             this.logger.error("getSnapshot - Unmarshalling exception: " + e.getMessage());
