@@ -9,7 +9,6 @@ import eu.vital.reply.xmlpojos.ValueList;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
@@ -78,9 +77,7 @@ public class HiReplySvc
     	String response = null;
 
     	HttpGet get = new HttpGet(uri);
-    	Builder requestConfigBuilder = RequestConfig.custom();
-    	requestConfigBuilder.setConnectionRequestTimeout(3000).setConnectTimeout(3000).setSocketTimeout(3000);
-    	get.setConfig(requestConfigBuilder.build());
+    	get.setConfig(RequestConfig.custom().setConnectionRequestTimeout(3000).setConnectTimeout(3000).setSocketTimeout(3000).build());
 
         CloseableHttpResponse resp;
         try {
@@ -93,12 +90,11 @@ public class HiReplySvc
             try {
             	// Try again with a higher timeout
             	try {
-					Thread.sleep(1000); // experimental: do not retry immediately
+					Thread.sleep(1000); // do not retry immediately
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
 				}
-            	requestConfigBuilder.setConnectionRequestTimeout(7000).setConnectTimeout(7000).setSocketTimeout(7000);
-            	get.setConfig(requestConfigBuilder.build());
+            	get.setConfig(RequestConfig.custom().setConnectionRequestTimeout(7000).setConnectTimeout(7000).setSocketTimeout(7000).build());
                 resp = http.httpc.execute(get);
                 if(resp.getStatusLine().getStatusCode() != 404) {
                 	response = EntityUtils.toString(resp.getEntity());
@@ -107,12 +103,11 @@ public class HiReplySvc
             } catch (IOException ea) {
             	// Try again with an even higher timeout
             	try {
-					Thread.sleep(1000); // experimental: do not retry immediately
+					Thread.sleep(1000); // do not retry immediately
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
 				}
-            	requestConfigBuilder.setConnectionRequestTimeout(12000).setConnectTimeout(12000).setSocketTimeout(12000);
-            	get.setConfig(requestConfigBuilder.build());
+            	get.setConfig(RequestConfig.custom().setConnectionRequestTimeout(12000).setConnectTimeout(12000).setSocketTimeout(12000).build());
                 resp = http.httpc.execute(get);
                 if(resp.getStatusLine().getStatusCode() != 404) {
                 	response = EntityUtils.toString(resp.getEntity());
