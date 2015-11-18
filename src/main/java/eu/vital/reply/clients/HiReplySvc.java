@@ -1,19 +1,18 @@
 package eu.vital.reply.clients;
 
 import eu.vital.reply.utils.ConfigReader;
+import eu.vital.reply.utils.HttpCommonClient;
 import eu.vital.reply.utils.UnmarshalUtil;
 import eu.vital.reply.xmlpojos.PropertyList;
 import eu.vital.reply.xmlpojos.ServiceList;
 import eu.vital.reply.xmlpojos.ValueList;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.config.RequestConfig.Builder;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,7 +36,7 @@ import java.util.Date;
  */
 public class HiReplySvc
 {
-    private HttpClient http;
+    private HttpCommonClient http;
     private Logger logger;
 
     private String host;
@@ -60,7 +59,7 @@ public class HiReplySvc
     public HiReplySvc()
     {
         ConfigReader config = ConfigReader.getInstance();
-        http = HttpClients.createDefault();
+        http = HttpCommonClient.getInstance();
         logger = LogManager.getLogger(HiReplySvc.class);
 
         host = config.get(ConfigReader.HI_HOSTNAME);
@@ -83,9 +82,13 @@ public class HiReplySvc
     	requestConfigBuilder.setConnectionRequestTimeout(3000).setConnectTimeout(3000).setSocketTimeout(3000);
     	get.setConfig(requestConfigBuilder.build());
 
-        HttpResponse resp;
+        CloseableHttpResponse resp;
         try {
-            resp = http.execute(get);
+            resp = http.httpc.execute(get);
+            if(resp.getStatusLine().getStatusCode() != 404) {
+            	response = EntityUtils.toString(resp.getEntity());
+            }
+            resp.close();
         } catch (Exception e) {
             try {
             	// Try again with a higher timeout
@@ -96,7 +99,11 @@ public class HiReplySvc
 				}
             	requestConfigBuilder.setConnectionRequestTimeout(7000).setConnectTimeout(7000).setSocketTimeout(7000);
             	get.setConfig(requestConfigBuilder.build());
-                resp = http.execute(get);
+                resp = http.httpc.execute(get);
+                if(resp.getStatusLine().getStatusCode() != 404) {
+                	response = EntityUtils.toString(resp.getEntity());
+                }
+                resp.close();
             } catch (IOException ea) {
             	// Try again with an even higher timeout
             	try {
@@ -106,17 +113,16 @@ public class HiReplySvc
 				}
             	requestConfigBuilder.setConnectionRequestTimeout(12000).setConnectTimeout(12000).setSocketTimeout(12000);
             	get.setConfig(requestConfigBuilder.build());
-                resp = http.execute(get);
+                resp = http.httpc.execute(get);
+                if(resp.getStatusLine().getStatusCode() != 404) {
+                	response = EntityUtils.toString(resp.getEntity());
+                }
+                resp.close();
             }
         }
 
-        if(resp.getStatusLine().getStatusCode() != 404) {
-	        String tmp = EntityUtils.toString(resp.getEntity());
-	        //this.logger.error("Message received - " + tmp);
-	        if(!tmp.contains("502 Proxy Error")) {
-	        	response = this.cleanOutput(tmp);
-	        }
-        }
+        if(!response.contains("502 Proxy Error"))
+        	response = this.cleanOutput(response);
 
     	return response;
     }
