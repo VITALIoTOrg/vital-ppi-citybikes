@@ -1656,7 +1656,7 @@ public class HiPPI {
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(timestamp);
-        if(cal.get(Calendar.YEAR) != 1900) {
+        if((cal.get(Calendar.YEAR) != 1900) && (currentSensor.getStatus() != 0)) {
         	m = new Measure();
 	        m.setContext(contextsUri + "measurement.jsonld");
 	    	String id = Long.toHexString(timestamp.getTime());
@@ -1742,7 +1742,7 @@ public class HiPPI {
         
         Calendar cal = Calendar.getInstance();
         cal.setTime(historyMeasure.getDate());
-        if (cal.get(Calendar.YEAR) != 1900) {
+        if ((cal.get(Calendar.YEAR) != 1900) && (currentSensor.getStatus() != 0)) {
 	        m = new Measure();
 	        m.setContext(contextsUri + "measurement.jsonld");
 	        String id = Long.toHexString(historyMeasure.getDate().getTime());
