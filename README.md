@@ -1,10 +1,10 @@
-# Vital HiReply PPI
+# VITAL Istanbul Traffic PPI
 
 ---
 
-This project contains the code for the Vital HiReply PPI. The module exposes
-the underlying IoT system through a REST interface compliant to D3.2.2 of the
-Vital Project.
+This project contains the code for the VITAL Istanbul Traffic PPI. The module
+exposes the underlying HiReply IoT system through a REST interface compliant to
+D3.2.2 of the VITAL Project.
 
 ## Configuration
 
@@ -31,7 +31,7 @@ copying it onto your target machine and executing:
 java -jar <package>.jar # Java 8 should be used
 ```
 
-You may also want to take a look at the Vital Deployer project, featuring a
-script to automatically build and deploy this application plus other components
-of the Vital system.
+You may also want to take a look at the VITAL Deployer project, featuring a
+script to automatically build and deploy this application and other components
+of the VITAL system.
 
