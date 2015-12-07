@@ -32,5 +32,7 @@ public class ServedEvent implements ContainerResponseFilter {
 		else {
 			logger.error("Request " + requestCount + " failed!");
 		}
+        EventHelper eventHelperF = new EventHelper(requestCount, arg0.getUriInfo().getPath());
+        StatCounter.deleteEventHelper(eventHelperF);
 	}
 }
