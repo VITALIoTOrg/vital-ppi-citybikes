@@ -7,7 +7,6 @@ import eu.vital.reply.xmlpojos.PropertyList;
 import eu.vital.reply.xmlpojos.ServiceList;
 import eu.vital.reply.xmlpojos.ValueList;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -73,8 +72,10 @@ public class HiReplySvc
         isServiceRunningPath = config.get(ConfigReader.HI_ISSERVICERUNNING_PATH);
     }
 
-    private String performRequest(URI uri) throws ClientProtocolException, IOException {
+    private String performRequest(URI uri) throws Exception {
     	String response = null;
+    	int code = 200;
+    	String msg;
 
     	HttpGet get = new HttpGet(uri);
     	get.setConfig(RequestConfig.custom().setConnectionRequestTimeout(3000).setConnectTimeout(3000).setSocketTimeout(3000).build());
@@ -82,8 +83,9 @@ public class HiReplySvc
         CloseableHttpResponse resp;
         try {
             resp = http.httpc.execute(get);
-            int code = resp.getStatusLine().getStatusCode();
-            if(code >=200 && code <= 299) {
+            code = resp.getStatusLine().getStatusCode();
+            msg = resp.getStatusLine().getReasonPhrase();
+            if(code >= 200 && code <= 299) {
             	response = EntityUtils.toString(resp.getEntity());
             }
             resp.close();
@@ -97,8 +99,9 @@ public class HiReplySvc
 				}
             	get.setConfig(RequestConfig.custom().setConnectionRequestTimeout(7000).setConnectTimeout(7000).setSocketTimeout(7000).build());
                 resp = http.httpc.execute(get);
-                int code = resp.getStatusLine().getStatusCode();
-                if(code >=200 && code <= 299) {
+                code = resp.getStatusLine().getStatusCode();
+                msg = resp.getStatusLine().getReasonPhrase();
+                if(code >= 200 && code <= 299) {
                 	response = EntityUtils.toString(resp.getEntity());
                 }
                 resp.close();
@@ -111,21 +114,31 @@ public class HiReplySvc
 				}
             	get.setConfig(RequestConfig.custom().setConnectionRequestTimeout(12000).setConnectTimeout(12000).setSocketTimeout(12000).build());
                 resp = http.httpc.execute(get);
-                int code = resp.getStatusLine().getStatusCode();
-                if(code >=200 && code <= 299) {
+                code = resp.getStatusLine().getStatusCode();
+                msg = resp.getStatusLine().getReasonPhrase();
+                if(code >= 200 && code <= 299) {
                 	response = EntityUtils.toString(resp.getEntity());
                 }
                 resp.close();
             }
         }
-
-        if(!response.contains("502 Proxy Error"))
+        
+        if((code >= 200 && code <= 299) && (response == null || !response.contains("502 Proxy Error")))
         	response = this.cleanOutput(response);
+        else {
+        	if(!(code >= 200 && code <= 299)) {
+        		String error = "{" + System.lineSeparator() + " \"code\": " + code + "," + System.lineSeparator() + " \"message\": \"Error while retrieving " + uri.toString() + ": " + msg + "\"" + System.lineSeparator() + "}";
+        		throw new Exception(error);
+        	} else if(response.contains("502 Proxy Error")) {
+        		String error = "{" + System.lineSeparator() + " \"code\": 502," + System.lineSeparator() + " \"message\": \"502 Proxy Error\"" + System.lineSeparator() + "}";
+        		throw new Exception(error);
+        	}
+        }
 
     	return response;
     }
     
-    public ServiceList getSnapshotFiltered(String filter)
+    public ServiceList getSnapshotFiltered(String filter) throws Exception
     {
         String respString;
         URI uri;
@@ -184,12 +197,12 @@ public class HiReplySvc
         return serviceList;
     }
 
-    public ServiceList getSnapshot()
+    public ServiceList getSnapshot() throws Exception
     {
         return getSnapshotFiltered(null);
     }
 
-    public PropertyList getPropertyNames(String serviceId)
+    public PropertyList getPropertyNames(String serviceId) throws Exception
     {
         String respString;
         URI uri;
@@ -229,7 +242,7 @@ public class HiReplySvc
         return props;
     }
 
-    public String getPropertyValue(String serviceId, String propertyName)
+    public String getPropertyValue(String serviceId, String propertyName) throws Exception
     {
         String respString;
         URI uri;
@@ -260,7 +273,7 @@ public class HiReplySvc
         return cleanOutput(respString);
     }
 
-    public boolean setPropertyValue(String serviceId, String propertyName, String value)
+    public boolean setPropertyValue(String serviceId, String propertyName, String value) throws Exception
     {
         String respString;
         URI uri;
@@ -292,7 +305,7 @@ public class HiReplySvc
         return respString.contains("correctly");
     }
 
-    public String getPropertyAttribute(String serviceId, String propertyName, String attributeName)
+    public String getPropertyAttribute(String serviceId, String propertyName, String attributeName) throws Exception
     {
         String respString;
         URI uri;
@@ -324,7 +337,7 @@ public class HiReplySvc
         return cleanOutput(respString);
     }
 
-    public ValueList getPropertyHistoricalValues(String serviceId, String propertyName, Date startTime, Date endTime)
+    public ValueList getPropertyHistoricalValues(String serviceId, String propertyName, Date startTime, Date endTime) throws Exception
     {
         String respString;
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -373,7 +386,7 @@ public class HiReplySvc
         return values;
     }
 
-    public String isServiceRunning(String serviceId)
+    public String isServiceRunning(String serviceId) throws Exception
     {
         String respString = "";
         URI uri = null;

@@ -9,15 +9,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Provider
-public class ThrowableExceptionMapper implements ExceptionMapper<Throwable> {
+public class ThrowableExceptionMapper implements ExceptionMapper<Exception> {
 
 	private Logger logger = LogManager.getLogger(RequestEvent.class);
 
     @Override
-    public Response toResponse(Throwable t) {
+    public Response toResponse(Exception e) {
     	StatCounter.incrementErrorNumber();
-    	logger.error(t.getMessage());
-    	//t.printStackTrace();
-    	return Response.status(Status.INTERNAL_SERVER_ERROR).entity(t.getMessage()).build();
+    	logger.error(System.lineSeparator() + e.getMessage());
+    	return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     }
 }

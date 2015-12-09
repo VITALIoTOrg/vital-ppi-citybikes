@@ -332,27 +332,32 @@ public class HiPPI {
             return Response.serverError().build();
         }
 
-        String taskManagerServiceId = this.hiReplySvc.getSnapshot().getTaskManager().getID();
+        String taskManagerServiceId;
+		try {
+			taskManagerServiceId = this.hiReplySvc.getSnapshot().getTaskManager().getID();
+	        List<Parameter_> configList = configurationReqBody.getParameters();
 
-        List<Parameter_> configList = configurationReqBody.getParameters();
+	        for(i = 0; i < configList.size(); i++) {
+	            String currentConfiguration = configList.get(i).getName();
+	            if(currentConfiguration.equals(this.logVerbosity)) {
+	                String logsPriorityValue = configList.get(i).getValue().toUpperCase();
+	                try {
+	                    success = this.hiReplySvc.setPropertyValue(taskManagerServiceId, hiLogVerbositySetting, logsPriorityValue);
+	                } catch (Exception e) {
+	                    success = false;
+	                }
+	            }
+	        }
 
-        for(i = 0; i < configList.size(); i++) {
-            String currentConfiguration = configList.get(i).getName();
-            if(currentConfiguration.equals(this.logVerbosity)) {
-                String logsPriorityValue = configList.get(i).getValue().toUpperCase();
-                try {
-                    success = this.hiReplySvc.setPropertyValue(taskManagerServiceId, hiLogVerbositySetting, logsPriorityValue);
-                } catch (Exception e) {
-                    success = false;
-                }
-            }
-        }
-
-        if(success) {
-            return Response.ok().build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+	        if(success) {
+	            return Response.ok().build();
+	        } else {
+	            return Response.status(Response.Status.NOT_FOUND).build();
+	        }
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e1.getMessage()).build();
+		}
     }
 
     /**
@@ -1805,7 +1810,7 @@ public class HiPPI {
         return m;
     }
 
-    private ServiceList.TrafficSensor retrieveSensor(String id) {
+    private ServiceList.TrafficSensor retrieveSensor(String id) throws Exception {
 
         String filter = hiReplySvc.createFilter("ID", id);
         List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor();
