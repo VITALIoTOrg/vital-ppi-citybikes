@@ -82,7 +82,8 @@ public class HiReplySvc
         CloseableHttpResponse resp;
         try {
             resp = http.httpc.execute(get);
-            if(resp.getStatusLine().getStatusCode() != 404) {
+            int code = resp.getStatusLine().getStatusCode();
+            if(code >=200 && code <= 299) {
             	response = EntityUtils.toString(resp.getEntity());
             }
             resp.close();
@@ -96,7 +97,8 @@ public class HiReplySvc
 				}
             	get.setConfig(RequestConfig.custom().setConnectionRequestTimeout(7000).setConnectTimeout(7000).setSocketTimeout(7000).build());
                 resp = http.httpc.execute(get);
-                if(resp.getStatusLine().getStatusCode() != 404) {
+                int code = resp.getStatusLine().getStatusCode();
+                if(code >=200 && code <= 299) {
                 	response = EntityUtils.toString(resp.getEntity());
                 }
                 resp.close();
@@ -109,7 +111,8 @@ public class HiReplySvc
 				}
             	get.setConfig(RequestConfig.custom().setConnectionRequestTimeout(12000).setConnectTimeout(12000).setSocketTimeout(12000).build());
                 resp = http.httpc.execute(get);
-                if(resp.getStatusLine().getStatusCode() != 404) {
+                int code = resp.getStatusLine().getStatusCode();
+                if(code >=200 && code <= 299) {
                 	response = EntityUtils.toString(resp.getEntity());
                 }
                 resp.close();
