@@ -130,7 +130,7 @@ public class HiReplySvc
         		String error = "{" + System.lineSeparator() + " \"code\": " + code + "," + System.lineSeparator() + " \"message\": \"Error while retrieving " + uri.toString() + ": " + msg + "\"" + System.lineSeparator() + "}";
         		throw new Exception(error);
         	} else if(response.contains("502 Proxy Error")) {
-        		String error = "{" + System.lineSeparator() + " \"code\": 502," + System.lineSeparator() + " \"message\": \"502 Proxy Error\"" + System.lineSeparator() + "}";
+        		String error = "{" + System.lineSeparator() + " \"code\": 502," + System.lineSeparator() + " \"message\": \"Proxy Error while retrieving " + uri.toString() + "\"" + System.lineSeparator() + "}";
         		throw new Exception(error);
         	}
         }
