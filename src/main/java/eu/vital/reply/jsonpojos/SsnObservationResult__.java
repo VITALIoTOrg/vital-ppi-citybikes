@@ -10,9 +10,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
@@ -28,6 +28,7 @@ public class SsnObservationResult__ {
     private SsnHasValue__ ssnHasValue;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    protected final static Object NOT_FOUND_VALUE = new Object();
 
     /**
      * 
@@ -96,6 +97,75 @@ public class SsnObservationResult__ {
 
     public SsnObservationResult__ withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
+        return this;
+    }
+
+    @SuppressWarnings({
+        "unchecked"
+    })
+    protected boolean declaredProperty(String name, Object value) {
+        switch (name) {
+            case "type":
+                if (value instanceof String) {
+                    setType(((String) value));
+                } else {
+                    throw new IllegalArgumentException(("property \"type\" is of type \"java.lang.String\", but got "+ value.getClass().toString()));
+                }
+                return true;
+            case "ssn:hasValue":
+                if (value instanceof SsnHasValue__) {
+                    setSsnHasValue(((SsnHasValue__) value));
+                } else {
+                    throw new IllegalArgumentException(("property \"ssn:hasValue\" is of type \"eu.vital.reply.jsonpojos.SsnHasValue__\", but got "+ value.getClass().toString()));
+                }
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @SuppressWarnings({
+        "unchecked"
+    })
+    protected Object declaredPropertyOrNotFound(String name, Object notFoundValue) {
+        switch (name) {
+            case "type":
+                return getType();
+            case "ssn:hasValue":
+                return getSsnHasValue();
+            default:
+                return notFoundValue;
+        }
+    }
+
+    @SuppressWarnings({
+        "unchecked"
+    })
+    public<T >T get(String name) {
+        Object value = declaredPropertyOrNotFound(name, SsnObservationResult__.NOT_FOUND_VALUE);
+        if (SsnObservationResult__.NOT_FOUND_VALUE!= value) {
+            return ((T) value);
+        } else {
+            return ((T) getAdditionalProperties().get(name));
+        }
+    }
+
+    @SuppressWarnings({
+        "unchecked"
+    })
+    public void set(String name, Object value) {
+        if (!declaredProperty(name, value)) {
+            getAdditionalProperties().put(name, ((Object) value));
+        }
+    }
+
+    @SuppressWarnings({
+        "unchecked"
+    })
+    public SsnObservationResult__ with(String name, Object value) {
+        if (!declaredProperty(name, value)) {
+            getAdditionalProperties().put(name, ((Object) value));
+        }
         return this;
     }
 

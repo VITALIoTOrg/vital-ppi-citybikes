@@ -6,7 +6,7 @@ import eu.vital.reply.utils.UnmarshalUtil;
 import eu.vital.reply.xmlpojos.PropertyList;
 import eu.vital.reply.xmlpojos.ServiceList;
 import eu.vital.reply.xmlpojos.ValueList;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
