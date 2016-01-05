@@ -131,6 +131,7 @@
                     <outputDirectory>${basedir}/src/main/java</outputDirectory>
                     <sourceType>json</sourceType>
                     <targetPackage>eu.vital.reply.jsonpojos</targetPackage>
+                    <targetVersion>1.8</targetVersion>
                 </configuration>
                 <executions>
                     <execution>
