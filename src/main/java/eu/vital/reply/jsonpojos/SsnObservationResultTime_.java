@@ -25,7 +25,6 @@ public class SsnObservationResultTime_ {
     private String timeInXSDDateTime;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-    protected final static Object NOT_FOUND_VALUE = new Object();
 
     /**
      * 
@@ -69,66 +68,6 @@ public class SsnObservationResultTime_ {
 
     public SsnObservationResultTime_ withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-        return this;
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    protected boolean declaredProperty(String name, Object value) {
-        switch (name) {
-            case "time:inXSDDateTime":
-                if (value instanceof String) {
-                    setTimeInXSDDateTime(((String) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"time:inXSDDateTime\" is of type \"java.lang.String\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    protected Object declaredPropertyOrNotFound(String name, Object notFoundValue) {
-        switch (name) {
-            case "time:inXSDDateTime":
-                return getTimeInXSDDateTime();
-            default:
-                return notFoundValue;
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public<T >T get(String name) {
-        Object value = declaredPropertyOrNotFound(name, SsnObservationResultTime_.NOT_FOUND_VALUE);
-        if (SsnObservationResultTime_.NOT_FOUND_VALUE!= value) {
-            return ((T) value);
-        } else {
-            return ((T) getAdditionalProperties().get(name));
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public void set(String name, Object value) {
-        if (!declaredProperty(name, value)) {
-            getAdditionalProperties().put(name, ((Object) value));
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public SsnObservationResultTime_ with(String name, Object value) {
-        if (!declaredProperty(name, value)) {
-            getAdditionalProperties().put(name, ((Object) value));
-        }
         return this;
     }
 

@@ -36,7 +36,6 @@ public class ObservationRequest {
     private String to;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-    protected final static Object NOT_FOUND_VALUE = new Object();
 
     /**
      * 
@@ -155,93 +154,6 @@ public class ObservationRequest {
 
     public ObservationRequest withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-        return this;
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    protected boolean declaredProperty(String name, Object value) {
-        switch (name) {
-            case "sensor":
-                if (value instanceof List) {
-                    setSensor(((List<String> ) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"sensor\" is of type \"java.util.List<java.lang.String>\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            case "property":
-                if (value instanceof String) {
-                    setProperty(((String) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"property\" is of type \"java.lang.String\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            case "from":
-                if (value instanceof String) {
-                    setFrom(((String) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"from\" is of type \"java.lang.String\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            case "to":
-                if (value instanceof String) {
-                    setTo(((String) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"to\" is of type \"java.lang.String\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    protected Object declaredPropertyOrNotFound(String name, Object notFoundValue) {
-        switch (name) {
-            case "sensor":
-                return getSensor();
-            case "property":
-                return getProperty();
-            case "from":
-                return getFrom();
-            case "to":
-                return getTo();
-            default:
-                return notFoundValue;
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public<T >T get(String name) {
-        Object value = declaredPropertyOrNotFound(name, ObservationRequest.NOT_FOUND_VALUE);
-        if (ObservationRequest.NOT_FOUND_VALUE!= value) {
-            return ((T) value);
-        } else {
-            return ((T) getAdditionalProperties().get(name));
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public void set(String name, Object value) {
-        if (!declaredProperty(name, value)) {
-            getAdditionalProperties().put(name, ((Object) value));
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public ObservationRequest with(String name, Object value) {
-        if (!declaredProperty(name, value)) {
-            getAdditionalProperties().put(name, ((Object) value));
-        }
         return this;
     }
 

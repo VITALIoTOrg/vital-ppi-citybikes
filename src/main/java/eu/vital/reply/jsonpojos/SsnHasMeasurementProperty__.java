@@ -28,7 +28,6 @@ public class SsnHasMeasurementProperty__ {
     private String hasValue;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-    protected final static Object NOT_FOUND_VALUE = new Object();
 
     /**
      * 
@@ -97,75 +96,6 @@ public class SsnHasMeasurementProperty__ {
 
     public SsnHasMeasurementProperty__ withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-        return this;
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    protected boolean declaredProperty(String name, Object value) {
-        switch (name) {
-            case "type":
-                if (value instanceof String) {
-                    setType(((String) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"type\" is of type \"java.lang.String\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            case "hasValue":
-                if (value instanceof String) {
-                    setHasValue(((String) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"hasValue\" is of type \"java.lang.String\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    protected Object declaredPropertyOrNotFound(String name, Object notFoundValue) {
-        switch (name) {
-            case "type":
-                return getType();
-            case "hasValue":
-                return getHasValue();
-            default:
-                return notFoundValue;
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public<T >T get(String name) {
-        Object value = declaredPropertyOrNotFound(name, SsnHasMeasurementProperty__.NOT_FOUND_VALUE);
-        if (SsnHasMeasurementProperty__.NOT_FOUND_VALUE!= value) {
-            return ((T) value);
-        } else {
-            return ((T) getAdditionalProperties().get(name));
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public void set(String name, Object value) {
-        if (!declaredProperty(name, value)) {
-            getAdditionalProperties().put(name, ((Object) value));
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public SsnHasMeasurementProperty__ with(String name, Object value) {
-        if (!declaredProperty(name, value)) {
-            getAdditionalProperties().put(name, ((Object) value));
-        }
         return this;
     }
 

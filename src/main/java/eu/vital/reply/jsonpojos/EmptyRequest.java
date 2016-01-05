@@ -22,7 +22,6 @@ public class EmptyRequest {
 
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-    protected final static Object NOT_FOUND_VALUE = new Object();
 
     @Override
     public String toString() {
@@ -41,57 +40,6 @@ public class EmptyRequest {
 
     public EmptyRequest withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-        return this;
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    protected boolean declaredProperty(String name, Object value) {
-        switch (name) {
-            default:
-                return false;
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    protected Object declaredPropertyOrNotFound(String name, Object notFoundValue) {
-        switch (name) {
-            default:
-                return notFoundValue;
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public<T >T get(String name) {
-        Object value = declaredPropertyOrNotFound(name, EmptyRequest.NOT_FOUND_VALUE);
-        if (EmptyRequest.NOT_FOUND_VALUE!= value) {
-            return ((T) value);
-        } else {
-            return ((T) getAdditionalProperties().get(name));
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public void set(String name, Object value) {
-        if (!declaredProperty(name, value)) {
-            getAdditionalProperties().put(name, ((Object) value));
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public EmptyRequest with(String name, Object value) {
-        if (!declaredProperty(name, value)) {
-            getAdditionalProperties().put(name, ((Object) value));
-        }
         return this;
     }
 

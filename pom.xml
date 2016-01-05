@@ -126,12 +126,13 @@
                 <configuration>
                     <sourceDirectory>${basedir}/src/main/JsonFile</sourceDirectory>
                     <useCommonsLang3>true</useCommonsLang3>
+                    <targetVersion>1.8</targetVersion>
+                    <includeDynamicAccessors>false</includeDynamicAccessors>
                     <generateBuilders>true</generateBuilders>
                     <includeHashcodeAndEquals>true</includeHashcodeAndEquals>
                     <outputDirectory>${basedir}/src/main/java</outputDirectory>
                     <sourceType>json</sourceType>
                     <targetPackage>eu.vital.reply.jsonpojos</targetPackage>
-                    <targetVersion>1.8</targetVersion>
                 </configuration>
                 <executions>
                     <execution>

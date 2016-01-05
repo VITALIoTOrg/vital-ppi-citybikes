@@ -31,7 +31,6 @@ public class SsnHasValue {
     private String qudtUnit;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-    protected final static Object NOT_FOUND_VALUE = new Object();
 
     /**
      * 
@@ -125,84 +124,6 @@ public class SsnHasValue {
 
     public SsnHasValue withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-        return this;
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    protected boolean declaredProperty(String name, Object value) {
-        switch (name) {
-            case "type":
-                if (value instanceof String) {
-                    setType(((String) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"type\" is of type \"java.lang.String\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            case "value":
-                if (value instanceof Double) {
-                    setValue(((Double) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"value\" is of type \"java.lang.Double\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            case "qudt:unit":
-                if (value instanceof String) {
-                    setQudtUnit(((String) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"qudt:unit\" is of type \"java.lang.String\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    protected Object declaredPropertyOrNotFound(String name, Object notFoundValue) {
-        switch (name) {
-            case "type":
-                return getType();
-            case "value":
-                return getValue();
-            case "qudt:unit":
-                return getQudtUnit();
-            default:
-                return notFoundValue;
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public<T >T get(String name) {
-        Object value = declaredPropertyOrNotFound(name, SsnHasValue.NOT_FOUND_VALUE);
-        if (SsnHasValue.NOT_FOUND_VALUE!= value) {
-            return ((T) value);
-        } else {
-            return ((T) getAdditionalProperties().get(name));
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public void set(String name, Object value) {
-        if (!declaredProperty(name, value)) {
-            getAdditionalProperties().put(name, ((Object) value));
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public SsnHasValue with(String name, Object value) {
-        if (!declaredProperty(name, value)) {
-            getAdditionalProperties().put(name, ((Object) value));
-        }
         return this;
     }
 

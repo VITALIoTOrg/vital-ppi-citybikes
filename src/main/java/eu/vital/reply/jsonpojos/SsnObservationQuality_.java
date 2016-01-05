@@ -25,7 +25,6 @@ public class SsnObservationQuality_ {
     private SsnHasMeasurementProperty_ ssnHasMeasurementProperty;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-    protected final static Object NOT_FOUND_VALUE = new Object();
 
     /**
      * 
@@ -69,66 +68,6 @@ public class SsnObservationQuality_ {
 
     public SsnObservationQuality_ withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-        return this;
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    protected boolean declaredProperty(String name, Object value) {
-        switch (name) {
-            case "ssn:hasMeasurementProperty":
-                if (value instanceof SsnHasMeasurementProperty_) {
-                    setSsnHasMeasurementProperty(((SsnHasMeasurementProperty_) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"ssn:hasMeasurementProperty\" is of type \"eu.vital.reply.jsonpojos.SsnHasMeasurementProperty_\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    protected Object declaredPropertyOrNotFound(String name, Object notFoundValue) {
-        switch (name) {
-            case "ssn:hasMeasurementProperty":
-                return getSsnHasMeasurementProperty();
-            default:
-                return notFoundValue;
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public<T >T get(String name) {
-        Object value = declaredPropertyOrNotFound(name, SsnObservationQuality_.NOT_FOUND_VALUE);
-        if (SsnObservationQuality_.NOT_FOUND_VALUE!= value) {
-            return ((T) value);
-        } else {
-            return ((T) getAdditionalProperties().get(name));
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public void set(String name, Object value) {
-        if (!declaredProperty(name, value)) {
-            getAdditionalProperties().put(name, ((Object) value));
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public SsnObservationQuality_ with(String name, Object value) {
-        if (!declaredProperty(name, value)) {
-            getAdditionalProperties().put(name, ((Object) value));
-        }
         return this;
     }
 

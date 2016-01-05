@@ -48,7 +48,6 @@ public class Sensor {
     private List<SsnObserf> ssnObserves = new ArrayList<SsnObserf>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-    protected final static Object NOT_FOUND_VALUE = new Object();
 
     /**
      * 
@@ -267,129 +266,6 @@ public class Sensor {
 
     public Sensor withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
-        return this;
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    protected boolean declaredProperty(String name, Object value) {
-        switch (name) {
-            case "@context":
-                if (value instanceof String) {
-                    setContext(((String) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"@context\" is of type \"java.lang.String\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            case "id":
-                if (value instanceof String) {
-                    setId(((String) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"id\" is of type \"java.lang.String\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            case "type":
-                if (value instanceof String) {
-                    setType(((String) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"type\" is of type \"java.lang.String\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            case "name":
-                if (value instanceof String) {
-                    setName(((String) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"name\" is of type \"java.lang.String\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            case "description":
-                if (value instanceof String) {
-                    setDescription(((String) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"description\" is of type \"java.lang.String\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            case "status":
-                if (value instanceof String) {
-                    setStatus(((String) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"status\" is of type \"java.lang.String\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            case "hasLastKnownLocation":
-                if (value instanceof HasLastKnownLocation) {
-                    setHasLastKnownLocation(((HasLastKnownLocation) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"hasLastKnownLocation\" is of type \"eu.vital.reply.jsonpojos.HasLastKnownLocation\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            case "ssn:observes":
-                if (value instanceof List) {
-                    setSsnObserves(((List<SsnObserf> ) value));
-                } else {
-                    throw new IllegalArgumentException(("property \"ssn:observes\" is of type \"java.util.List<eu.vital.reply.jsonpojos.SsnObserf>\", but got "+ value.getClass().toString()));
-                }
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    protected Object declaredPropertyOrNotFound(String name, Object notFoundValue) {
-        switch (name) {
-            case "@context":
-                return getContext();
-            case "id":
-                return getId();
-            case "type":
-                return getType();
-            case "name":
-                return getName();
-            case "description":
-                return getDescription();
-            case "status":
-                return getStatus();
-            case "hasLastKnownLocation":
-                return getHasLastKnownLocation();
-            case "ssn:observes":
-                return getSsnObserves();
-            default:
-                return notFoundValue;
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public<T >T get(String name) {
-        Object value = declaredPropertyOrNotFound(name, Sensor.NOT_FOUND_VALUE);
-        if (Sensor.NOT_FOUND_VALUE!= value) {
-            return ((T) value);
-        } else {
-            return ((T) getAdditionalProperties().get(name));
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public void set(String name, Object value) {
-        if (!declaredProperty(name, value)) {
-            getAdditionalProperties().put(name, ((Object) value));
-        }
-    }
-
-    @SuppressWarnings({
-        "unchecked"
-    })
-    public Sensor with(String name, Object value) {
-        if (!declaredProperty(name, value)) {
-            getAdditionalProperties().put(name, ((Object) value));
-        }
         return this;
     }
 
