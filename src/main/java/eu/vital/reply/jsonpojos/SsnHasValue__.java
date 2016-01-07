@@ -18,17 +18,17 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "type",
-    "hrest:hasAddress",
-    "hrest:hasMethod"
+    "value",
+    "qudt:unit"
 })
-public class Operation {
+public class SsnHasValue__ {
 
     @JsonProperty("type")
     private String type;
-    @JsonProperty("hrest:hasAddress")
-    private String hrestHasAddress;
-    @JsonProperty("hrest:hasMethod")
-    private String hrestHasMethod;
+    @JsonProperty("value")
+    private String value;
+    @JsonProperty("qudt:unit")
+    private String qudtUnit;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -52,7 +52,7 @@ public class Operation {
         this.type = type;
     }
 
-    public Operation withType(String type) {
+    public SsnHasValue__ withType(String type) {
         this.type = type;
         return this;
     }
@@ -60,50 +60,50 @@ public class Operation {
     /**
      * 
      * @return
-     *     The hrestHasAddress
+     *     The value
      */
-    @JsonProperty("hrest:hasAddress")
-    public String getHrestHasAddress() {
-        return hrestHasAddress;
+    @JsonProperty("value")
+    public String getValue() {
+        return value;
     }
 
     /**
      * 
-     * @param hrestHasAddress
-     *     The hrest:hasAddress
+     * @param value
+     *     The value
      */
-    @JsonProperty("hrest:hasAddress")
-    public void setHrestHasAddress(String hrestHasAddress) {
-        this.hrestHasAddress = hrestHasAddress;
+    @JsonProperty("value")
+    public void setValue(String value) {
+        this.value = value;
     }
 
-    public Operation withHrestHasAddress(String hrestHasAddress) {
-        this.hrestHasAddress = hrestHasAddress;
+    public SsnHasValue__ withValue(String value) {
+        this.value = value;
         return this;
     }
 
     /**
      * 
      * @return
-     *     The hrestHasMethod
+     *     The qudtUnit
      */
-    @JsonProperty("hrest:hasMethod")
-    public String getHrestHasMethod() {
-        return hrestHasMethod;
+    @JsonProperty("qudt:unit")
+    public String getQudtUnit() {
+        return qudtUnit;
     }
 
     /**
      * 
-     * @param hrestHasMethod
-     *     The hrest:hasMethod
+     * @param qudtUnit
+     *     The qudt:unit
      */
-    @JsonProperty("hrest:hasMethod")
-    public void setHrestHasMethod(String hrestHasMethod) {
-        this.hrestHasMethod = hrestHasMethod;
+    @JsonProperty("qudt:unit")
+    public void setQudtUnit(String qudtUnit) {
+        this.qudtUnit = qudtUnit;
     }
 
-    public Operation withHrestHasMethod(String hrestHasMethod) {
-        this.hrestHasMethod = hrestHasMethod;
+    public SsnHasValue__ withQudtUnit(String qudtUnit) {
+        this.qudtUnit = qudtUnit;
         return this;
     }
 
@@ -122,14 +122,14 @@ public class Operation {
         this.additionalProperties.put(name, value);
     }
 
-    public Operation withAdditionalProperty(String name, Object value) {
+    public SsnHasValue__ withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(type).append(hrestHasAddress).append(hrestHasMethod).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(type).append(value).append(qudtUnit).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -137,11 +137,11 @@ public class Operation {
         if (other == this) {
             return true;
         }
-        if ((other instanceof Operation) == false) {
+        if ((other instanceof SsnHasValue__) == false) {
             return false;
         }
-        Operation rhs = ((Operation) other);
-        return new EqualsBuilder().append(type, rhs.type).append(hrestHasAddress, rhs.hrestHasAddress).append(hrestHasMethod, rhs.hrestHasMethod).append(additionalProperties, rhs.additionalProperties).isEquals();
+        SsnHasValue__ rhs = ((SsnHasValue__) other);
+        return new EqualsBuilder().append(type, rhs.type).append(value, rhs.value).append(qudtUnit, rhs.qudtUnit).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

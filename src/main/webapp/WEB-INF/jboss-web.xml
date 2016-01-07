@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE project>
+<jboss-web>
+    <context-root>hireplyppi</context-root>
+</jboss-web>
+

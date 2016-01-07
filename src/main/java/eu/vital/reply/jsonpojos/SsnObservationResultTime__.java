@@ -1,9 +1,7 @@
 
 package eu.vital.reply.jsonpojos;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -19,37 +17,37 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "metric"
+    "time:inXSDDateTime"
 })
-public class MetricRequest {
+public class SsnObservationResultTime__ {
 
-    @JsonProperty("metric")
-    private List<String> metric = new ArrayList<String>();
+    @JsonProperty("time:inXSDDateTime")
+    private String timeInXSDDateTime;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The metric
+     *     The timeInXSDDateTime
      */
-    @JsonProperty("metric")
-    public List<String> getMetric() {
-        return metric;
+    @JsonProperty("time:inXSDDateTime")
+    public String getTimeInXSDDateTime() {
+        return timeInXSDDateTime;
     }
 
     /**
      * 
-     * @param metric
-     *     The metric
+     * @param timeInXSDDateTime
+     *     The time:inXSDDateTime
      */
-    @JsonProperty("metric")
-    public void setMetric(List<String> metric) {
-        this.metric = metric;
+    @JsonProperty("time:inXSDDateTime")
+    public void setTimeInXSDDateTime(String timeInXSDDateTime) {
+        this.timeInXSDDateTime = timeInXSDDateTime;
     }
 
-    public MetricRequest withMetric(List<String> metric) {
-        this.metric = metric;
+    public SsnObservationResultTime__ withTimeInXSDDateTime(String timeInXSDDateTime) {
+        this.timeInXSDDateTime = timeInXSDDateTime;
         return this;
     }
 
@@ -68,14 +66,14 @@ public class MetricRequest {
         this.additionalProperties.put(name, value);
     }
 
-    public MetricRequest withAdditionalProperty(String name, Object value) {
+    public SsnObservationResultTime__ withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(metric).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(timeInXSDDateTime).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -83,11 +81,11 @@ public class MetricRequest {
         if (other == this) {
             return true;
         }
-        if ((other instanceof MetricRequest) == false) {
+        if ((other instanceof SsnObservationResultTime__) == false) {
             return false;
         }
-        MetricRequest rhs = ((MetricRequest) other);
-        return new EqualsBuilder().append(metric, rhs.metric).append(additionalProperties, rhs.additionalProperties).isEquals();
+        SsnObservationResultTime__ rhs = ((SsnObservationResultTime__) other);
+        return new EqualsBuilder().append(timeInXSDDateTime, rhs.timeInXSDDateTime).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

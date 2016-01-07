@@ -27,7 +27,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
     "ssn:observationQuality",
     "ssn:observationResult"
 })
-public class Measure {
+public class SensorStatus {
 
     @JsonProperty("@context")
     private String Context;
@@ -38,15 +38,15 @@ public class Measure {
     @JsonProperty("ssn:observedBy")
     private String ssnObservedBy;
     @JsonProperty("ssn:observationProperty")
-    private SsnObservationProperty ssnObservationProperty;
+    private SsnObservationProperty__ ssnObservationProperty;
     @JsonProperty("ssn:observationResultTime")
-    private SsnObservationResultTime ssnObservationResultTime;
+    private SsnObservationResultTime__ ssnObservationResultTime;
     @JsonProperty("dul:hasLocation")
-    private DulHasLocation dulHasLocation;
+    private DulHasLocation_ dulHasLocation;
     @JsonProperty("ssn:observationQuality")
-    private SsnObservationQuality ssnObservationQuality;
+    private SsnObservationQuality__ ssnObservationQuality;
     @JsonProperty("ssn:observationResult")
-    private SsnObservationResult ssnObservationResult;
+    private SsnObservationResult__ ssnObservationResult;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -70,7 +70,7 @@ public class Measure {
         this.Context = Context;
     }
 
-    public Measure withContext(String Context) {
+    public SensorStatus withContext(String Context) {
         this.Context = Context;
         return this;
     }
@@ -95,7 +95,7 @@ public class Measure {
         this.id = id;
     }
 
-    public Measure withId(String id) {
+    public SensorStatus withId(String id) {
         this.id = id;
         return this;
     }
@@ -120,7 +120,7 @@ public class Measure {
         this.type = type;
     }
 
-    public Measure withType(String type) {
+    public SensorStatus withType(String type) {
         this.type = type;
         return this;
     }
@@ -145,7 +145,7 @@ public class Measure {
         this.ssnObservedBy = ssnObservedBy;
     }
 
-    public Measure withSsnObservedBy(String ssnObservedBy) {
+    public SensorStatus withSsnObservedBy(String ssnObservedBy) {
         this.ssnObservedBy = ssnObservedBy;
         return this;
     }
@@ -156,7 +156,7 @@ public class Measure {
      *     The ssnObservationProperty
      */
     @JsonProperty("ssn:observationProperty")
-    public SsnObservationProperty getSsnObservationProperty() {
+    public SsnObservationProperty__ getSsnObservationProperty() {
         return ssnObservationProperty;
     }
 
@@ -166,11 +166,11 @@ public class Measure {
      *     The ssn:observationProperty
      */
     @JsonProperty("ssn:observationProperty")
-    public void setSsnObservationProperty(SsnObservationProperty ssnObservationProperty) {
+    public void setSsnObservationProperty(SsnObservationProperty__ ssnObservationProperty) {
         this.ssnObservationProperty = ssnObservationProperty;
     }
 
-    public Measure withSsnObservationProperty(SsnObservationProperty ssnObservationProperty) {
+    public SensorStatus withSsnObservationProperty(SsnObservationProperty__ ssnObservationProperty) {
         this.ssnObservationProperty = ssnObservationProperty;
         return this;
     }
@@ -181,7 +181,7 @@ public class Measure {
      *     The ssnObservationResultTime
      */
     @JsonProperty("ssn:observationResultTime")
-    public SsnObservationResultTime getSsnObservationResultTime() {
+    public SsnObservationResultTime__ getSsnObservationResultTime() {
         return ssnObservationResultTime;
     }
 
@@ -191,11 +191,11 @@ public class Measure {
      *     The ssn:observationResultTime
      */
     @JsonProperty("ssn:observationResultTime")
-    public void setSsnObservationResultTime(SsnObservationResultTime ssnObservationResultTime) {
+    public void setSsnObservationResultTime(SsnObservationResultTime__ ssnObservationResultTime) {
         this.ssnObservationResultTime = ssnObservationResultTime;
     }
 
-    public Measure withSsnObservationResultTime(SsnObservationResultTime ssnObservationResultTime) {
+    public SensorStatus withSsnObservationResultTime(SsnObservationResultTime__ ssnObservationResultTime) {
         this.ssnObservationResultTime = ssnObservationResultTime;
         return this;
     }
@@ -206,7 +206,7 @@ public class Measure {
      *     The dulHasLocation
      */
     @JsonProperty("dul:hasLocation")
-    public DulHasLocation getDulHasLocation() {
+    public DulHasLocation_ getDulHasLocation() {
         return dulHasLocation;
     }
 
@@ -216,11 +216,11 @@ public class Measure {
      *     The dul:hasLocation
      */
     @JsonProperty("dul:hasLocation")
-    public void setDulHasLocation(DulHasLocation dulHasLocation) {
+    public void setDulHasLocation(DulHasLocation_ dulHasLocation) {
         this.dulHasLocation = dulHasLocation;
     }
 
-    public Measure withDulHasLocation(DulHasLocation dulHasLocation) {
+    public SensorStatus withDulHasLocation(DulHasLocation_ dulHasLocation) {
         this.dulHasLocation = dulHasLocation;
         return this;
     }
@@ -231,7 +231,7 @@ public class Measure {
      *     The ssnObservationQuality
      */
     @JsonProperty("ssn:observationQuality")
-    public SsnObservationQuality getSsnObservationQuality() {
+    public SsnObservationQuality__ getSsnObservationQuality() {
         return ssnObservationQuality;
     }
 
@@ -241,11 +241,11 @@ public class Measure {
      *     The ssn:observationQuality
      */
     @JsonProperty("ssn:observationQuality")
-    public void setSsnObservationQuality(SsnObservationQuality ssnObservationQuality) {
+    public void setSsnObservationQuality(SsnObservationQuality__ ssnObservationQuality) {
         this.ssnObservationQuality = ssnObservationQuality;
     }
 
-    public Measure withSsnObservationQuality(SsnObservationQuality ssnObservationQuality) {
+    public SensorStatus withSsnObservationQuality(SsnObservationQuality__ ssnObservationQuality) {
         this.ssnObservationQuality = ssnObservationQuality;
         return this;
     }
@@ -256,7 +256,7 @@ public class Measure {
      *     The ssnObservationResult
      */
     @JsonProperty("ssn:observationResult")
-    public SsnObservationResult getSsnObservationResult() {
+    public SsnObservationResult__ getSsnObservationResult() {
         return ssnObservationResult;
     }
 
@@ -266,11 +266,11 @@ public class Measure {
      *     The ssn:observationResult
      */
     @JsonProperty("ssn:observationResult")
-    public void setSsnObservationResult(SsnObservationResult ssnObservationResult) {
+    public void setSsnObservationResult(SsnObservationResult__ ssnObservationResult) {
         this.ssnObservationResult = ssnObservationResult;
     }
 
-    public Measure withSsnObservationResult(SsnObservationResult ssnObservationResult) {
+    public SensorStatus withSsnObservationResult(SsnObservationResult__ ssnObservationResult) {
         this.ssnObservationResult = ssnObservationResult;
         return this;
     }
@@ -290,7 +290,7 @@ public class Measure {
         this.additionalProperties.put(name, value);
     }
 
-    public Measure withAdditionalProperty(String name, Object value) {
+    public SensorStatus withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
@@ -305,10 +305,10 @@ public class Measure {
         if (other == this) {
             return true;
         }
-        if ((other instanceof Measure) == false) {
+        if ((other instanceof SensorStatus) == false) {
             return false;
         }
-        Measure rhs = ((Measure) other);
+        SensorStatus rhs = ((SensorStatus) other);
         return new EqualsBuilder().append(Context, rhs.Context).append(id, rhs.id).append(type, rhs.type).append(ssnObservedBy, rhs.ssnObservedBy).append(ssnObservationProperty, rhs.ssnObservationProperty).append(ssnObservationResultTime, rhs.ssnObservationResultTime).append(dulHasLocation, rhs.dulHasLocation).append(ssnObservationQuality, rhs.ssnObservationQuality).append(ssnObservationResult, rhs.ssnObservationResult).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 

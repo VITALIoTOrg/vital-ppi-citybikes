@@ -25,7 +25,7 @@
       "type":"ssn:SensorOutput",
       "ssn:hasValue":{
          "type":"ssn:ObservationValue",
-         "value":21.0,
+         "value":"vital:Running",
          "qudt:unit":"qudt:DegreeCelsius"
       }
    }

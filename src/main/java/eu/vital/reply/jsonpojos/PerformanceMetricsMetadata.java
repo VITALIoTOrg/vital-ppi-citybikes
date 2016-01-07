@@ -12,16 +12,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "metrics"
 })
-public class PerformaceMetricsMetadata {
+public class PerformanceMetricsMetadata {
 
     @JsonProperty("metrics")
     private List<Metric> metrics = new ArrayList<Metric>();
@@ -48,7 +48,7 @@ public class PerformaceMetricsMetadata {
         this.metrics = metrics;
     }
 
-    public PerformaceMetricsMetadata withMetrics(List<Metric> metrics) {
+    public PerformanceMetricsMetadata withMetrics(List<Metric> metrics) {
         this.metrics = metrics;
         return this;
     }
@@ -68,7 +68,7 @@ public class PerformaceMetricsMetadata {
         this.additionalProperties.put(name, value);
     }
 
-    public PerformaceMetricsMetadata withAdditionalProperty(String name, Object value) {
+    public PerformanceMetricsMetadata withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
@@ -83,10 +83,10 @@ public class PerformaceMetricsMetadata {
         if (other == this) {
             return true;
         }
-        if ((other instanceof PerformaceMetricsMetadata) == false) {
+        if ((other instanceof PerformanceMetricsMetadata) == false) {
             return false;
         }
-        PerformaceMetricsMetadata rhs = ((PerformaceMetricsMetadata) other);
+        PerformanceMetricsMetadata rhs = ((PerformanceMetricsMetadata) other);
         return new EqualsBuilder().append(metrics, rhs.metrics).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 

@@ -1,9 +1,7 @@
 
 package eu.vital.reply.jsonpojos;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -19,37 +17,37 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "metric"
+    "ssn:hasMeasurementProperty"
 })
-public class MetricRequest {
+public class SsnObservationQuality__ {
 
-    @JsonProperty("metric")
-    private List<String> metric = new ArrayList<String>();
+    @JsonProperty("ssn:hasMeasurementProperty")
+    private SsnHasMeasurementProperty__ ssnHasMeasurementProperty;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The metric
+     *     The ssnHasMeasurementProperty
      */
-    @JsonProperty("metric")
-    public List<String> getMetric() {
-        return metric;
+    @JsonProperty("ssn:hasMeasurementProperty")
+    public SsnHasMeasurementProperty__ getSsnHasMeasurementProperty() {
+        return ssnHasMeasurementProperty;
     }
 
     /**
      * 
-     * @param metric
-     *     The metric
+     * @param ssnHasMeasurementProperty
+     *     The ssn:hasMeasurementProperty
      */
-    @JsonProperty("metric")
-    public void setMetric(List<String> metric) {
-        this.metric = metric;
+    @JsonProperty("ssn:hasMeasurementProperty")
+    public void setSsnHasMeasurementProperty(SsnHasMeasurementProperty__ ssnHasMeasurementProperty) {
+        this.ssnHasMeasurementProperty = ssnHasMeasurementProperty;
     }
 
-    public MetricRequest withMetric(List<String> metric) {
-        this.metric = metric;
+    public SsnObservationQuality__ withSsnHasMeasurementProperty(SsnHasMeasurementProperty__ ssnHasMeasurementProperty) {
+        this.ssnHasMeasurementProperty = ssnHasMeasurementProperty;
         return this;
     }
 
@@ -68,14 +66,14 @@ public class MetricRequest {
         this.additionalProperties.put(name, value);
     }
 
-    public MetricRequest withAdditionalProperty(String name, Object value) {
+    public SsnObservationQuality__ withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(metric).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(ssnHasMeasurementProperty).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -83,11 +81,11 @@ public class MetricRequest {
         if (other == this) {
             return true;
         }
-        if ((other instanceof MetricRequest) == false) {
+        if ((other instanceof SsnObservationQuality__) == false) {
             return false;
         }
-        MetricRequest rhs = ((MetricRequest) other);
-        return new EqualsBuilder().append(metric, rhs.metric).append(additionalProperties, rhs.additionalProperties).isEquals();
+        SsnObservationQuality__ rhs = ((SsnObservationQuality__) other);
+        return new EqualsBuilder().append(ssnHasMeasurementProperty, rhs.ssnHasMeasurementProperty).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

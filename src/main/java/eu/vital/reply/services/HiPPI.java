@@ -16,13 +16,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @version 2.0.0
  */
 
-@Path("/ppi")
+@Path("")
 public class HiPPI {
 
     private Logger logger;
@@ -118,17 +116,17 @@ public class HiPPI {
         ArrayList<String> services = new ArrayList<>();
         ArrayList<String> sensors = new ArrayList<>();
 
-        // Is it ok or it must be a real accessible file?
+        // Context must point to a real file
         ioTSystem.setContext(contextsUri + "system.jsonld");
         ioTSystem.setId(system.getIoTSystem().getUri());
-        ioTSystem.setType("vital:IoTSystem"); // is it really it?
-        ioTSystem.setName(system.getIoTSystem().getID());
+        ioTSystem.setType("vital:VitalSystem"); // is it really it? Think so...
+        ioTSystem.setName(system.getIoTSystem().getName());
         ioTSystem.setDescription(system.getIoTSystem().getDescription());
 
         ioTSystem.setOperator(system.getIoTSystem().getOperator());
         ioTSystem.setServiceArea("http://dbpedia.org/page/" + system.getIoTSystem().getServiceArea());
 
-        List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshot().getTrafficSensor();
+        List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
         for(i = 0; i < trafficSensors.size(); i++) {
             sensors.add(this.createSensorFromTraffic(trafficSensors.get(i)).getId());
         }
@@ -165,23 +163,23 @@ public class HiPPI {
 
         String out;
 
-        PerformaceMetricsMetadata performaceMetricsMetadata = new PerformaceMetricsMetadata();
+        PerformanceMetricsMetadata performanceMetricsMetadata = new PerformanceMetricsMetadata();
 
         List<Metric> list = new ArrayList<>();
 
         Metric metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "MemUsed");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/memUsed");
+        metric.setType(this.transfProt + this.ontBaseUri + "UsedMem");
+        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/usedMem");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "MemAvailable");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/memAvailable");
+        metric.setType(this.transfProt + this.ontBaseUri + "AvailableMem");
+        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/availableMem");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "DiskAvailable");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/diskAvailable");
+        metric.setType(this.transfProt + this.ontBaseUri + "AvailableDisk");
+        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/availableDisk");
         list.add(metric);
 
         metric = new Metric();
@@ -190,8 +188,8 @@ public class HiPPI {
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "ServedRequest");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/servedRequest");
+        metric.setType(this.transfProt + this.ontBaseUri + "ServedRequests");
+        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/servedRequests");
         list.add(metric);
 
         metric = new Metric();
@@ -200,19 +198,19 @@ public class HiPPI {
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "SysUpTime");
+        metric.setType(this.transfProt + this.ontBaseUri + "SysUptime");
         metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/sysUptime");
         list.add(metric);
 
         metric = new Metric();
         metric.setType(this.transfProt + this.ontBaseUri + "PendingRequests");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/pendingRequest");
+        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/pendingRequests");
         list.add(metric);
 
-        performaceMetricsMetadata.setMetrics(list);
+        performanceMetricsMetadata.setMetrics(list);
 
         try {
-            out = JsonUtils.serializeJson(performaceMetricsMetadata);
+            out = JsonUtils.serializeJson(performanceMetricsMetadata);
         } catch (IOException e) {
             this.logger.error("JSON UTILS IO EXCEPTION - getPerformanceMetric information");
             throw new Exception("JSON UTILS IO EXCEPTION - getPerformanceMetric information");
@@ -249,21 +247,21 @@ public class HiPPI {
             pm = pms.get(i).replaceAll("http://" + this.ontBaseUri, "");
 
             PerformanceMetric metric;
-            if (pm.contains("memUsed")) {
+            if (pm.contains("UsedMem")) {
                 metric = this.getMemoryUsed();
-            } else if (pm.toLowerCase().contains("memavailable")) {
+            } else if (pm.contains("AvailableMem")) {
                 metric = this.getMemoryAvailable();
-            } else if (pm.toLowerCase().contains("diskavailable")) {
+            } else if (pm.contains("AvailableDisk")) {
                 metric = this.getDiskAvailable();
-            } else if (pm.toLowerCase().contains("sysload")) {
+            } else if (pm.contains("SysLoad")) {
                 metric = this.getCpuUsage();
-            } else if (pm.toLowerCase().contains("servedrequest")) {
+            } else if (pm.contains("ServedRequests")) {
                 metric = this.getServedRequest();
-            } else if (pm.toLowerCase().contains("errors")) {
+            } else if (pm.contains("Errors")) {
                 metric = this.getErrors();
-            } else if (pm.toLowerCase().contains("sysuptime")) {
+            } else if (pm.contains("SysUptime")) {
                 metric = this.getUpTime();
-            } else if (pm.toLowerCase().contains("pendingrequests")) {
+            } else if (pm.contains("PendingRequests")) {
                 metric = this.getPendingRequest();
             } else {
                 return "{\n" +
@@ -334,27 +332,32 @@ public class HiPPI {
             return Response.serverError().build();
         }
 
-        String taskManagerServiceId = this.hiReplySvc.getSnapshot().getTaskManager().getID();
+        String taskManagerServiceId;
+		try {
+			taskManagerServiceId = this.hiReplySvc.getSnapshot().getTaskManager().getID();
+	        List<Parameter_> configList = configurationReqBody.getParameters();
 
-        List<Parameter_> configList = configurationReqBody.getParameters();
+	        for(i = 0; i < configList.size(); i++) {
+	            String currentConfiguration = configList.get(i).getName();
+	            if(currentConfiguration.equals(this.logVerbosity)) {
+	                String logsPriorityValue = configList.get(i).getValue().toUpperCase();
+	                try {
+	                    success = this.hiReplySvc.setPropertyValue(taskManagerServiceId, hiLogVerbositySetting, logsPriorityValue);
+	                } catch (Exception e) {
+	                    success = false;
+	                }
+	            }
+	        }
 
-        for(i = 0; i < configList.size(); i++) {
-            String currentConfiguration = configList.get(i).getName();
-            if(currentConfiguration.equals(this.logVerbosity)) {
-                String logsPriorityValue = configList.get(i).getValue().toUpperCase();
-                try {
-                    success = this.hiReplySvc.setPropertyValue(taskManagerServiceId, hiLogVerbositySetting, logsPriorityValue);
-                } catch (Exception e) {
-                    success = false;
-                }
-            }
-        }
-
-        if(success) {
-            return Response.ok().build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+	        if(success) {
+	            return Response.ok().build();
+	        } else {
+	            return Response.status(Response.Status.NOT_FOUND).build();
+	        }
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e1.getMessage()).build();
+		}
     }
 
     /**
@@ -364,16 +367,17 @@ public class HiPPI {
     @Path("/system/status")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public String getLifecycleInformation(String bodyRequest) throws Exception {
+    public String getSystemStatus(String bodyRequest) throws Exception {
 
         ServiceList system = hiReplySvc.getSnapshot();
         PerformanceMetric lifecycleInformation = new PerformanceMetric();
 
-        Date date = new Date();
+        Date now = new Date();
+        String id = Long.toHexString(now.getTime());
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         lifecycleInformation.setContext(contextsUri + "measurement.jsonld");
-        lifecycleInformation.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        lifecycleInformation.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         lifecycleInformation.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -382,7 +386,7 @@ public class HiPPI {
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
 
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         lifecycleInformation.setSsnObservationResultTime(ssnObservationResultTime_);
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
@@ -435,10 +439,10 @@ public class HiPPI {
     public String getServiceMetadata(String bodyRequest) throws Exception {
 
         int i;
-        SensorRequest serviceRequest; // TODO rename type, it's the same
+        IdTypeRequest serviceRequest;
 
         try {
-            serviceRequest = (SensorRequest) JsonUtils.deserializeJson(bodyRequest, SensorRequest.class);
+            serviceRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
         } catch (IOException e) {
             this.logger.error("GET SERVICE METADATA - IOException parsing the json request");
             return "{\n" +
@@ -557,13 +561,14 @@ public class HiPPI {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String getIcoMetadata(String bodyRequest) throws Exception {
+    public String getSensorMetadata(String bodyRequest) throws Exception {
 
         int i, j;
-        SensorRequest sensorRequest;
+        IdTypeRequest sensorRequest;
+        ServiceList system = null;
 
         try {
-            sensorRequest = (SensorRequest) JsonUtils.deserializeJson(bodyRequest, SensorRequest.class);
+            sensorRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
         } catch (IOException e) {
             this.logger.error("GET SENSOR METADATA - IOException parsing the json request");
             return "{\n" +
@@ -586,7 +591,10 @@ public class HiPPI {
 
         if ((requestedSensor.size() == 0) && (requestedType.size() == 0)) {
             // then all the sensors must be returned
-            List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshot().getTrafficSensor();
+        	if(system == null) {
+        		system = hiReplySvc.getSnapshot();
+        	}
+            List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
             for (i = 0; i < trafficSensors.size(); i++) {
                 sensors.add(this.createSensorFromTraffic(trafficSensors.get(i)));
             }
@@ -604,7 +612,10 @@ public class HiPPI {
                 } else {
                 	currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
                     if (currentType.toLowerCase().contains("vitalsensor")) {
-	                    List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshot().getTrafficSensor();
+                    	if(system == null) {
+                    		system = hiReplySvc.getSnapshot();
+                    	}
+	                    List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
 	                    for(j = 0; j < trafficSensors.size(); j++) {
 	                        tmpSensor = this.createSensorFromTraffic(trafficSensors.get(j));
 	                        if(!sensors.contains(tmpSensor)) {
@@ -625,6 +636,21 @@ public class HiPPI {
                         sensors.add(tmpSensor);
                     }
                 } else {
+                	/*if(system == null) {
+                		system = hiReplySvc.getSnapshot();
+                	}
+                	List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
+                    for(j = 0; j < trafficSensors.size(); j++) {
+                    	ServiceList.TrafficSensor ts = trafficSensors.get(j);
+                    	if(ts.getID().equals(currentId)) {
+	                        tmpSensor = this.createSensorFromTraffic(trafficSensors.get(j));
+	                        if(!sensors.contains(tmpSensor)) {
+	                            sensors.add(tmpSensor);
+	                        }
+                    	}
+                    }*/
+                	// The above would mean one call for multiple sensors, but would degrade performance in cases with
+                	// a few sensors only and would move some computation load on the PPI server which is not powerful
                     String filter = hiReplySvc.createFilter("ID", currentId);
 
                     ServiceList.TrafficSensor currentTrafficSensor;
@@ -640,7 +666,6 @@ public class HiPPI {
                         // if not present goes on looking for the other requested sensors
                     }
                 }
-
             }
         }
 
@@ -648,6 +673,137 @@ public class HiPPI {
 
         try {
             out = JsonUtils.serializeJson(sensors);
+        } catch (IOException e) {
+            this.logger.error("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
+            throw new Exception("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
+        }
+
+        return out;
+    }
+
+    /**
+     * Method that returns the status of the requested sensor(s). This method is optional.
+     * @param bodyRequest <br>
+     *            JSON-LD String with the body request <br>
+     *            { <br>
+     *              "id": <br>
+     *              [ <br>
+     *                  "http://www.example.com/ico/123/", <br>
+     *                  "http://www.example.com/ico/1234/", <br>
+     *                  "http://www.example.com/ico/12345/" <br>
+     *              ], <br>
+     *              "type": <br>
+     *              [ <br>
+     *                  "http://vital-iot.eu/ontology/ns/VitalSensor", <br>
+     *                  "http://vital-iot.eu/ontology/ns/MonitoringSensor" <br>
+     *              ] <br>
+     *            } <br>
+     * If the id and type fields are omitted, all the sensors are requested <br>
+     * @return Returns a serialized String with the list of the requested sensors. <br>
+     */
+    @Path("/sensor/status")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getSensorStatus(String bodyRequest) throws Exception {
+
+        int i, j;
+        IdTypeRequest sensorRequest;
+        ServiceList system = null;
+        
+
+        try {
+            sensorRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
+        } catch (IOException e) {
+            this.logger.error("GET SENSOR STATUS - IOException parsing the json request");
+            return "{\n" +
+                    "\"error\": \"Malformed request body\"\n"+
+                    "}";
+        }
+
+        List<String> requestedSensor;
+        List<String> requestedType;
+
+        try {
+            requestedSensor = sensorRequest.getId();
+            requestedType = sensorRequest.getType();
+        } catch (NullPointerException e) {
+            this.logger.error("/sensor/status IO Exception - Requested Sensor");
+            throw new Exception("/sensor/status IO Exception - Requested Sensor");
+        }
+
+        ArrayList<SensorStatus> measures = new ArrayList<>();
+
+        if ((requestedSensor.size() == 0) && (requestedType.size() == 0)) {
+            // then all the sensors must be returned
+        	if(system == null) {
+        		system = hiReplySvc.getSnapshot();
+        	}
+            List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
+            for (i = 0; i < trafficSensors.size(); i++) {
+                measures.add(this.createStatusMeasureFromSensor(trafficSensors.get(i), "OperationalState"));
+            }
+            //sensors.add(this.createMonitoringSensor());
+        } else {
+            String currentType;
+            SensorStatus tmpMeasure;
+            for (i = 0; i < requestedType.size(); i++) {
+            	currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
+                if (currentType.toLowerCase().contains("monitoringsensor")) {
+                    //tmpSensor = this.createMonitoringSensor();
+                    //if(!sensors.contains(tmpSensor)) {
+                    //    sensors.add(tmpSensor);
+                    //}
+                } else {
+                	currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
+                    if (currentType.toLowerCase().contains("vitalsensor")) {
+                    	if(system == null) {
+                    		system = hiReplySvc.getSnapshot();
+                    	}
+	                    List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
+	                    for(j = 0; j < trafficSensors.size(); j++) {
+	                    	tmpMeasure = this.createStatusMeasureFromSensor(trafficSensors.get(j), "OperationalState");
+	                    	if(!measures.contains(tmpMeasure)) {
+	                    		measures.add(tmpMeasure);
+	                    	}
+	                    }
+                    }
+                }
+            }
+            // return only some selected sensors
+            String currentId;
+            for (i = 0; i < requestedSensor.size(); i++) {
+                currentId = requestedSensor.get(i).replaceAll(this.transfProt + this.symbolicUri + "/sensor/", "");
+
+                if (currentId.toLowerCase().contains("monitoring")) {
+                    //tmpSensor = this.createMonitoringSensor();
+                    //if(!sensors.contains(tmpSensor)) {
+                    //    sensors.add(tmpSensor);
+                    //}
+                } else {
+                    String filter = hiReplySvc.createFilter("ID", currentId);
+
+                    ServiceList.TrafficSensor currentTrafficSensor;
+
+                    try {
+                        currentTrafficSensor = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor().get(0);
+                        tmpMeasure = this.createStatusMeasureFromSensor(currentTrafficSensor, "OperationalState");
+                    	if(!measures.contains(tmpMeasure)) {
+                    		measures.add(tmpMeasure);
+                    	}
+                    } catch (IndexOutOfBoundsException e) {
+                        logger.error("getSensorStatus ID: " + currentId + " not present.");
+                        // if not present goes on looking for the other requested sensors
+                    }
+                }
+
+            }
+        }
+
+        String out;
+
+        try {
+            out = JsonUtils.serializeJson(measures);
         } catch (IOException e) {
             this.logger.error("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
             throw new Exception("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
@@ -689,7 +845,6 @@ public class HiPPI {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String getObservation(String bodyRequest) throws Exception {
-        int i, s, len;
         ObservationRequest observationRequest;
         ArrayList<Measure> measures = new ArrayList<>();
         ArrayList<PerformanceMetric> metrics = new ArrayList<>();
@@ -707,41 +862,38 @@ public class HiPPI {
         }
 
         List<String>ids = observationRequest.getSensor();
-        len = ids.size();
-        for(s = 0; s < len; s++) {
-            id = ids.get(s).replaceAll(this.transfProt + this.symbolicUri + "/sensor/", "");
+        String property = observationRequest.getProperty().replaceAll("http://" + this.ontBaseUri, "");
+        for (String sid : ids) {
+            id = sid.replaceAll(this.transfProt + this.symbolicUri + "/sensor/", "");
 
             if (id.contains("monitoring")) {
                 // Monitoring sensor
                 PerformanceMetric metric;
-                // get the requested property
-                String requestedProperty = observationRequest.getProperty();
-                SsnObservationProperty_ ob;
-                if (requestedProperty.toLowerCase().contains("memused")) {
+                if (property.contains("UsedMem")) {
                     metric = this.getMemoryUsed();
-                } else if (requestedProperty.toLowerCase().contains("memavailable")) {
+                } else if (property.contains("AvailableMem")) {
                     metric = this.getMemoryAvailable();
-                } else if (requestedProperty.toLowerCase().contains("diskavailable")) {
+                } else if (property.contains("AvailableDisk")) {
                     metric = this.getDiskAvailable();
-                } else if (requestedProperty.toLowerCase().contains("sysload")) {
+                } else if (property.contains("SysLoad")) {
                     metric = this.getCpuUsage();
-                } else if (requestedProperty.toLowerCase().contains("servedrequest")) {
+                } else if (property.contains("ServedRequests")) {
                     metric = this.getServedRequest();
-                } else if (requestedProperty.toLowerCase().contains("errors")) {
+                } else if (property.contains("Errors")) {
                     metric = this.getErrors();
-                } else if (requestedProperty.toLowerCase().contains("sysuptime")) {
+                } else if (property.contains("SysUptime")) {
                     metric = this.getUpTime();
-                } else if (requestedProperty.toLowerCase().contains("pendingrequests")) {
+                } else if (property.contains("PendingRequests")) {
                     metric = this.getPendingRequest();
                 } else {
                     return "{\n" +
-                            "\"error\": \"Performance " + requestedProperty + " not present.\"\n" +
+                            "\"error\": \"Performance " + property + " not present.\"\n" +
                             "}";
                 }
 
-                if(metric != null) {
-                    metric.setSsnObservedBy(ids.get(s));
-                    ob = new SsnObservationProperty_();
+                if (metric != null) {
+                    metric.setSsnObservedBy(sid);
+                    SsnObservationProperty_ ob = new SsnObservationProperty_();
                     ob.setType("http://" + this.ontBaseUri + metric.getSsnObservationProperty().getType().replaceAll("vital:", ""));
                     metric.setSsnObservationProperty(ob);
                     metrics.add(metric);
@@ -757,8 +909,7 @@ public class HiPPI {
                 return out;
 
             } else {
-                // check if the sensor exists
-                ServiceList.TrafficSensor currentSensor = this.retrieveSensor(id);
+            	ServiceList.TrafficSensor currentSensor = this.retrieveSensor(id);
 
                 if(currentSensor == null) {
                     return "{\n" +
@@ -766,18 +917,16 @@ public class HiPPI {
                             "}";
                 }
 
-                // check if the sensor has the requested property
-                String property = observationRequest.getProperty().replaceAll("http://" + this.ontBaseUri, "");
-
                 if(!this.checkTrafficProperty(currentSensor, property)) {
                     return "{\n" +
                             "\"error\": \"Property " + property + " not present for " + id + " sensor.\"\n" +
                             "}";
                 }
+                
+                Measure tmpMes;
 
                 if(observationRequest.getFrom() != null && observationRequest.getTo() != null) {
                     // get history range
-
                     SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
                     SimpleDateFormat hiReplyFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
@@ -808,18 +957,20 @@ public class HiPPI {
 
                     List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(hiReplySvc.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
 
-                    for(i = 0; i < historyMeasures.size(); i++) {
-                        measures.add(this.createMeasureFromHistoryMeasure(historyMeasures.get(i), currentSensor, property));
+                    for (HistoryMeasure hm : historyMeasures) {
+                    	tmpMes = this.createMeasureFromHistoryMeasure(hm, currentSensor, property);
+                    	if (tmpMes != null) {
+                    		measures.add(tmpMes);
+                    	}
                     }
 
-                } else if(observationRequest.getFrom() != null && observationRequest.getTo() == null) {
+                } else if (observationRequest.getFrom() != null && observationRequest.getTo() == null) {
                     // get all values since from
-
                     SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                     SimpleDateFormat hiReplyFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
                     Date fromDate;
-                    Date toDate = new Date(); // hi reply still need end date (use current date)
+                    Date toDate = new Date(); // hireply still needs end date (use current date)
                     Date fromDateHiReply;
                     Date toDateHiReply;
 
@@ -842,13 +993,19 @@ public class HiPPI {
 
                     List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(hiReplySvc.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
 
-                    for(i = 0; i < historyMeasures.size(); i++) {
-                        measures.add(this.createMeasureFromHistoryMeasure(historyMeasures.get(i), currentSensor, property));
+                    for (HistoryMeasure hm : historyMeasures) {
+                    	tmpMes = this.createMeasureFromHistoryMeasure(hm, currentSensor, property);
+                    	if (tmpMes != null) {
+                    		measures.add(tmpMes);
+                    	}
                     }
 
-                } else if(observationRequest.getFrom() == null && observationRequest.getTo() == null) {
+                } else if (observationRequest.getFrom() == null && observationRequest.getTo() == null) {
                     // get last value only
-                    measures.add(this.createMeasureFromSensor(currentSensor, property));
+                	tmpMes = this.createMeasureFromSensor(currentSensor, property);
+                	if (tmpMes != null) {
+                		measures.add(tmpMes);
+                	}
                 }
             }
         }
@@ -863,43 +1020,20 @@ public class HiPPI {
         return out;
     }
 
-    @Path("/contexts/{id}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getContext(@PathParam("id") String context) throws Exception {
-
-        String out = null;
-        byte[] b = new byte[4096];
-        int size;
-
-        InputStream is = this.getClass().getResourceAsStream("/contexts/" + context);
-        try
-        {
-            size = is.read(b);
-            out = new String(b, 0, size, StandardCharsets.UTF_8);
-        }
-        catch (IOException e)
-        {
-            logger.error("ConfigReader - IO EXCEPTION");
-            e.printStackTrace();
-        }
-
-        return out;
-    }
-
     private PerformanceMetric getPendingRequest() throws Exception {
 
         /* Minus 1 because this method has not yet ended (is still pending) */
 
         int pendingRequest = StatCounter.getPendingRequest() - 1;
 
-        Date date = new Date();
+        Date now = new Date();
+        String id = Long.toHexString(now.getTime());
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         PerformanceMetric pendingReq = new PerformanceMetric();
 
         pendingReq.setContext(contextsUri + "measurement.jsonld");
-        pendingReq.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        pendingReq.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         pendingReq.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -909,7 +1043,7 @@ public class HiPPI {
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
 
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         pendingReq.setSsnObservationResultTime(ssnObservationResultTime_);
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
@@ -927,6 +1061,7 @@ public class HiPPI {
     private PerformanceMetric getUpTime() throws Exception {
 
         Date now = new Date();
+        String id = Long.toHexString(now.getTime());
 
         Date hiReplyStartTime = this.hiReplySvc.getSnapshot().getTaskManager().getLastStartTime().toGregorianCalendar().getTime();
 
@@ -937,11 +1072,11 @@ public class HiPPI {
         PerformanceMetric sysUpTime = new PerformanceMetric();
 
         sysUpTime.setContext(contextsUri + "measurement.jsonld");
-        sysUpTime.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        sysUpTime.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         sysUpTime.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:SysUpTime");
+        ssnObservationProperty_.setType("vital:SysUptime");
 
         sysUpTime.setSsnObservationProperty(ssnObservationProperty_);
 
@@ -968,25 +1103,26 @@ public class HiPPI {
 
         requestCount = StatCounter.getRequestNumber();
         int auxCount = requestCount.get();
-        requestCount.set(auxCount+1);
+        requestCount.set(auxCount + 1);
 
-        Date date = new Date();
+        Date now = new Date();
+        String id = Long.toHexString(now.getTime());
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         PerformanceMetric servedRequest = new PerformanceMetric();
 
         servedRequest.setContext(contextsUri + "measurement.jsonld");
-        servedRequest.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        servedRequest.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         servedRequest.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:ServedRequest");
+        ssnObservationProperty_.setType("vital:ServedRequests");
 
         servedRequest.setSsnObservationProperty(ssnObservationProperty_);
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
 
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         servedRequest.setSsnObservationResultTime(ssnObservationResultTime_);
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
@@ -1005,13 +1141,14 @@ public class HiPPI {
 
         requestError = StatCounter.getErrorNumber();
 
-        Date date = new Date();
+        Date now = new Date();
+        String id = Long.toHexString(now.getTime());
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         PerformanceMetric errors = new PerformanceMetric();
 
         errors.setContext(contextsUri + "measurement.jsonld");
-        errors.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        errors.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         errors.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -1021,7 +1158,7 @@ public class HiPPI {
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
 
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         errors.setSsnObservationResultTime(ssnObservationResultTime_);
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
@@ -1041,23 +1178,24 @@ public class HiPPI {
         ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
 
         BigInteger memoryUsed = tm.getMemoryConsumption();
-        Date date = new Date();
+        Date now = new Date();
+        String id = Long.toHexString(now.getTime());
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
 
         PerformanceMetric memUsed = new PerformanceMetric();
 
         memUsed.setContext(contextsUri + "measurement.jsonld");
-        memUsed.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        memUsed.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         memUsed.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:MemUsed");
+        ssnObservationProperty_.setType("vital:UsedMem");
         memUsed.setSsnObservationProperty(ssnObservationProperty_);
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
 
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         memUsed.setSsnObservationResultTime(ssnObservationResultTime_);
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
@@ -1077,22 +1215,23 @@ public class HiPPI {
         ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
 
         BigInteger memAvailable = tm.getAvailMemoryCounter();
-        Date date = new Date();
+        Date now = new Date();
+        String id = Long.toHexString(now.getTime());
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         PerformanceMetric memAval = new PerformanceMetric();
 
         memAval.setContext(contextsUri + "measurement.jsonld");
-        memAval.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        memAval.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         memAval.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:MemAvailable");
+        ssnObservationProperty_.setType("vital:AvailableMem");
         memAval.setSsnObservationProperty(ssnObservationProperty_);
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
 
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         memAval.setSsnObservationResultTime(ssnObservationResultTime_);
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
@@ -1112,13 +1251,14 @@ public class HiPPI {
         ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
 
         float cpuUsage = tm.getCPUTotalCounter();
-        Date date = new Date();
+        Date now = new Date();
+        String id = Long.toHexString(now.getTime());
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         PerformanceMetric load = new PerformanceMetric();
 
         load.setContext(contextsUri + "measurement.jsonld");
-        load.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        load.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         load.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -1127,7 +1267,7 @@ public class HiPPI {
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
 
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         load.setSsnObservationResultTime(ssnObservationResultTime_);
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
@@ -1151,22 +1291,23 @@ public class HiPPI {
         int bkSlashIndex = strDiskAvailable.indexOf("\\");
         int freeDiskSpace = Integer.parseInt (strDiskAvailable.substring(bkSlashIndex+2).replaceAll("\\s+",""));
 
-        Date date = new Date();
+        Date now = new Date();
+        String id = Long.toHexString(now.getTime());
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         PerformanceMetric diskAval = new PerformanceMetric();
 
         diskAval.setContext(contextsUri + "measurement.jsonld");
-        diskAval.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation");
+        diskAval.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
         diskAval.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:DiskAvailable");
+        ssnObservationProperty_.setType("vital:AvailableDisk");
         diskAval.setSsnObservationProperty(ssnObservationProperty_);
 
         SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
 
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
         diskAval.setSsnObservationResultTime(ssnObservationResultTime_);
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
@@ -1193,15 +1334,11 @@ public class HiPPI {
             this.value = value;
             this.date = date;
         }
-        public void setValue(float value) {
-            this.value = value;
-        }
-        public void setDate(Date date) {
-            this.date = date;
-        }
+
         public float getValue() {
             return this.value;
         }
+
         public Date getDate() {
             return this.date;
         }
@@ -1211,7 +1348,7 @@ public class HiPPI {
 
         ArrayList<HistoryMeasure> historyMeasures = new ArrayList<>();
         List<String> values = valueList.getValue();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa");
 
         for(String currentValue : values) {
             String[] splitted = currentValue.split(","); // splitted[0] = value --- splitted[1] data
@@ -1231,7 +1368,7 @@ public class HiPPI {
         return historyMeasures;
     }
 
-    private Sensor createSensorFromTraffic(ServiceList.TrafficSensor currentSensor) {
+    private Sensor createSensorFromTraffic(ServiceList.TrafficSensor currentSensor) throws Exception {
         Sensor sensor = new Sensor();
         String id = currentSensor.getID();
 
@@ -1244,9 +1381,24 @@ public class HiPPI {
         int status = currentSensor.getStatus();
 
         if (status == 1) {
-            sensor.setStatus("vital:Running");
+            SimpleDateFormat timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date timestamp = null;
+        	String timestampS = currentSensor.getMeasureTime().toString();
+            try {
+                timestamp = timestampDateFormat.parse(timestampS);
+            } catch (ParseException e) {
+                this.logger.error("HiPPI - createSensorFromTraffic - ERROR PARSING DATE FROM HIREPLY TIMESTAMP");
+                throw new Exception("HiPPI - createSensorFromTraffic - ERROR PARSING DATE FROM HIREPLY TIMESTAMP");
+            }
+            Date now = new Date();
+            if(now.getTime() - timestamp.getTime() > 60 * 1000 * 60) { // If not updated for some time (1 hour)
+            	sensor.setStatus("vital:Unavailable");
+            }
+            else {
+            	sensor.setStatus("vital:Running");
+            }
         } else if (status == 0) {
-            sensor.setStatus("vital:unavailable");
+            sensor.setStatus("vital:Unavailable");
         } else {
             sensor.setStatus("");
         }
@@ -1254,8 +1406,8 @@ public class HiPPI {
         HasLastKnownLocation location = new HasLastKnownLocation();
         location.setType("geo:Point");
         String[] splitted = currentSensor.getPhysicalLocation().split(";");
-        location.setGeoLat(splitted[1]);
-        location.setGeoLong(splitted[0]);
+        location.setGeoLat(Double.valueOf(splitted[1]));
+        location.setGeoLong(Double.valueOf(splitted[0]));
 
         sensor.setHasLastKnownLocation(location);
 
@@ -1348,6 +1500,11 @@ public class HiPPI {
         operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "/system/status");
         operations.add(operation);
         operation = new Operation();
+        operation.setType("vital:GetSensorStatus");
+        operation.setHrestHasMethod("hrest:POST");
+        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "/sensor/status");
+        operations.add(operation);
+        operation = new Operation();
         operation.setType("vital:GetSupportedPerformanceMetrics");
         operation.setHrestHasMethod("hrest:GET");
         operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "/system/performance");
@@ -1379,17 +1536,17 @@ public class HiPPI {
 
         SsnObserf observedProperty = new SsnObserf();
         observedProperty.setType("vital:MemUsed");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" +"memUsed");
+        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + "usedMem");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:MemAvailable");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + "memAvailable");
+        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + "availableMem");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:DiskAvailable");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + "diskAvailable");
+        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + "availableDisk");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
@@ -1399,7 +1556,7 @@ public class HiPPI {
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:ServedRequest");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" +id+ "/" + "servedRequest");
+        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" +id+ "/" + "servedRequests");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
@@ -1421,15 +1578,80 @@ public class HiPPI {
 
         return sensor;
     }
+    
+    private SensorStatus createStatusMeasureFromSensor(ServiceList.TrafficSensor currentSensor, String property) throws Exception {
+        SensorStatus m = new SensorStatus();
+
+        Date date = new Date();
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+        m.setContext(contextsUri + "measurement.jsonld");
+        if(property.equals("OperationalState")) {
+        	String id = Long.toHexString(date.getTime());
+        	m.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
+        }
+        m.setType("ssn:Observation");
+
+        SsnObservationProperty__ ssnObservationProperty = new SsnObservationProperty__();
+        if(property.equals("OperationalState")) {
+        	ssnObservationProperty.setType("vital:" + property);
+        }
+
+        m.setSsnObservationProperty(ssnObservationProperty);
+
+        SsnObservationResultTime__ ssnObservationResultTime = new SsnObservationResultTime__();
+        if(property.equals("OperationalState")) {
+        	ssnObservationResultTime.setTimeInXSDDateTime(printedDateFormat.format(date));
+        	m.setAdditionalProperty("ssn:featureOfInterest", this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID());
+        }
+
+        m.setSsnObservationResultTime(ssnObservationResultTime);
+
+        SsnObservationResult__ ssnObservationResult = new SsnObservationResult__();
+        ssnObservationResult.setType("ssn:SensorOutput");
+        SsnHasValue__ ssnHasValue = new SsnHasValue__();
+        ssnHasValue.setType("ssn:ObservationValue");
+
+        if(property.equals("OperationalState")) {
+        	int status = currentSensor.getStatus();
+            if (status == 1) {
+            	SimpleDateFormat timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                Date timestamp = null;
+            	String timestampS = currentSensor.getMeasureTime().toString();
+                try {
+                    timestamp = timestampDateFormat.parse(timestampS);
+                } catch (ParseException e) {
+                    this.logger.error("HiPPI - createSensorFromTraffic - ERROR PARSING DATE FROM HIREPLY TIMESTAMP");
+                    throw new Exception("HiPPI - createSensorFromTraffic - ERROR PARSING DATE FROM HIREPLY TIMESTAMP");
+                }
+                Date now = new Date();
+                if(now.getTime() - timestamp.getTime() > 60 * 1000 * 60) { // If not updated for some time (1 hour)
+                	ssnHasValue.setValue("vital:Unavailable");
+                }
+                else {
+                	ssnHasValue.setValue("vital:Running");
+                }
+            } else if (status == 0) {
+            	ssnHasValue.setValue("vital:Unavailable");
+            } else {
+            	ssnHasValue.setValue("");
+            }
+        }
+
+        ssnObservationResult.setSsnHasValue(ssnHasValue);
+        m.setSsnObservationResult(ssnObservationResult);
+
+        return m;
+    }
 
     private Measure createMeasureFromSensor(ServiceList.TrafficSensor currentSensor, String property) throws Exception {
-        Measure m = new Measure();
+        Measure m = null;
 
         SimpleDateFormat timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
-        String hiReplyTimestamp = this.hiReplySvc.getPropertyAttribute(currentSensor.getID(), property, "Timestamp");
-        Date timestamp;
+        Date timestamp = null;
+        String hiReplyTimestamp = currentSensor.getMeasureTime().toString();
         try {
             timestamp = timestampDateFormat.parse(hiReplyTimestamp);
         } catch (ParseException e) {
@@ -1437,161 +1659,158 @@ public class HiPPI {
             throw new Exception("HiPPI - createMeasureFromSensor - ERROR PARSING DATE FROM HIREPLY TIMESTAMP");
         }
 
-        m.setContext(contextsUri + "measurement.jsonld");
-        m.setId(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID() + "/observation");
-        m.setType("ssn:Observation");
-        m.setSsnObservedBy(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID());
-
-        SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
-        ssnObservationProperty.setType("http://" + this.ontBaseUri + property);
-
-        m.setSsnObservationProperty(ssnObservationProperty);
-
-        SsnObservationResultTime ssnObservationResultTime = new SsnObservationResultTime();
-        ssnObservationResultTime.setTimeInXSDDateTime(printedDateFormat.format(timestamp));
-
-        m.setSsnObservationResultTime(ssnObservationResultTime);
-
-        DulHasLocation dulHasLocation = new DulHasLocation();
-        dulHasLocation.setType("geo:Point");
-        String[] splitted = currentSensor.getPhysicalLocation().split(";");
-        dulHasLocation.setGeoLat(splitted[1]);
-        dulHasLocation.setGeoLong(splitted[0]);
-        dulHasLocation.setGeoAlt("0.0");
-
-        m.setDulHasLocation(dulHasLocation);
-
-        SsnObservationResult ssnObservationResult = new SsnObservationResult();
-        ssnObservationResult.setType("ssn:SensorOutput");
-        SsnHasValue ssnHasValue = new SsnHasValue();
-        ssnHasValue.setType("ssn:ObservationValue");
-
-        float speedValue;
-        int colorValue;
-
-        if (currentSensor.getDirectionCount() == 1) {
-            if (property.equals(this.speedProp)) {
-                speedValue = currentSensor.getSpeed();
-                ssnHasValue.setValue(""+speedValue);
-                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
-            } else if (property.equals(this.colorProp)) {
-                colorValue = currentSensor.getColor();
-                ssnHasValue.setValue(""+colorValue);
-                ssnHasValue.setQudtUnit("qudt:Color");
-            } else {
-                return null;
-            }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(timestamp);
+        if((cal.get(Calendar.YEAR) != 1900) && (currentSensor.getStatus() != 0)) {
+        	m = new Measure();
+	        m.setContext(contextsUri + "measurement.jsonld");
+	    	String id = Long.toHexString(timestamp.getTime());
+	    	m.setId(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID() + "/observation/" + id);
+	        m.setType("ssn:Observation");
+	        m.setSsnObservedBy(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID());
+	
+	        SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
+	        ssnObservationProperty.setType("vital:" + property);
+	
+	        m.setSsnObservationProperty(ssnObservationProperty);
+	
+	        SsnObservationResultTime ssnObservationResultTime = new SsnObservationResultTime();
+	        ssnObservationResultTime.setTimeInXSDDateTime(printedDateFormat.format(timestamp));
+	
+	        m.setSsnObservationResultTime(ssnObservationResultTime);
+	
+	        DulHasLocation dulHasLocation = new DulHasLocation();
+	        dulHasLocation.setType("geo:Point");
+	        String[] splitted = currentSensor.getPhysicalLocation().split(";");
+	        dulHasLocation.setGeoLat(Double.valueOf(splitted[1]));
+	        dulHasLocation.setGeoLong(Double.valueOf(splitted[0]));
+	        dulHasLocation.setGeoAlt(0.0);
+	
+	        m.setDulHasLocation(dulHasLocation);
+	
+	        SsnObservationResult ssnObservationResult = new SsnObservationResult();
+	        ssnObservationResult.setType("ssn:SensorOutput");
+	        SsnHasValue ssnHasValue = new SsnHasValue();
+	        ssnHasValue.setType("ssn:ObservationValue");
+	        
+	        float speedValue;
+	        int colorValue;
+	
+	        if (currentSensor.getDirectionCount() == 1) {
+	            if (property.equals(this.speedProp)) {
+	                speedValue = currentSensor.getSpeed();
+	                ssnHasValue.setValue((double) speedValue);
+	                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
+	            } else if (property.equals(this.colorProp)) {
+	                colorValue = currentSensor.getColor();
+	                ssnHasValue.setValue((double) colorValue);
+	                ssnHasValue.setQudtUnit("qudt:Color");
+	            } else {
+	                return null;
+	            }
+	        }
+	
+	        if (currentSensor.getDirectionCount() == 2) {
+	            if (property.equals(this.speedProp)) {
+	                speedValue = currentSensor.getSpeed();
+	                ssnHasValue.setValue((double) speedValue);
+	                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
+	            } else if (property.equals(this.colorProp)) {
+	                colorValue = currentSensor.getColor();
+	                ssnHasValue.setValue((double) colorValue);
+	                ssnHasValue.setQudtUnit("qudt:Color");
+	            } else if (property.equals(this.reverseSpeedProp)) {
+	                speedValue = currentSensor.getSpeed();
+	                ssnHasValue.setValue((double) speedValue);
+	                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
+	            } else if (property.equals(this.reverseColorProp)) {
+	                colorValue = currentSensor.getColor();
+	                ssnHasValue.setValue((double) colorValue);
+	                ssnHasValue.setQudtUnit("qudt:Color");
+	            } else {
+	                return null;
+	            }
+	        }
+	
+	        ssnObservationResult.setSsnHasValue(ssnHasValue);
+	        m.setSsnObservationResult(ssnObservationResult);
         }
-
-        if (currentSensor.getDirectionCount() == 2) {
-            if (property.equals(this.speedProp)) {
-                speedValue = currentSensor.getSpeed();
-                ssnHasValue.setValue(""+speedValue);
-                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
-            } else if (property.equals(this.colorProp)) {
-                colorValue = currentSensor.getColor();
-                ssnHasValue.setValue(""+colorValue);
-                ssnHasValue.setQudtUnit("qudt:Color");
-            } else if (property.equals(this.reverseSpeedProp)) {
-                speedValue = currentSensor.getSpeed();
-                ssnHasValue.setValue(""+speedValue);
-                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
-            } else if (property.equals(this.reverseColorProp)) {
-                colorValue = currentSensor.getColor();
-                ssnHasValue.setValue(""+colorValue);
-                ssnHasValue.setQudtUnit("qudt:Color");
-            } else {
-                return null;
-            }
-        }
-
-        ssnObservationResult.setSsnHasValue(ssnHasValue);
-        m.setSsnObservationResult(ssnObservationResult);
 
         return m;
     }
 
     private Measure createMeasureFromHistoryMeasure(HistoryMeasure historyMeasure, ServiceList.TrafficSensor currentSensor, String property) {
 
-        Measure m = new Measure();
+        Measure m = null;
 
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-        m.setContext(contextsUri + "measurement.jsonld");
-        m.setId(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID() + "/observation");
-        m.setType("ssn:Observation");
-
-        SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
-        ssnObservationProperty.setType("http://" + this.ontBaseUri + property);
-        m.setSsnObservedBy(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID());
-
-        m.setSsnObservationProperty(ssnObservationProperty);
-
-        SsnObservationResultTime ssnObservationResultTime = new SsnObservationResultTime();
-        ssnObservationResultTime.setTimeInXSDDateTime(printedDateFormat.format(historyMeasure.getDate()));
-
-        m.setSsnObservationResultTime(ssnObservationResultTime);
-
-        DulHasLocation dulHasLocation = new DulHasLocation();
-        dulHasLocation.setType("geo:Point");
-        String[] splitted = currentSensor.getPhysicalLocation().split(";");
-        dulHasLocation.setGeoLat(splitted[1]);
-        dulHasLocation.setGeoLong(splitted[0]);
-        dulHasLocation.setGeoAlt("0.0");
-
-        m.setDulHasLocation(dulHasLocation);
-
-        SsnObservationResult ssnObservationResult = new SsnObservationResult();
-        ssnObservationResult.setType("ssn:SensorOutput");
-        SsnHasValue ssnHasValue = new SsnHasValue();
-        ssnHasValue.setType("ssn:ObservationValue");
-
-        float speedValue;
-        int colorValue;
-
-        if (currentSensor.getDirectionCount() == 1) {
-            if (property.equals(this.speedProp)) {
-                speedValue = historyMeasure.getValue();
-                ssnHasValue.setValue(""+speedValue);
-                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
-            } else if (property.equals(this.colorProp)) {
-                colorValue = Math.round(historyMeasure.getValue());
-                ssnHasValue.setValue(""+colorValue);
-                ssnHasValue.setQudtUnit("qudt:Color");
-            } else {
-                return null;
-            }
+        
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(historyMeasure.getDate());
+        if ((cal.get(Calendar.YEAR) != 1900) && (currentSensor.getStatus() != 0)) {
+	        m = new Measure();
+	        m.setContext(contextsUri + "measurement.jsonld");
+	        String id = Long.toHexString(historyMeasure.getDate().getTime());
+	        m.setId(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID() + "/observation/" + id);
+	        m.setType("ssn:Observation");
+	
+	        SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
+	        ssnObservationProperty.setType("vital:" + property);
+	        m.setSsnObservedBy(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID());
+	
+	        m.setSsnObservationProperty(ssnObservationProperty);
+	
+	        SsnObservationResultTime ssnObservationResultTime = new SsnObservationResultTime();
+	        ssnObservationResultTime.setTimeInXSDDateTime(printedDateFormat.format(historyMeasure.getDate()));
+	
+	        m.setSsnObservationResultTime(ssnObservationResultTime);
+	
+	        DulHasLocation dulHasLocation = new DulHasLocation();
+	        dulHasLocation.setType("geo:Point");
+	        String[] splitted = currentSensor.getPhysicalLocation().split(";");
+	        dulHasLocation.setGeoLat(Double.valueOf(splitted[1]));
+	        dulHasLocation.setGeoLong(Double.valueOf(splitted[0]));
+	        dulHasLocation.setGeoAlt(0.0);
+	
+	        m.setDulHasLocation(dulHasLocation);
+	
+	        SsnObservationResult ssnObservationResult = new SsnObservationResult();
+	        ssnObservationResult.setType("ssn:SensorOutput");
+	        SsnHasValue ssnHasValue = new SsnHasValue();
+	        ssnHasValue.setType("ssn:ObservationValue");
+	
+	        if (currentSensor.getDirectionCount() == 1) {
+	            if (property.equals(this.speedProp)) {
+	                ssnHasValue.setValue((double) historyMeasure.getValue());
+	                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
+	            } else if (property.equals(this.colorProp)) {
+	                ssnHasValue.setValue((double) Math.round(historyMeasure.getValue()));
+	                ssnHasValue.setQudtUnit("qudt:Color");
+	            } else {
+	                return null;
+	            }
+	        }
+	
+	        if (currentSensor.getDirectionCount() == 2) {
+	            if (property.equals(this.speedProp) || property.equals(this.reverseSpeedProp)) {
+	                ssnHasValue.setValue((double) historyMeasure.getValue());
+	                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
+	            } else if (property.equals(this.colorProp) || property.equals(this.reverseColorProp)) {
+	                ssnHasValue.setValue((double) Math.round(historyMeasure.getValue()));
+	                ssnHasValue.setQudtUnit("qudt:Color");
+	            } else {
+	                return null;
+	            }
+	        }
+	
+	        ssnObservationResult.setSsnHasValue(ssnHasValue);
+	        m.setSsnObservationResult(ssnObservationResult);
         }
-
-        if (currentSensor.getDirectionCount() == 2) {
-            if (property.equals(this.speedProp)) {
-                speedValue = historyMeasure.getValue();
-                ssnHasValue.setValue(""+speedValue);
-                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
-            } else if (property.equals(this.colorProp)) {
-                colorValue = Math.round(historyMeasure.getValue());
-                ssnHasValue.setValue(""+colorValue);
-                ssnHasValue.setQudtUnit("qudt:Color");
-            } else if (property.equals(this.reverseSpeedProp)) {
-                speedValue = historyMeasure.getValue();
-                ssnHasValue.setValue(""+speedValue);
-                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
-            } else if (property.equals(this.reverseColorProp)) {
-                colorValue = Math.round(historyMeasure.getValue());
-                ssnHasValue.setValue(""+colorValue);
-                ssnHasValue.setQudtUnit("qudt:Color");
-            } else {
-                return null;
-            }
-        }
-
-        ssnObservationResult.setSsnHasValue(ssnHasValue);
-        m.setSsnObservationResult(ssnObservationResult);
 
         return m;
     }
 
-    private ServiceList.TrafficSensor retrieveSensor(String id) {
+    private ServiceList.TrafficSensor retrieveSensor(String id) throws Exception {
 
         String filter = hiReplySvc.createFilter("ID", id);
         List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor();
@@ -1601,6 +1820,7 @@ public class HiPPI {
         try {
             currentSensor = trafficSensors.get(0);
         } catch (IndexOutOfBoundsException e) {
+        	logger.error("retrieveSensor ID: " + id + " not present.");
             return null;
         }
 

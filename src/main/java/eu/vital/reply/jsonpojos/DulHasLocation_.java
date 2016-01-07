@@ -18,17 +18,20 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "type",
-    "hrest:hasAddress",
-    "hrest:hasMethod"
+    "geo:lat",
+    "geo:long",
+    "geo:alt"
 })
-public class Operation {
+public class DulHasLocation_ {
 
     @JsonProperty("type")
     private String type;
-    @JsonProperty("hrest:hasAddress")
-    private String hrestHasAddress;
-    @JsonProperty("hrest:hasMethod")
-    private String hrestHasMethod;
+    @JsonProperty("geo:lat")
+    private Double geoLat;
+    @JsonProperty("geo:long")
+    private Double geoLong;
+    @JsonProperty("geo:alt")
+    private Double geoAlt;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -52,7 +55,7 @@ public class Operation {
         this.type = type;
     }
 
-    public Operation withType(String type) {
+    public DulHasLocation_ withType(String type) {
         this.type = type;
         return this;
     }
@@ -60,50 +63,75 @@ public class Operation {
     /**
      * 
      * @return
-     *     The hrestHasAddress
+     *     The geoLat
      */
-    @JsonProperty("hrest:hasAddress")
-    public String getHrestHasAddress() {
-        return hrestHasAddress;
+    @JsonProperty("geo:lat")
+    public Double getGeoLat() {
+        return geoLat;
     }
 
     /**
      * 
-     * @param hrestHasAddress
-     *     The hrest:hasAddress
+     * @param geoLat
+     *     The geo:lat
      */
-    @JsonProperty("hrest:hasAddress")
-    public void setHrestHasAddress(String hrestHasAddress) {
-        this.hrestHasAddress = hrestHasAddress;
+    @JsonProperty("geo:lat")
+    public void setGeoLat(Double geoLat) {
+        this.geoLat = geoLat;
     }
 
-    public Operation withHrestHasAddress(String hrestHasAddress) {
-        this.hrestHasAddress = hrestHasAddress;
+    public DulHasLocation_ withGeoLat(Double geoLat) {
+        this.geoLat = geoLat;
         return this;
     }
 
     /**
      * 
      * @return
-     *     The hrestHasMethod
+     *     The geoLong
      */
-    @JsonProperty("hrest:hasMethod")
-    public String getHrestHasMethod() {
-        return hrestHasMethod;
+    @JsonProperty("geo:long")
+    public Double getGeoLong() {
+        return geoLong;
     }
 
     /**
      * 
-     * @param hrestHasMethod
-     *     The hrest:hasMethod
+     * @param geoLong
+     *     The geo:long
      */
-    @JsonProperty("hrest:hasMethod")
-    public void setHrestHasMethod(String hrestHasMethod) {
-        this.hrestHasMethod = hrestHasMethod;
+    @JsonProperty("geo:long")
+    public void setGeoLong(Double geoLong) {
+        this.geoLong = geoLong;
     }
 
-    public Operation withHrestHasMethod(String hrestHasMethod) {
-        this.hrestHasMethod = hrestHasMethod;
+    public DulHasLocation_ withGeoLong(Double geoLong) {
+        this.geoLong = geoLong;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The geoAlt
+     */
+    @JsonProperty("geo:alt")
+    public Double getGeoAlt() {
+        return geoAlt;
+    }
+
+    /**
+     * 
+     * @param geoAlt
+     *     The geo:alt
+     */
+    @JsonProperty("geo:alt")
+    public void setGeoAlt(Double geoAlt) {
+        this.geoAlt = geoAlt;
+    }
+
+    public DulHasLocation_ withGeoAlt(Double geoAlt) {
+        this.geoAlt = geoAlt;
         return this;
     }
 
@@ -122,14 +150,14 @@ public class Operation {
         this.additionalProperties.put(name, value);
     }
 
-    public Operation withAdditionalProperty(String name, Object value) {
+    public DulHasLocation_ withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(type).append(hrestHasAddress).append(hrestHasMethod).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(type).append(geoLat).append(geoLong).append(geoAlt).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -137,11 +165,11 @@ public class Operation {
         if (other == this) {
             return true;
         }
-        if ((other instanceof Operation) == false) {
+        if ((other instanceof DulHasLocation_) == false) {
             return false;
         }
-        Operation rhs = ((Operation) other);
-        return new EqualsBuilder().append(type, rhs.type).append(hrestHasAddress, rhs.hrestHasAddress).append(hrestHasMethod, rhs.hrestHasMethod).append(additionalProperties, rhs.additionalProperties).isEquals();
+        DulHasLocation_ rhs = ((DulHasLocation_) other);
+        return new EqualsBuilder().append(type, rhs.type).append(geoLat, rhs.geoLat).append(geoLong, rhs.geoLong).append(geoAlt, rhs.geoAlt).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

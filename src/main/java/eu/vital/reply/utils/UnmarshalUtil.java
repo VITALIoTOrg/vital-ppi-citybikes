@@ -19,11 +19,10 @@ import java.io.StringReader;
 
 public class UnmarshalUtil
 {
-    private static UnmarshalUtil instance;
     private XMLFilter xmlFilter;
     private UnmarshallerHandler unmarshallerHandler;
 
-    private UnmarshalUtil()
+    public UnmarshalUtil()
     {
         try
         {
@@ -43,13 +42,6 @@ public class UnmarshalUtil
         }
     }
 
-    public static UnmarshalUtil getInstance()
-    {
-        if(instance == null)
-            instance = new UnmarshalUtil();
-        return instance;
-    }
-
     public Object unmarshal(String xml) throws IOException, SAXException, JAXBException
     {
         StringReader sr = new StringReader(xml);
@@ -62,7 +54,6 @@ public class UnmarshalUtil
      */
     private static class IoTXMLFilter extends XMLFilterImpl
     {
-
         public IoTXMLFilter(XMLReader xmlReader) {
             super(xmlReader);
         }
@@ -80,6 +71,5 @@ public class UnmarshalUtil
         {
             super.endElement(uri, localName, qName);
         }
-
     }
 }

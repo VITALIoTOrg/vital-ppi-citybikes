@@ -1,9 +1,7 @@
 
 package eu.vital.reply.jsonpojos;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -19,37 +17,65 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "metric"
+    "type",
+    "ssn:hasValue"
 })
-public class MetricRequest {
+public class SsnObservationResult__ {
 
-    @JsonProperty("metric")
-    private List<String> metric = new ArrayList<String>();
+    @JsonProperty("type")
+    private String type;
+    @JsonProperty("ssn:hasValue")
+    private SsnHasValue__ ssnHasValue;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The metric
+     *     The type
      */
-    @JsonProperty("metric")
-    public List<String> getMetric() {
-        return metric;
+    @JsonProperty("type")
+    public String getType() {
+        return type;
     }
 
     /**
      * 
-     * @param metric
-     *     The metric
+     * @param type
+     *     The type
      */
-    @JsonProperty("metric")
-    public void setMetric(List<String> metric) {
-        this.metric = metric;
+    @JsonProperty("type")
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public MetricRequest withMetric(List<String> metric) {
-        this.metric = metric;
+    public SsnObservationResult__ withType(String type) {
+        this.type = type;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The ssnHasValue
+     */
+    @JsonProperty("ssn:hasValue")
+    public SsnHasValue__ getSsnHasValue() {
+        return ssnHasValue;
+    }
+
+    /**
+     * 
+     * @param ssnHasValue
+     *     The ssn:hasValue
+     */
+    @JsonProperty("ssn:hasValue")
+    public void setSsnHasValue(SsnHasValue__ ssnHasValue) {
+        this.ssnHasValue = ssnHasValue;
+    }
+
+    public SsnObservationResult__ withSsnHasValue(SsnHasValue__ ssnHasValue) {
+        this.ssnHasValue = ssnHasValue;
         return this;
     }
 
@@ -68,14 +94,14 @@ public class MetricRequest {
         this.additionalProperties.put(name, value);
     }
 
-    public MetricRequest withAdditionalProperty(String name, Object value) {
+    public SsnObservationResult__ withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(metric).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(type).append(ssnHasValue).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -83,11 +109,11 @@ public class MetricRequest {
         if (other == this) {
             return true;
         }
-        if ((other instanceof MetricRequest) == false) {
+        if ((other instanceof SsnObservationResult__) == false) {
             return false;
         }
-        MetricRequest rhs = ((MetricRequest) other);
-        return new EqualsBuilder().append(metric, rhs.metric).append(additionalProperties, rhs.additionalProperties).isEquals();
+        SsnObservationResult__ rhs = ((SsnObservationResult__) other);
+        return new EqualsBuilder().append(type, rhs.type).append(ssnHasValue, rhs.ssnHasValue).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

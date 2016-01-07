@@ -10,9 +10,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
@@ -26,7 +26,7 @@ public class SsnHasValue {
     @JsonProperty("type")
     private String type;
     @JsonProperty("value")
-    private String value;
+    private Double value;
     @JsonProperty("qudt:unit")
     private String qudtUnit;
     @JsonIgnore
@@ -63,7 +63,7 @@ public class SsnHasValue {
      *     The value
      */
     @JsonProperty("value")
-    public String getValue() {
+    public Double getValue() {
         return value;
     }
 
@@ -73,11 +73,11 @@ public class SsnHasValue {
      *     The value
      */
     @JsonProperty("value")
-    public void setValue(String value) {
+    public void setValue(Double value) {
         this.value = value;
     }
 
-    public SsnHasValue withValue(String value) {
+    public SsnHasValue withValue(Double value) {
         this.value = value;
         return this;
     }

@@ -26,7 +26,7 @@ public class StatCounter {
         requestNumber.set(value);
     }
 
-    public static void incrementErrorNumeber() {
+    public static void incrementErrorNumber() {
 
         int currentErrorNumber = errorNumber.get();
         errorNumber.set(currentErrorNumber + 1);

@@ -10,9 +10,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
@@ -26,9 +26,9 @@ public class HasLastKnownLocation {
     @JsonProperty("type")
     private String type;
     @JsonProperty("geo:lat")
-    private String geoLat;
+    private Double geoLat;
     @JsonProperty("geo:long")
-    private String geoLong;
+    private Double geoLong;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -63,7 +63,7 @@ public class HasLastKnownLocation {
      *     The geoLat
      */
     @JsonProperty("geo:lat")
-    public String getGeoLat() {
+    public Double getGeoLat() {
         return geoLat;
     }
 
@@ -73,11 +73,11 @@ public class HasLastKnownLocation {
      *     The geo:lat
      */
     @JsonProperty("geo:lat")
-    public void setGeoLat(String geoLat) {
+    public void setGeoLat(Double geoLat) {
         this.geoLat = geoLat;
     }
 
-    public HasLastKnownLocation withGeoLat(String geoLat) {
+    public HasLastKnownLocation withGeoLat(Double geoLat) {
         this.geoLat = geoLat;
         return this;
     }
@@ -88,7 +88,7 @@ public class HasLastKnownLocation {
      *     The geoLong
      */
     @JsonProperty("geo:long")
-    public String getGeoLong() {
+    public Double getGeoLong() {
         return geoLong;
     }
 
@@ -98,11 +98,11 @@ public class HasLastKnownLocation {
      *     The geo:long
      */
     @JsonProperty("geo:long")
-    public void setGeoLong(String geoLong) {
+    public void setGeoLong(Double geoLong) {
         this.geoLong = geoLong;
     }
 
-    public HasLastKnownLocation withGeoLong(String geoLong) {
+    public HasLastKnownLocation withGeoLong(Double geoLong) {
         this.geoLong = geoLong;
         return this;
     }

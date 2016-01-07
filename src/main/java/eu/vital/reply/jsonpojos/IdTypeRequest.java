@@ -12,9 +12,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
@@ -22,7 +22,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
     "id",
     "type"
 })
-public class SensorRequest {
+public class IdTypeRequest {
 
     @JsonProperty("id")
     private List<String> id = new ArrayList<String>();
@@ -51,7 +51,7 @@ public class SensorRequest {
         this.id = id;
     }
 
-    public SensorRequest withId(List<String> id) {
+    public IdTypeRequest withId(List<String> id) {
         this.id = id;
         return this;
     }
@@ -76,7 +76,7 @@ public class SensorRequest {
         this.type = type;
     }
 
-    public SensorRequest withType(List<String> type) {
+    public IdTypeRequest withType(List<String> type) {
         this.type = type;
         return this;
     }
@@ -96,7 +96,7 @@ public class SensorRequest {
         this.additionalProperties.put(name, value);
     }
 
-    public SensorRequest withAdditionalProperty(String name, Object value) {
+    public IdTypeRequest withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
@@ -111,10 +111,10 @@ public class SensorRequest {
         if (other == this) {
             return true;
         }
-        if ((other instanceof SensorRequest) == false) {
+        if ((other instanceof IdTypeRequest) == false) {
             return false;
         }
-        SensorRequest rhs = ((SensorRequest) other);
+        IdTypeRequest rhs = ((IdTypeRequest) other);
         return new EqualsBuilder().append(id, rhs.id).append(type, rhs.type).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
