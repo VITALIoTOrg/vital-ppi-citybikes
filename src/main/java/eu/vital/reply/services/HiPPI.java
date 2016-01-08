@@ -849,15 +849,28 @@ public class HiPPI {
         ArrayList<Measure> measures = new ArrayList<>();
         ArrayList<PerformanceMetric> metrics = new ArrayList<>();
         String id;
+        boolean missing;
+        String errmsg = "";
 
         String out;
 
         try {
             observationRequest = (ObservationRequest) JsonUtils.deserializeJson(bodyRequest, ObservationRequest.class);
+            missing = false;
+            if (observationRequest.getSensor().isEmpty()) {
+            	missing = true;
+            	errmsg = errmsg + "sensor";
+            }
+            if (observationRequest.getProperty() == null) {
+            	missing = true;
+            	errmsg = errmsg + " and property";
+            }
+            if(missing)
+            	throw new IOException("field(s) " + errmsg + " is/are required!");
         } catch (IOException e) {
             this.logger.error("GET OBSERVATION - IOException parsing the json request");
             return "{\n" +
-                    "\"error\": \"Malformed request body\"\n"+
+                    "\"error\": \"Malformed request body: " + e.getMessage() + "\"\n" +
                     "}";
         }
 
