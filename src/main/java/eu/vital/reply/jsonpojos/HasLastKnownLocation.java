@@ -26,9 +26,9 @@ public class HasLastKnownLocation {
     @JsonProperty("type")
     private String type;
     @JsonProperty("geo:lat")
-    private Double geoLat;
+    private String geoLat;
     @JsonProperty("geo:long")
-    private Double geoLong;
+    private String geoLong;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -63,7 +63,7 @@ public class HasLastKnownLocation {
      *     The geoLat
      */
     @JsonProperty("geo:lat")
-    public Double getGeoLat() {
+    public String getGeoLat() {
         return geoLat;
     }
 
@@ -73,11 +73,11 @@ public class HasLastKnownLocation {
      *     The geo:lat
      */
     @JsonProperty("geo:lat")
-    public void setGeoLat(Double geoLat) {
+    public void setGeoLat(String geoLat) {
         this.geoLat = geoLat;
     }
 
-    public HasLastKnownLocation withGeoLat(Double geoLat) {
+    public HasLastKnownLocation withGeoLat(String geoLat) {
         this.geoLat = geoLat;
         return this;
     }
@@ -88,7 +88,7 @@ public class HasLastKnownLocation {
      *     The geoLong
      */
     @JsonProperty("geo:long")
-    public Double getGeoLong() {
+    public String getGeoLong() {
         return geoLong;
     }
 
@@ -98,11 +98,11 @@ public class HasLastKnownLocation {
      *     The geo:long
      */
     @JsonProperty("geo:long")
-    public void setGeoLong(Double geoLong) {
+    public void setGeoLong(String geoLong) {
         this.geoLong = geoLong;
     }
 
-    public HasLastKnownLocation withGeoLong(Double geoLong) {
+    public HasLastKnownLocation withGeoLong(String geoLong) {
         this.geoLong = geoLong;
         return this;
     }
