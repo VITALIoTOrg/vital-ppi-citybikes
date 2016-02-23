@@ -3,12 +3,12 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>wild.ppi</groupId>
-    <artifactId>wildppi</artifactId>
+    <groupId>eu.vital-iot</groupId>
+    <artifactId>vital-ppi-istanbul-traffic</artifactId>
     <version>1.0</version>
     <packaging>war</packaging>
-    <name>HiReply PPI for WildFly</name>
-    <description>HiReply PPI for the VITAL project (Java 8 / WildFly 10.0.0.CR5)</description>
+    <name>VITAL PPI: Istanbul Traffic</name>
+    <description>VITAL PPI for HI Reply Istanbul Traffic</description>
 
     <properties>
         <!-- Explicitly declaring the source encoding eliminates the following 
@@ -161,3 +161,4 @@
         </plugins>
     </build>
 </project>
+
