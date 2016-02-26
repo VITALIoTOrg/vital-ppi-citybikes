@@ -1419,8 +1419,8 @@ public class HiPPI {
         HasLastKnownLocation location = new HasLastKnownLocation();
         location.setType("geo:Point");
         String[] splitted = currentSensor.getPhysicalLocation().split(";");
-        location.setGeoLat(splitted[1]);
-        location.setGeoLong(splitted[0]);
+        location.setGeoLat(Double.valueOf(splitted[1]));
+        location.setGeoLong(Double.valueOf(splitted[0]));
 
         sensor.setHasLastKnownLocation(location);
 
@@ -1695,9 +1695,9 @@ public class HiPPI {
 	        DulHasLocation dulHasLocation = new DulHasLocation();
 	        dulHasLocation.setType("geo:Point");
 	        String[] splitted = currentSensor.getPhysicalLocation().split(";");
-	        dulHasLocation.setGeoLat(splitted[1]);
-	        dulHasLocation.setGeoLong(splitted[0]);
-	        dulHasLocation.setGeoAlt("0.0");
+	        dulHasLocation.setGeoLat(Double.valueOf(splitted[1]));
+	        dulHasLocation.setGeoLong(Double.valueOf(splitted[0]));
+	        dulHasLocation.setGeoAlt(0.0);
 	
 	        m.setDulHasLocation(dulHasLocation);
 	
@@ -1781,9 +1781,9 @@ public class HiPPI {
 	        DulHasLocation dulHasLocation = new DulHasLocation();
 	        dulHasLocation.setType("geo:Point");
 	        String[] splitted = currentSensor.getPhysicalLocation().split(";");
-	        dulHasLocation.setGeoLat(splitted[1]);
-	        dulHasLocation.setGeoLong(splitted[0]);
-	        dulHasLocation.setGeoAlt("0.0");
+	        dulHasLocation.setGeoLat(Double.valueOf(splitted[1]));
+	        dulHasLocation.setGeoLong(Double.valueOf(splitted[0]));
+	        dulHasLocation.setGeoAlt(0.0);
 	
 	        m.setDulHasLocation(dulHasLocation);
 	

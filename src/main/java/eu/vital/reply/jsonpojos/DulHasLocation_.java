@@ -27,11 +27,11 @@ public class DulHasLocation_ {
     @JsonProperty("type")
     private String type;
     @JsonProperty("geo:lat")
-    private String geoLat;
+    private Double geoLat;
     @JsonProperty("geo:long")
-    private String geoLong;
+    private Double geoLong;
     @JsonProperty("geo:alt")
-    private String geoAlt;
+    private Double geoAlt;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -66,7 +66,7 @@ public class DulHasLocation_ {
      *     The geoLat
      */
     @JsonProperty("geo:lat")
-    public String getGeoLat() {
+    public Double getGeoLat() {
         return geoLat;
     }
 
@@ -76,11 +76,11 @@ public class DulHasLocation_ {
      *     The geo:lat
      */
     @JsonProperty("geo:lat")
-    public void setGeoLat(String geoLat) {
+    public void setGeoLat(Double geoLat) {
         this.geoLat = geoLat;
     }
 
-    public DulHasLocation_ withGeoLat(String geoLat) {
+    public DulHasLocation_ withGeoLat(Double geoLat) {
         this.geoLat = geoLat;
         return this;
     }
@@ -91,7 +91,7 @@ public class DulHasLocation_ {
      *     The geoLong
      */
     @JsonProperty("geo:long")
-    public String getGeoLong() {
+    public Double getGeoLong() {
         return geoLong;
     }
 
@@ -101,11 +101,11 @@ public class DulHasLocation_ {
      *     The geo:long
      */
     @JsonProperty("geo:long")
-    public void setGeoLong(String geoLong) {
+    public void setGeoLong(Double geoLong) {
         this.geoLong = geoLong;
     }
 
-    public DulHasLocation_ withGeoLong(String geoLong) {
+    public DulHasLocation_ withGeoLong(Double geoLong) {
         this.geoLong = geoLong;
         return this;
     }
@@ -116,7 +116,7 @@ public class DulHasLocation_ {
      *     The geoAlt
      */
     @JsonProperty("geo:alt")
-    public String getGeoAlt() {
+    public Double getGeoAlt() {
         return geoAlt;
     }
 
@@ -126,11 +126,11 @@ public class DulHasLocation_ {
      *     The geo:alt
      */
     @JsonProperty("geo:alt")
-    public void setGeoAlt(String geoAlt) {
+    public void setGeoAlt(Double geoAlt) {
         this.geoAlt = geoAlt;
     }
 
-    public DulHasLocation_ withGeoAlt(String geoAlt) {
+    public DulHasLocation_ withGeoAlt(Double geoAlt) {
         this.geoAlt = geoAlt;
         return this;
     }
