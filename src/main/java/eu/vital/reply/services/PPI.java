@@ -3,7 +3,15 @@ package eu.vital.reply.services;
 import eu.vital.reply.clients.IoTSystemClient;
 import eu.vital.reply.jsonpojos.EmptyRequest;
 import eu.vital.reply.jsonpojos.IoTSystem;
+import eu.vital.reply.jsonpojos.Metric;
+import eu.vital.reply.jsonpojos.MetricRequest;
 import eu.vital.reply.jsonpojos.Network;
+import eu.vital.reply.jsonpojos.PerformanceMetric;
+import eu.vital.reply.jsonpojos.PerformanceMetricsMetadata;
+import eu.vital.reply.jsonpojos.SsnHasValue_;
+import eu.vital.reply.jsonpojos.SsnObservationProperty_;
+import eu.vital.reply.jsonpojos.SsnObservationResultTime_;
+import eu.vital.reply.jsonpojos.SsnObservationResult_;
 import eu.vital.reply.jsonpojos.Station;
 import eu.vital.reply.utils.ConfigReader;
 import eu.vital.reply.utils.JsonUtils;
@@ -11,12 +19,19 @@ import eu.vital.reply.utils.StatCounter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import java.io.File;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -53,6 +68,9 @@ public class PPI {
 
     private AtomicInteger requestCount;
     private AtomicInteger requestError;
+    
+    // VITAL ontology extended prefix
+    private static final String ontologyPrefix = "http://vital-iot.eu/ontology/ns/";
 
     // IoT system data
     private static final String apiBasePath = "http://api.citybik.es/v2/networks";
@@ -60,12 +78,13 @@ public class PPI {
 
     // To be able to return system metadata if CityBikes is temporarily unavailable
     private static HashMap<String, Network> networkCache;
+    
+    private static Date startupTime = new Date();
 
     @Context
     private UriInfo uriInfo;
 
     public PPI() {
-
         ConfigReader configReader = ConfigReader.getInstance();
 
         client = new IoTSystemClient();
@@ -88,6 +107,9 @@ public class PPI {
         requestCount = new AtomicInteger(0);
         requestError = new AtomicInteger(0);
 
+        if (startupTime == null) {
+        	startupTime = new Date();
+        }
     }
 
     /**
@@ -111,7 +133,7 @@ public class PPI {
         try {
             JsonUtils.deserializeJson(bodyRequest, EmptyRequest.class);
         } catch (IOException e) {
-            this.logger.error("[/metadata] Error parsing request header");
+            this.logger.error("[/metadata] Error parsing request");
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
@@ -170,130 +192,167 @@ public class PPI {
     @Path("/system/performance")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getSupportedPerformanceMetrics() throws Exception {
+    public Response getSupportedPerformanceMetrics(@Context UriInfo uri) {
+    	PerformanceMetricsMetadata performanceMetricsMetadata;
+        List<Metric> list;
+        Metric metric;
 
-        String out;
+        performanceMetricsMetadata = new PerformanceMetricsMetadata();
+        list = new ArrayList<Metric>();
 
-        PerformanceMetricsMetadata performanceMetricsMetadata = new PerformanceMetricsMetadata();
-
-        List<Metric> list = new ArrayList<>();
-
-        Metric metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "UsedMem");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/usedMem");
+        metric = new Metric();
+        metric.setType(ontologyPrefix + "UsedMem");
+        metric.setId(uri.getBaseUri() + "/sensor/monitoring/usedMem");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "AvailableMem");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/availableMem");
+        metric.setType(ontologyPrefix + "AvailableMem");
+        metric.setId(uri.getBaseUri() + "/sensor/monitoring/availableMem");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "AvailableDisk");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/availableDisk");
+        metric.setType(ontologyPrefix + "AvailableDisk");
+        metric.setId(uri.getBaseUri() + "/sensor/monitoring/availableDisk");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "SysLoad");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/sysLoad");
+        metric.setType(ontologyPrefix + "SysLoad");
+        metric.setId(uri.getBaseUri() + "/sensor/monitoring/sysLoad");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "ServedRequests");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/servedRequests");
+        metric.setType(ontologyPrefix + "ServedRequests");
+        metric.setId(uri.getBaseUri() + "/sensor/monitoring/servedRequests");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "Errors");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/errors");
+        metric.setType(ontologyPrefix + "Errors");
+        metric.setId(uri.getBaseUri() + "/sensor/monitoring/errors");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "SysUptime");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/sysUptime");
+        metric.setType(ontologyPrefix + "SysUptime");
+        metric.setId(uri.getBaseUri() + "/sensor/monitoring/sysUptime");
         list.add(metric);
 
         metric = new Metric();
-        metric.setType(this.transfProt + this.ontBaseUri + "PendingRequests");
-        metric.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/pendingRequests");
+        metric.setType(ontologyPrefix + "PendingRequests");
+        metric.setId(uri.getBaseUri() + "/sensor/monitoring/pendingRequests");
         list.add(metric);
 
         performanceMetricsMetadata.setMetrics(list);
 
         try {
-            out = JsonUtils.serializeJson(performanceMetricsMetadata);
-        } catch (IOException e) {
-            this.logger.error("JSON UTILS IO EXCEPTION - getPerformanceMetric information");
-            throw new Exception("JSON UTILS IO EXCEPTION - getPerformanceMetric information");
-        }
-
-        return out;
+			return Response.status(Response.Status.OK)
+				.entity(JsonUtils.serializeJson(performanceMetricsMetadata))
+				.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
     }
 
     @Path("/system/performance")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String getPerformanceMetrics(String bodyRequest) throws Exception {
-
-        int i, len;
-        MetricRequest metricRequest;
-        ArrayList<PerformanceMetric> metrics = new ArrayList<>();
-        String pm;
-
-        String out;
+    public Response getPerformanceMetrics(String bodyRequest, @Context UriInfo uri) {
+        List<String> requestedMetrics;
+        List<PerformanceMetric> metrics;
+        PerformanceMetric metric;
+        Date date;
+        Runtime runtime;
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+        String type, unit, value;
 
         try {
-            metricRequest = (MetricRequest) JsonUtils.deserializeJson(bodyRequest, MetricRequest.class);
+        	requestedMetrics = ((MetricRequest) JsonUtils.deserializeJson(bodyRequest, MetricRequest.class)).getMetric();
         } catch (IOException e) {
-            this.logger.error("GET METRIC - IOException parsing the json request");
-            return "{\n" +
-                    "\"error\": \"Malformed request body\"\n"+
-                    "}";
+        	this.logger.error("[/system/performance] Error parsing request");
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        List<String>pms = metricRequest.getMetric();
-        len = pms.size();
-        for(i = 0; i < len; i++) {
-            pm = pms.get(i).replaceAll("http://" + this.ontBaseUri, "");
-
-            PerformanceMetric metric;
-            if (pm.contains("UsedMem")) {
-                metric = this.getMemoryUsed();
-            } else if (pm.contains("AvailableMem")) {
-                metric = this.getMemoryAvailable();
-            } else if (pm.contains("AvailableDisk")) {
-                metric = this.getDiskAvailable();
-            } else if (pm.contains("SysLoad")) {
-                metric = this.getCpuUsage();
-            } else if (pm.contains("ServedRequests")) {
-                metric = this.getServedRequest();
-            } else if (pm.contains("Errors")) {
-                metric = this.getErrors();
-            } else if (pm.contains("SysUptime")) {
-                metric = this.getUpTime();
-            } else if (pm.contains("PendingRequests")) {
-                metric = this.getPendingRequest();
+        date = new Date();
+        runtime = Runtime.getRuntime();
+        metrics = new ArrayList<PerformanceMetric>();
+        for (String m : requestedMetrics) {
+            if (m.contains("UsedMem".toLowerCase())) {
+            	type = "vital:UsedMem";
+            	unit = "qudt:Byte";
+            	value = Long.toString(runtime.totalMemory());
+            } else if (m.contains("AvailableMem".toLowerCase())) {
+            	type = "vital:AvailableMem";
+            	unit = "qudt:Byte";
+            	value = Long.toString(runtime.freeMemory());
+            } else if (m.contains("AvailableDisk".toLowerCase())) {
+            	type = "vital:AvailableDisk";
+            	unit = "qudt:Byte";
+            	File file;
+            	value = Long.toString(new File("/").getFreeSpace());
+            } else if (m.contains("SysLoad".toLowerCase())) {
+            	type = "vital:SysLoad";
+            	unit = "qudt:Percentage";
+            	try {
+					value = Double.toString(getProcessCpuLoad());
+				} catch (Exception e) {
+					e.printStackTrace();
+					return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+				}
+            } else if (m.contains("ServedRequests".toLowerCase())) {
+            	type = "vital:ServedRequests";
+            	unit = "qudt:Number";
+            	value = Integer.toString(StatCounter.getRequestNumber().get());
+            } else if (m.contains("Errors".toLowerCase())) {
+            	type = "vital:Errors";
+            	unit = "qudt:Number";
+            	value = Integer.toString(StatCounter.getErrorNumber().get());
+            } else if (m.contains("SysUptime".toLowerCase())) {
+            	type = "vital:SysUptime";
+            	unit = "qudt:MilliSecond";
+            	value = Long.toString(date.getTime() - startupTime.getTime());
+            } else if (m.contains("PendingRequests".toLowerCase())) {
+            	type = "vital:PendingRequests";
+            	unit = "qudt:Number";
+            	value = Integer.toString(StatCounter.getPendingRequest() - 1);
             } else {
-                return "{\n" +
-                        "\"error\": \"Performance " + pm.toLowerCase() + " not present.\"\n" +
-                        "}";
+            	this.logger.error("[/system/performance] Bad metric " + m);
+                return Response.status(Response.Status.BAD_REQUEST).build();
             }
 
-            if (metric != null) {
-                metric.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
-                metrics.add(metric);
-            }
+            metric = new PerformanceMetric();
+            metric.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
+            metric.setId(uri.getBaseUri() + "/sensor/monitoring/observation/" + Long.toHexString(date.getTime()));
+            metric.setType("ssn:Observation");
+
+            SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+            ssnObservationProperty_.setType(type);
+            metric.setSsnObservationProperty(ssnObservationProperty_);
+
+            SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+            ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+            metric.setSsnObservationResultTime(ssnObservationResultTime_);
+
+            SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+            ssnObservationResult_.setType("ssn:SensorOutput");
+            SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+            ssnHasValue_.setType("ssn:ObservationValue");
+            ssnHasValue_.setValue(value);
+            ssnHasValue_.setQudtUnit(unit);
+            ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+            metric.setSsnObservationResult(ssnObservationResult_);
+
+            metric.setSsnFeatureOfInterest(uri.getBaseUri().toString());
+            metrics.add(metric);
         }
 
         try {
-            out = JsonUtils.serializeJson(metrics);
-        } catch (IOException e) {
-            this.logger.error("GET METRIC - serialize to json response IO Exception");
-            throw new Exception("GET METRIC - serialize to json response IO Exception");
-        }
-
-        return out;
+			return Response.status(Response.Status.OK)
+				.entity(JsonUtils.serializeJson(metrics))
+				.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
     }
 
     @Path("/configuration")
@@ -1044,308 +1103,6 @@ public class PPI {
         return out;
     }
 
-    private PerformanceMetric getPendingRequest() throws Exception {
-
-        /* Minus 1 because this method has not yet ended (is still pending) */
-
-        int pendingRequest = StatCounter.getPendingRequest() - 1;
-
-        Date now = new Date();
-        String id = Long.toHexString(now.getTime());
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-        PerformanceMetric pendingReq = new PerformanceMetric();
-
-        pendingReq.setContext(contextsUri + "measurement.jsonld");
-        pendingReq.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
-        pendingReq.setType("ssn:Observation");
-
-        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:PendingRequests");
-
-        pendingReq.setSsnObservationProperty(ssnObservationProperty_);
-
-        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
-
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
-        pendingReq.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
-        ssnObservationResult_.setType("ssn:SensorOutput");
-        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
-        ssnHasValue_.setType("ssn:ObservationValue");
-        ssnHasValue_.setValue(pendingRequest + "");
-        ssnHasValue_.setQudtUnit("qudt:number");
-        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
-        pendingReq.setSsnObservationResult(ssnObservationResult_);
-
-        return pendingReq;
-    }
-
-    private PerformanceMetric getUpTime() throws Exception {
-
-        Date now = new Date();
-        String id = Long.toHexString(now.getTime());
-
-        Date hiReplyStartTime = this.client.getSnapshot().getTaskManager().getLastStartTime().toGregorianCalendar().getTime();
-
-        long span = now.getTime() - hiReplyStartTime.getTime();
-
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-        PerformanceMetric sysUpTime = new PerformanceMetric();
-
-        sysUpTime.setContext(contextsUri + "measurement.jsonld");
-        sysUpTime.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
-        sysUpTime.setType("ssn:Observation");
-
-        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:SysUptime");
-
-        sysUpTime.setSsnObservationProperty(ssnObservationProperty_);
-
-        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
-
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
-        sysUpTime.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
-        ssnObservationResult_.setType("ssn:SensorOutput");
-        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
-        ssnHasValue_.setType("ssn:ObservationValue");
-        ssnHasValue_.setValue(span+"");
-        ssnHasValue_.setQudtUnit("qudt:milliseconds");
-        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
-        sysUpTime.setSsnObservationResult(ssnObservationResult_);
-
-        return sysUpTime;
-    }
-
-    private PerformanceMetric getServedRequest() throws Exception {
-
-        /* Plus 1 for the current request */
-
-        requestCount = StatCounter.getRequestNumber();
-        int auxCount = requestCount.get();
-        requestCount.set(auxCount + 1);
-
-        Date now = new Date();
-        String id = Long.toHexString(now.getTime());
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-        PerformanceMetric servedRequest = new PerformanceMetric();
-
-        servedRequest.setContext(contextsUri + "measurement.jsonld");
-        servedRequest.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
-        servedRequest.setType("ssn:Observation");
-
-        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:ServedRequests");
-
-        servedRequest.setSsnObservationProperty(ssnObservationProperty_);
-
-        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
-
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
-        servedRequest.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
-        ssnObservationResult_.setType("ssn:SensorOutput");
-        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
-        ssnHasValue_.setType("ssn:ObservationValue");
-        ssnHasValue_.setValue(requestCount.get()+"");
-        ssnHasValue_.setQudtUnit("qudt:Number");
-        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
-        servedRequest.setSsnObservationResult(ssnObservationResult_);
-
-        return servedRequest;
-    }
-
-    private PerformanceMetric getErrors() throws Exception {
-
-        requestError = StatCounter.getErrorNumber();
-
-        Date now = new Date();
-        String id = Long.toHexString(now.getTime());
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-        PerformanceMetric errors = new PerformanceMetric();
-
-        errors.setContext(contextsUri + "measurement.jsonld");
-        errors.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
-        errors.setType("ssn:Observation");
-
-        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:Errors");
-
-        errors.setSsnObservationProperty(ssnObservationProperty_);
-
-        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
-
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
-        errors.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
-        ssnObservationResult_.setType("ssn:SensorOutput");
-        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
-        ssnHasValue_.setType("ssn:ObservationValue");
-        ssnHasValue_.setValue(requestError.get()+"");
-        ssnHasValue_.setQudtUnit("qudt:Number");
-        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
-        errors.setSsnObservationResult(ssnObservationResult_);
-
-        return errors;
-    }
-
-    private PerformanceMetric getMemoryUsed() throws Exception {
-
-        ServiceList.TaskManager tm = this.client.getSnapshot().getTaskManager();
-
-        BigInteger memoryUsed = tm.getMemoryConsumption();
-        Date now = new Date();
-        String id = Long.toHexString(now.getTime());
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-
-        PerformanceMetric memUsed = new PerformanceMetric();
-
-        memUsed.setContext(contextsUri + "measurement.jsonld");
-        memUsed.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
-        memUsed.setType("ssn:Observation");
-
-        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:UsedMem");
-        memUsed.setSsnObservationProperty(ssnObservationProperty_);
-
-        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
-
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
-        memUsed.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
-        ssnObservationResult_.setType("ssn:SensorOutput");
-        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
-        ssnHasValue_.setType("ssn:ObservationValue");
-        ssnHasValue_.setValue(memoryUsed.toString());
-        ssnHasValue_.setQudtUnit("qudt:Byte");
-        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
-        memUsed.setSsnObservationResult(ssnObservationResult_);
-
-        return memUsed;
-    }
-
-    private PerformanceMetric getMemoryAvailable() throws Exception {
-
-        ServiceList.TaskManager tm = this.client.getSnapshot().getTaskManager();
-
-        BigInteger memAvailable = tm.getAvailMemoryCounter();
-        Date now = new Date();
-        String id = Long.toHexString(now.getTime());
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-        PerformanceMetric memAval = new PerformanceMetric();
-
-        memAval.setContext(contextsUri + "measurement.jsonld");
-        memAval.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
-        memAval.setType("ssn:Observation");
-
-        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:AvailableMem");
-        memAval.setSsnObservationProperty(ssnObservationProperty_);
-
-        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
-
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
-        memAval.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
-        ssnObservationResult_.setType("ssn:SensorOutput");
-        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
-        ssnHasValue_.setType("ssn:ObservationValue");
-        ssnHasValue_.setValue(memAvailable.toString());
-        ssnHasValue_.setQudtUnit("qudt:Byte");
-        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
-        memAval.setSsnObservationResult(ssnObservationResult_);
-
-        return memAval;
-    }
-
-    private PerformanceMetric getCpuUsage() throws Exception {
-
-        ServiceList.TaskManager tm = this.client.getSnapshot().getTaskManager();
-
-        float cpuUsage = tm.getCPUTotalCounter();
-        Date now = new Date();
-        String id = Long.toHexString(now.getTime());
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-        PerformanceMetric load = new PerformanceMetric();
-
-        load.setContext(contextsUri + "measurement.jsonld");
-        load.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
-        load.setType("ssn:Observation");
-
-        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:SysLoad");
-        load.setSsnObservationProperty(ssnObservationProperty_);
-
-        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
-
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
-        load.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
-        ssnObservationResult_.setType("ssn:SensorOutput");
-        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
-        ssnHasValue_.setType("ssn:ObservationValue");
-        ssnHasValue_.setValue(cpuUsage+"");
-        ssnHasValue_.setQudtUnit("qudt:Percentage");
-        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
-        load.setSsnObservationResult(ssnObservationResult_);
-
-        return load;
-    }
-
-    private PerformanceMetric getDiskAvailable() throws Exception {
-
-        ServiceList.TaskManager tm = this.client.getSnapshot().getTaskManager();
-
-        String strDiskAvailable = tm.getFreeDiskSpace();
-
-        int bkSlashIndex = strDiskAvailable.indexOf("\\");
-        int freeDiskSpace = Integer.parseInt (strDiskAvailable.substring(bkSlashIndex+2).replaceAll("\\s+",""));
-
-        Date now = new Date();
-        String id = Long.toHexString(now.getTime());
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-        PerformanceMetric diskAval = new PerformanceMetric();
-
-        diskAval.setContext(contextsUri + "measurement.jsonld");
-        diskAval.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
-        diskAval.setType("ssn:Observation");
-
-        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
-        ssnObservationProperty_.setType("vital:AvailableDisk");
-        diskAval.setSsnObservationProperty(ssnObservationProperty_);
-
-        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
-
-        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
-        diskAval.setSsnObservationResultTime(ssnObservationResultTime_);
-
-        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
-        ssnObservationResult_.setType("ssn:SensorOutput");
-        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
-        ssnHasValue_.setType("ssn:ObservationValue");
-        ssnHasValue_.setValue(freeDiskSpace+"");
-        ssnHasValue_.setQudtUnit("qudt:Byte");
-        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
-        diskAval.setSsnObservationResult(ssnObservationResult_);
-
-        return diskAval;
-    }
-
     /*
         Private Class and Methods that adapt
         HiReply structure with Vital structure
@@ -1832,5 +1589,22 @@ public class PPI {
         }
 
         return m;
+    }
+    
+    private static double getProcessCpuLoad() throws Exception {
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        ObjectName name = ObjectName.getInstance("java.lang:type=OperatingSystem");
+        AttributeList list = mbs.getAttributes(name, new String[] { "ProcessCpuLoad" });
+
+        if (list.isEmpty())
+        	return Double.NaN;
+
+        Attribute att = (Attribute) list.get(0);
+        Double value = (Double) att.getValue();
+
+        if (value == -1.0)
+        	return Double.NaN;
+
+        return ((int) (value * 1000) / 10.0);
     }
 }
