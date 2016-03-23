@@ -112,13 +112,6 @@ public class PPI {
         }
     }
 
-    /**
-     * Method that returns the metadata of the system. This method is mandatory.
-     * @param bodyRequest
-     *            JSON-LD String with the body request
-     *            {}
-     * @return Returns a string with the serialized JSON-LD IoTSystem.
-     */
     @Path("/metadata")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
