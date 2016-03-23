@@ -347,24 +347,42 @@ public class PPI {
 		}
     }
 
-    /**
-     * Method that returns the status of the system. This method is not mandatory.
-     * @return Returns a string with the serialized JSON-LD status information.
-     */
     @Path("/system/status")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public String getSystemStatus(String bodyRequest) throws Exception {
+    public Response getSystemStatus(@Context UriInfo uri) {
+    	Date now;
+        Network network;
+        SsnHasValue_ ssnHasValue_;
+        PerformanceMetric lifecycleInformation;
 
-        ServiceList system = client.getSnapshot();
-        PerformanceMetric lifecycleInformation = new PerformanceMetric();
+		network = client.getNetwork(apiBasePath, networkId).getNetwork();
 
-        Date now = new Date();
-        String id = Long.toHexString(now.getTime());
+		if (network == null) {
+			// Try and get metadata from cache
+			network = networkCache.get(networkId);
+			if (network == null) {
+				return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+			} else {
+				// Found in cache, but unavailable
+				lifecycleInformation = new PerformanceMetric();
+				ssnHasValue_ = new SsnHasValue_();
+				ssnHasValue_.setValue("vital:Running");
+				ssnHasValue_.setValue("vital:Unavailable");
+			}
+		} else {
+			// Well up and running
+			networkCache.put(networkId, network);
+			lifecycleInformation = new PerformanceMetric();
+			ssnHasValue_ = new SsnHasValue_();
+			ssnHasValue_.setValue("vital:Running");
+		}
+
+        now = new Date();
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
-        lifecycleInformation.setContext(contextsUri + "measurement.jsonld");
-        lifecycleInformation.setId(this.transfProt + this.symbolicUri + "/sensor/monitoring/observation/" + id);
+        lifecycleInformation.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
+        lifecycleInformation.setId(uri.getBaseUri() + "/sensor/monitoring/observation/" + Long.toHexString(now.getTime()));
         lifecycleInformation.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -378,28 +396,21 @@ public class PPI {
 
         SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
         ssnObservationResult_.setType("ssn:SensorOutput");
-        SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+        
         ssnHasValue_.setType("ssn:ObservationValue");
-        if (system.getIoTSystem().getStatus().equals("Running")) {
-            ssnHasValue_.setValue("vital:Running");
-        } else {
-            ssnHasValue_.setValue("vital:Unavailable");
-        }
         ssnObservationResult_.setSsnHasValue(ssnHasValue_);
         lifecycleInformation.setSsnObservationResult(ssnObservationResult_);
 
-        lifecycleInformation.setSsnFeatureOfInterest(this.transfProt + this.symbolicUri);
-
-        String out;
+        lifecycleInformation.setSsnFeatureOfInterest(uri.getBaseUri().toString());
 
         try {
-            out = JsonUtils.serializeJson(lifecycleInformation);
-        } catch (IOException e) {
-            this.logger.error("JSON UTILS IO EXCEPTION - lifecycle information");
-            throw new Exception("JSON UTILS IO EXCEPTION - lifecycle information");
-        }
-
-        return out;
+			return Response.status(Response.Status.OK)
+				.entity(JsonUtils.serializeJson(lifecycleInformation))
+				.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
     }
 
     /**
