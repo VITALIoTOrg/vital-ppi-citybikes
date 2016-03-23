@@ -4,6 +4,7 @@ package eu.vital.reply.jsonpojos;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Generated;
+import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -38,14 +39,18 @@ public class PerformanceMetric {
     @JsonProperty("ssn:observedBy")
     private String ssnObservedBy;
     @JsonProperty("ssn:observationProperty")
+    @Valid
     private SsnObservationProperty_ ssnObservationProperty;
     @JsonProperty("ssn:observationResultTime")
+    @Valid
     private SsnObservationResultTime_ ssnObservationResultTime;
     @JsonProperty("ssn:observationQuality")
+    @Valid
     private SsnObservationQuality_ ssnObservationQuality;
     @JsonProperty("ssn:featureOfInterest")
     private String ssnFeatureOfInterest;
     @JsonProperty("ssn:observationResult")
+    @Valid
     private SsnObservationResult_ ssnObservationResult;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();

@@ -1,11 +1,10 @@
 
 package eu.vital.reply.jsonpojos;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
+import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -19,85 +18,21 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "@context",
-    "id",
     "type",
-    "name",
-    "description",
-    "status",
-    "hasLastKnownLocation",
-    "ssn:observes"
+    "minItems",
+    "items"
 })
 public class Sensor {
 
-    @JsonProperty("@context")
-    private String Context;
-    @JsonProperty("id")
-    private String id;
     @JsonProperty("type")
     private String type;
-    @JsonProperty("name")
-    private String name;
-    @JsonProperty("description")
-    private String description;
-    @JsonProperty("status")
-    private String status;
-    @JsonProperty("hasLastKnownLocation")
-    private HasLastKnownLocation hasLastKnownLocation;
-    @JsonProperty("ssn:observes")
-    private List<SsnObserf> ssnObserves = new ArrayList<SsnObserf>();
+    @JsonProperty("minItems")
+    private Integer minItems;
+    @JsonProperty("items")
+    @Valid
+    private Items items;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    /**
-     * 
-     * @return
-     *     The Context
-     */
-    @JsonProperty("@context")
-    public String getContext() {
-        return Context;
-    }
-
-    /**
-     * 
-     * @param Context
-     *     The @context
-     */
-    @JsonProperty("@context")
-    public void setContext(String Context) {
-        this.Context = Context;
-    }
-
-    public Sensor withContext(String Context) {
-        this.Context = Context;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The id
-     */
-    @JsonProperty("id")
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * 
-     * @param id
-     *     The id
-     */
-    @JsonProperty("id")
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Sensor withId(String id) {
-        this.id = id;
-        return this;
-    }
 
     /**
      * 
@@ -127,125 +62,50 @@ public class Sensor {
     /**
      * 
      * @return
-     *     The name
+     *     The minItems
      */
-    @JsonProperty("name")
-    public String getName() {
-        return name;
+    @JsonProperty("minItems")
+    public Integer getMinItems() {
+        return minItems;
     }
 
     /**
      * 
-     * @param name
-     *     The name
+     * @param minItems
+     *     The minItems
      */
-    @JsonProperty("name")
-    public void setName(String name) {
-        this.name = name;
+    @JsonProperty("minItems")
+    public void setMinItems(Integer minItems) {
+        this.minItems = minItems;
     }
 
-    public Sensor withName(String name) {
-        this.name = name;
+    public Sensor withMinItems(Integer minItems) {
+        this.minItems = minItems;
         return this;
     }
 
     /**
      * 
      * @return
-     *     The description
+     *     The items
      */
-    @JsonProperty("description")
-    public String getDescription() {
-        return description;
+    @JsonProperty("items")
+    public Items getItems() {
+        return items;
     }
 
     /**
      * 
-     * @param description
-     *     The description
+     * @param items
+     *     The items
      */
-    @JsonProperty("description")
-    public void setDescription(String description) {
-        this.description = description;
+    @JsonProperty("items")
+    public void setItems(Items items) {
+        this.items = items;
     }
 
-    public Sensor withDescription(String description) {
-        this.description = description;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The status
-     */
-    @JsonProperty("status")
-    public String getStatus() {
-        return status;
-    }
-
-    /**
-     * 
-     * @param status
-     *     The status
-     */
-    @JsonProperty("status")
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Sensor withStatus(String status) {
-        this.status = status;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The hasLastKnownLocation
-     */
-    @JsonProperty("hasLastKnownLocation")
-    public HasLastKnownLocation getHasLastKnownLocation() {
-        return hasLastKnownLocation;
-    }
-
-    /**
-     * 
-     * @param hasLastKnownLocation
-     *     The hasLastKnownLocation
-     */
-    @JsonProperty("hasLastKnownLocation")
-    public void setHasLastKnownLocation(HasLastKnownLocation hasLastKnownLocation) {
-        this.hasLastKnownLocation = hasLastKnownLocation;
-    }
-
-    public Sensor withHasLastKnownLocation(HasLastKnownLocation hasLastKnownLocation) {
-        this.hasLastKnownLocation = hasLastKnownLocation;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The ssnObserves
-     */
-    @JsonProperty("ssn:observes")
-    public List<SsnObserf> getSsnObserves() {
-        return ssnObserves;
-    }
-
-    /**
-     * 
-     * @param ssnObserves
-     *     The ssn:observes
-     */
-    @JsonProperty("ssn:observes")
-    public void setSsnObserves(List<SsnObserf> ssnObserves) {
-        this.ssnObserves = ssnObserves;
-    }
-
-    public Sensor withSsnObserves(List<SsnObserf> ssnObserves) {
-        this.ssnObserves = ssnObserves;
+    public Sensor withItems(Items items) {
+        this.items = items;
         return this;
     }
 
@@ -271,7 +131,7 @@ public class Sensor {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(Context).append(id).append(type).append(name).append(description).append(status).append(hasLastKnownLocation).append(ssnObserves).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(type).append(minItems).append(items).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -283,7 +143,7 @@ public class Sensor {
             return false;
         }
         Sensor rhs = ((Sensor) other);
-        return new EqualsBuilder().append(Context, rhs.Context).append(id, rhs.id).append(type, rhs.type).append(name, rhs.name).append(description, rhs.description).append(status, rhs.status).append(hasLastKnownLocation, rhs.hasLastKnownLocation).append(ssnObserves, rhs.ssnObserves).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(type, rhs.type).append(minItems, rhs.minItems).append(items, rhs.items).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

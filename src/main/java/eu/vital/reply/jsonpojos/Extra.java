@@ -1,12 +1,9 @@
 
 package eu.vital.reply.jsonpojos;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
-import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -20,38 +17,37 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "parameters"
+    "description"
 })
-public class ConfigurationReqBody {
+public class Extra {
 
-    @JsonProperty("parameters")
-    @Valid
-    private List<Parameter_> parameters = new ArrayList<Parameter_>();
+    @JsonProperty("description")
+    private String description;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The parameters
+     *     The description
      */
-    @JsonProperty("parameters")
-    public List<Parameter_> getParameters() {
-        return parameters;
+    @JsonProperty("description")
+    public String getDescription() {
+        return description;
     }
 
     /**
      * 
-     * @param parameters
-     *     The parameters
+     * @param description
+     *     The description
      */
-    @JsonProperty("parameters")
-    public void setParameters(List<Parameter_> parameters) {
-        this.parameters = parameters;
+    @JsonProperty("description")
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public ConfigurationReqBody withParameters(List<Parameter_> parameters) {
-        this.parameters = parameters;
+    public Extra withDescription(String description) {
+        this.description = description;
         return this;
     }
 
@@ -70,14 +66,14 @@ public class ConfigurationReqBody {
         this.additionalProperties.put(name, value);
     }
 
-    public ConfigurationReqBody withAdditionalProperty(String name, Object value) {
+    public Extra withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(parameters).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(description).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -85,11 +81,11 @@ public class ConfigurationReqBody {
         if (other == this) {
             return true;
         }
-        if ((other instanceof ConfigurationReqBody) == false) {
+        if ((other instanceof Extra) == false) {
             return false;
         }
-        ConfigurationReqBody rhs = ((ConfigurationReqBody) other);
-        return new EqualsBuilder().append(parameters, rhs.parameters).append(additionalProperties, rhs.additionalProperties).isEquals();
+        Extra rhs = ((Extra) other);
+        return new EqualsBuilder().append(description, rhs.description).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

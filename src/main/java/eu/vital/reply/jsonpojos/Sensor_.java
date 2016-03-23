@@ -25,13 +25,11 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
     "type",
     "name",
     "description",
-    "operator",
-    "serviceArea",
-    "sensors",
-    "services",
-    "status"
+    "status",
+    "hasLastKnownLocation",
+    "ssn:observes"
 })
-public class IoTSystem {
+public class Sensor_ {
 
     @JsonProperty("@context")
     private String Context;
@@ -43,18 +41,14 @@ public class IoTSystem {
     private String name;
     @JsonProperty("description")
     private String description;
-    @JsonProperty("operator")
-    private String operator;
-    @JsonProperty("serviceArea")
-    private String serviceArea;
-    @JsonProperty("sensors")
-    @Valid
-    private List<String> sensors = new ArrayList<String>();
-    @JsonProperty("services")
-    @Valid
-    private List<String> services = new ArrayList<String>();
     @JsonProperty("status")
     private String status;
+    @JsonProperty("hasLastKnownLocation")
+    @Valid
+    private HasLastKnownLocation hasLastKnownLocation;
+    @JsonProperty("ssn:observes")
+    @Valid
+    private List<SsnObserf> ssnObserves = new ArrayList<SsnObserf>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -78,7 +72,7 @@ public class IoTSystem {
         this.Context = Context;
     }
 
-    public IoTSystem withContext(String Context) {
+    public Sensor_ withContext(String Context) {
         this.Context = Context;
         return this;
     }
@@ -103,7 +97,7 @@ public class IoTSystem {
         this.id = id;
     }
 
-    public IoTSystem withId(String id) {
+    public Sensor_ withId(String id) {
         this.id = id;
         return this;
     }
@@ -128,7 +122,7 @@ public class IoTSystem {
         this.type = type;
     }
 
-    public IoTSystem withType(String type) {
+    public Sensor_ withType(String type) {
         this.type = type;
         return this;
     }
@@ -153,7 +147,7 @@ public class IoTSystem {
         this.name = name;
     }
 
-    public IoTSystem withName(String name) {
+    public Sensor_ withName(String name) {
         this.name = name;
         return this;
     }
@@ -178,108 +172,8 @@ public class IoTSystem {
         this.description = description;
     }
 
-    public IoTSystem withDescription(String description) {
+    public Sensor_ withDescription(String description) {
         this.description = description;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The operator
-     */
-    @JsonProperty("operator")
-    public String getOperator() {
-        return operator;
-    }
-
-    /**
-     * 
-     * @param operator
-     *     The operator
-     */
-    @JsonProperty("operator")
-    public void setOperator(String operator) {
-        this.operator = operator;
-    }
-
-    public IoTSystem withOperator(String operator) {
-        this.operator = operator;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The serviceArea
-     */
-    @JsonProperty("serviceArea")
-    public String getServiceArea() {
-        return serviceArea;
-    }
-
-    /**
-     * 
-     * @param serviceArea
-     *     The serviceArea
-     */
-    @JsonProperty("serviceArea")
-    public void setServiceArea(String serviceArea) {
-        this.serviceArea = serviceArea;
-    }
-
-    public IoTSystem withServiceArea(String serviceArea) {
-        this.serviceArea = serviceArea;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The sensors
-     */
-    @JsonProperty("sensors")
-    public List<String> getSensors() {
-        return sensors;
-    }
-
-    /**
-     * 
-     * @param sensors
-     *     The sensors
-     */
-    @JsonProperty("sensors")
-    public void setSensors(List<String> sensors) {
-        this.sensors = sensors;
-    }
-
-    public IoTSystem withSensors(List<String> sensors) {
-        this.sensors = sensors;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The services
-     */
-    @JsonProperty("services")
-    public List<String> getServices() {
-        return services;
-    }
-
-    /**
-     * 
-     * @param services
-     *     The services
-     */
-    @JsonProperty("services")
-    public void setServices(List<String> services) {
-        this.services = services;
-    }
-
-    public IoTSystem withServices(List<String> services) {
-        this.services = services;
         return this;
     }
 
@@ -303,8 +197,58 @@ public class IoTSystem {
         this.status = status;
     }
 
-    public IoTSystem withStatus(String status) {
+    public Sensor_ withStatus(String status) {
         this.status = status;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The hasLastKnownLocation
+     */
+    @JsonProperty("hasLastKnownLocation")
+    public HasLastKnownLocation getHasLastKnownLocation() {
+        return hasLastKnownLocation;
+    }
+
+    /**
+     * 
+     * @param hasLastKnownLocation
+     *     The hasLastKnownLocation
+     */
+    @JsonProperty("hasLastKnownLocation")
+    public void setHasLastKnownLocation(HasLastKnownLocation hasLastKnownLocation) {
+        this.hasLastKnownLocation = hasLastKnownLocation;
+    }
+
+    public Sensor_ withHasLastKnownLocation(HasLastKnownLocation hasLastKnownLocation) {
+        this.hasLastKnownLocation = hasLastKnownLocation;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
+     *     The ssnObserves
+     */
+    @JsonProperty("ssn:observes")
+    public List<SsnObserf> getSsnObserves() {
+        return ssnObserves;
+    }
+
+    /**
+     * 
+     * @param ssnObserves
+     *     The ssn:observes
+     */
+    @JsonProperty("ssn:observes")
+    public void setSsnObserves(List<SsnObserf> ssnObserves) {
+        this.ssnObserves = ssnObserves;
+    }
+
+    public Sensor_ withSsnObserves(List<SsnObserf> ssnObserves) {
+        this.ssnObserves = ssnObserves;
         return this;
     }
 
@@ -323,14 +267,14 @@ public class IoTSystem {
         this.additionalProperties.put(name, value);
     }
 
-    public IoTSystem withAdditionalProperty(String name, Object value) {
+    public Sensor_ withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(Context).append(id).append(type).append(name).append(description).append(operator).append(serviceArea).append(sensors).append(services).append(status).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(Context).append(id).append(type).append(name).append(description).append(status).append(hasLastKnownLocation).append(ssnObserves).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -338,11 +282,11 @@ public class IoTSystem {
         if (other == this) {
             return true;
         }
-        if ((other instanceof IoTSystem) == false) {
+        if ((other instanceof Sensor_) == false) {
             return false;
         }
-        IoTSystem rhs = ((IoTSystem) other);
-        return new EqualsBuilder().append(Context, rhs.Context).append(id, rhs.id).append(type, rhs.type).append(name, rhs.name).append(description, rhs.description).append(operator, rhs.operator).append(serviceArea, rhs.serviceArea).append(sensors, rhs.sensors).append(services, rhs.services).append(status, rhs.status).append(additionalProperties, rhs.additionalProperties).isEquals();
+        Sensor_ rhs = ((Sensor_) other);
+        return new EqualsBuilder().append(Context, rhs.Context).append(id, rhs.id).append(type, rhs.type).append(name, rhs.name).append(description, rhs.description).append(status, rhs.status).append(hasLastKnownLocation, rhs.hasLastKnownLocation).append(ssnObserves, rhs.ssnObserves).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

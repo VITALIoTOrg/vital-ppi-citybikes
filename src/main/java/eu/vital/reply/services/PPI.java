@@ -1,12 +1,13 @@
 package eu.vital.reply.services;
 
-import eu.vital.reply.clients.HiReplySvc;
-import eu.vital.reply.jsonpojos.*;
+import eu.vital.reply.clients.IoTSystemClient;
+import eu.vital.reply.jsonpojos.EmptyRequest;
+import eu.vital.reply.jsonpojos.IoTSystem;
+import eu.vital.reply.jsonpojos.Network;
+import eu.vital.reply.jsonpojos.Station;
 import eu.vital.reply.utils.ConfigReader;
 import eu.vital.reply.utils.JsonUtils;
 import eu.vital.reply.utils.StatCounter;
-import eu.vital.reply.xmlpojos.ServiceList;
-import eu.vital.reply.xmlpojos.ValueList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,22 +23,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * HiPPI Class that provides all the REST API that a system attached to Vital will expose
- *
- * @author <a href="mailto:f.deceglia@reply.it">Fabrizio de Ceglia</a>
- * @author <a href="mailto:l.bracco@reply.it">Lorenzo Bracco</a>
- * @version 2.0.0
+/*
+ * PPI Class that provides all the REST API that a system attached to VITAL will expose
  */
 
 @Path("")
-public class HiPPI {
+public class PPI {
 
     private Logger logger;
-    private HiReplySvc hiReplySvc;
+    private IoTSystemClient client;
 
     private String symbolicUri;
     private String ontBaseUri;
@@ -56,15 +54,22 @@ public class HiPPI {
     private AtomicInteger requestCount;
     private AtomicInteger requestError;
 
+    // IoT system data
+    private static final String apiBasePath = "http://api.citybik.es/v2/networks";
+    private static final String networkId = "to-bike";
+
+    // To be able to return system metadata if CityBikes is temporarily unavailable
+    private static HashMap<String, Network> networkCache;
+
     @Context
     private UriInfo uriInfo;
 
-    public HiPPI() {
+    public PPI() {
 
         ConfigReader configReader = ConfigReader.getInstance();
 
-        hiReplySvc = new HiReplySvc();
-        logger = LogManager.getLogger(HiPPI.class);
+        client = new IoTSystemClient();
+        logger = LogManager.getLogger(PPI.class);
 
         symbolicUri = configReader.get(ConfigReader.SYMBOLIC_URI);
         ontBaseUri = configReader.get(ConfigReader.ONT_BASE_URI_PROPERTY);
@@ -86,74 +91,80 @@ public class HiPPI {
     }
 
     /**
-     * Method that returns the metadata of System. This method is mandatory.
-     * @param bodyRequest <br>
-     *            JSON-LD String with the body request <br>
-     *            { <br>
-     *            } <br>
+     * Method that returns the metadata of the system. This method is mandatory.
+     * @param bodyRequest
+     *            JSON-LD String with the body request
+     *            {}
      * @return Returns a string with the serialized JSON-LD IoTSystem.
      */
     @Path("/metadata")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String getMetadata(String bodyRequest) throws Exception {
-
+    public Response getMetadata(String bodyRequest, @Context UriInfo uri) {
         int i;
+        Network network;
+        IoTSystem iotSystem;
+        List<String> services;
+        List<String> sensors;
 
         try {
             JsonUtils.deserializeJson(bodyRequest, EmptyRequest.class);
         } catch (IOException e) {
-            this.logger.error("/METADATA error parsing request header");
-            return "{\n" +
-                    "\"error\": \"Malformed request body\"\n"+
-                    "}";
+            this.logger.error("[/metadata] Error parsing request header");
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        ServiceList system = hiReplySvc.getSnapshot();
+		network = client.getNetwork(apiBasePath, networkId).getNetwork();
 
-        IoTSystem ioTSystem = new IoTSystem();
-        ArrayList<String> services = new ArrayList<>();
-        ArrayList<String> sensors = new ArrayList<>();
+		if (network == null) {
+			// Try and get metadata from cache
+			network = networkCache.get(networkId);
+			if (network == null) {
+				return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+			} else {
+				iotSystem = new IoTSystem();
+				// Found in cache, but unavailable
+				iotSystem.setStatus("vital:Unavailable");
+			}
+		} else {
+			// Well up and running
+			networkCache.put(networkId, network);
+			iotSystem = new IoTSystem();
+			iotSystem.setStatus("vital:Running");
+		}
 
-        // Context must point to a real file
-        ioTSystem.setContext(contextsUri + "system.jsonld");
-        ioTSystem.setId(system.getIoTSystem().getUri());
-        ioTSystem.setType("vital:VitalSystem"); // is it really it? Think so...
-        ioTSystem.setName(system.getIoTSystem().getName());
-        ioTSystem.setDescription(system.getIoTSystem().getDescription());
+        services = new ArrayList<String>();
+        sensors = new ArrayList<String>();
 
-        ioTSystem.setOperator(system.getIoTSystem().getOperator());
-        ioTSystem.setServiceArea("http://dbpedia.org/page/" + system.getIoTSystem().getServiceArea());
+        iotSystem.setContext("http://vital-iot.eu/contexts/system.jsonld");
+        iotSystem.setId(uri.getBaseUri().toString());
+        iotSystem.setType("vital:VitalSystem");
+        iotSystem.setName(network.getName());
+        iotSystem.setDescription("CityBikes " + network.getName() + " network operated by " + network.getCompany());
+        iotSystem.setOperator(network.getCompany());
+        iotSystem.setServiceArea("http://dbpedia.org/page/" + network.getLocation().getCity());
 
-        List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
-        for(i = 0; i < trafficSensors.size(); i++) {
-            sensors.add(this.createSensorFromTraffic(trafficSensors.get(i)).getId());
+        List<Station> stations = network.getStations();
+        for (i = 0; i < stations.size(); i++) {
+            sensors.add(uri.getBaseUri() + "/sensor/" + stations.get(i).getId());
         }
-        sensors.add(this.createMonitoringSensor().getId());
-        ioTSystem.setSensors(sensors);
+        sensors.add(uri.getBaseUri() + "/sensor/monitoring");
+        iotSystem.setSensors(sensors);
 
-        // Adding services (described in /service/metadata)
-        services.add(this.transfProt + this.symbolicUri + "/service/configuration");
-        services.add(this.transfProt + this.symbolicUri + "/service/monitoring");
-        services.add(this.transfProt + this.symbolicUri + "/service/observation");
-
-        ioTSystem.setServices(services);
-
-        if (system.getIoTSystem().getStatus().equals("Running")) {
-            ioTSystem.setStatus("vital:Running");
-        }
-
-        String out;
+        services.add(uri.getBaseUri() + "/service/configuration");
+        services.add(uri.getBaseUri() + "/service/monitoring");
+        services.add(uri.getBaseUri() + "/service/observation");
+        iotSystem.setServices(services);
 
         try {
-            out = JsonUtils.serializeJson(ioTSystem);
-        } catch (IOException e) {
-            this.logger.error("JSON UTILS IO EXCEPTION - metadata information");
-            throw new Exception("JSON UTILS IO EXCEPTION - metadata information");
-        }
-
-        return out;
+			return Response.status(Response.Status.OK)
+				.entity(JsonUtils.serializeJson(iotSystem))
+				.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
     }
 
     @Path("/system/performance")
@@ -298,7 +309,7 @@ public class HiPPI {
         List<Parameter> parameters = new ArrayList<>();
 
         parameter.setName(this.logVerbosity);
-        parameter.setValue(this.hiReplySvc.getSnapshot().getTaskManager().getLogsPriorityLevel());
+        parameter.setValue(this.client.getSnapshot().getTaskManager().getLogsPriorityLevel());
         parameter.setType("http://www.w3.org/2001/XMLSchema#string");
         parameter.setPermissions("rw");
 
@@ -334,7 +345,7 @@ public class HiPPI {
 
         String taskManagerServiceId;
 		try {
-			taskManagerServiceId = this.hiReplySvc.getSnapshot().getTaskManager().getID();
+			taskManagerServiceId = this.client.getSnapshot().getTaskManager().getID();
 	        List<Parameter_> configList = configurationReqBody.getParameters();
 
 	        for(i = 0; i < configList.size(); i++) {
@@ -342,7 +353,7 @@ public class HiPPI {
 	            if(currentConfiguration.equals(this.logVerbosity)) {
 	                String logsPriorityValue = configList.get(i).getValue().toUpperCase();
 	                try {
-	                    success = this.hiReplySvc.setPropertyValue(taskManagerServiceId, hiLogVerbositySetting, logsPriorityValue);
+	                    success = this.client.setPropertyValue(taskManagerServiceId, hiLogVerbositySetting, logsPriorityValue);
 	                } catch (Exception e) {
 	                    success = false;
 	                }
@@ -369,7 +380,7 @@ public class HiPPI {
     @Produces(MediaType.APPLICATION_JSON)
     public String getSystemStatus(String bodyRequest) throws Exception {
 
-        ServiceList system = hiReplySvc.getSnapshot();
+        ServiceList system = client.getSnapshot();
         PerformanceMetric lifecycleInformation = new PerformanceMetric();
 
         Date now = new Date();
@@ -592,7 +603,7 @@ public class HiPPI {
         if ((requestedSensor.size() == 0) && (requestedType.size() == 0)) {
             // then all the sensors must be returned
         	if(system == null) {
-        		system = hiReplySvc.getSnapshot();
+        		system = client.getSnapshot();
         	}
             List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
             for (i = 0; i < trafficSensors.size(); i++) {
@@ -613,7 +624,7 @@ public class HiPPI {
                 	currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
                     if (currentType.toLowerCase().contains("vitalsensor")) {
                     	if(system == null) {
-                    		system = hiReplySvc.getSnapshot();
+                    		system = client.getSnapshot();
                     	}
 	                    List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
 	                    for(j = 0; j < trafficSensors.size(); j++) {
@@ -637,7 +648,7 @@ public class HiPPI {
                     }
                 } else {
                 	/*if(system == null) {
-                		system = hiReplySvc.getSnapshot();
+                		system = client.getSnapshot();
                 	}
                 	List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
                     for(j = 0; j < trafficSensors.size(); j++) {
@@ -651,12 +662,12 @@ public class HiPPI {
                     }*/
                 	// The above would mean one call for multiple sensors, but would degrade performance in cases with
                 	// a few sensors only and would move some computation load on the PPI server which is not powerful
-                    String filter = hiReplySvc.createFilter("ID", currentId);
+                    String filter = client.createFilter("ID", currentId);
 
                     ServiceList.TrafficSensor currentTrafficSensor;
 
                     try {
-                        currentTrafficSensor = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor().get(0);
+                        currentTrafficSensor = this.client.getSnapshotFiltered(filter).getTrafficSensor().get(0);
                         tmpSensor = this.createSensorFromTraffic(currentTrafficSensor);
                         if(!sensors.contains(tmpSensor)) {
                             sensors.add(tmpSensor);
@@ -737,7 +748,7 @@ public class HiPPI {
         if ((requestedSensor.size() == 0) && (requestedType.size() == 0)) {
             // then all the sensors must be returned
         	if(system == null) {
-        		system = hiReplySvc.getSnapshot();
+        		system = client.getSnapshot();
         	}
             List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
             for (i = 0; i < trafficSensors.size(); i++) {
@@ -758,7 +769,7 @@ public class HiPPI {
                 	currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
                     if (currentType.toLowerCase().contains("vitalsensor")) {
                     	if(system == null) {
-                    		system = hiReplySvc.getSnapshot();
+                    		system = client.getSnapshot();
                     	}
 	                    List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
 	                    for(j = 0; j < trafficSensors.size(); j++) {
@@ -781,12 +792,12 @@ public class HiPPI {
                     //    sensors.add(tmpSensor);
                     //}
                 } else {
-                    String filter = hiReplySvc.createFilter("ID", currentId);
+                    String filter = client.createFilter("ID", currentId);
 
                     ServiceList.TrafficSensor currentTrafficSensor;
 
                     try {
-                        currentTrafficSensor = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor().get(0);
+                        currentTrafficSensor = this.client.getSnapshotFiltered(filter).getTrafficSensor().get(0);
                         tmpMeasure = this.createStatusMeasureFromSensor(currentTrafficSensor, "OperationalState");
                     	if(!measures.contains(tmpMeasure)) {
                     		measures.add(tmpMeasure);
@@ -968,7 +979,7 @@ public class HiPPI {
                                 "}";
                     }
 
-                    List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(hiReplySvc.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
+                    List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(client.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
 
                     for (HistoryMeasure hm : historyMeasures) {
                     	tmpMes = this.createMeasureFromHistoryMeasure(hm, currentSensor, property);
@@ -1004,7 +1015,7 @@ public class HiPPI {
                         throw new Exception("GET OBSERVATION - Parse exception during parse date for hi reply format");
                     }
 
-                    List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(hiReplySvc.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
+                    List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(client.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
 
                     for (HistoryMeasure hm : historyMeasures) {
                     	tmpMes = this.createMeasureFromHistoryMeasure(hm, currentSensor, property);
@@ -1076,7 +1087,7 @@ public class HiPPI {
         Date now = new Date();
         String id = Long.toHexString(now.getTime());
 
-        Date hiReplyStartTime = this.hiReplySvc.getSnapshot().getTaskManager().getLastStartTime().toGregorianCalendar().getTime();
+        Date hiReplyStartTime = this.client.getSnapshot().getTaskManager().getLastStartTime().toGregorianCalendar().getTime();
 
         long span = now.getTime() - hiReplyStartTime.getTime();
 
@@ -1188,7 +1199,7 @@ public class HiPPI {
 
     private PerformanceMetric getMemoryUsed() throws Exception {
 
-        ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
+        ServiceList.TaskManager tm = this.client.getSnapshot().getTaskManager();
 
         BigInteger memoryUsed = tm.getMemoryConsumption();
         Date now = new Date();
@@ -1225,7 +1236,7 @@ public class HiPPI {
 
     private PerformanceMetric getMemoryAvailable() throws Exception {
 
-        ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
+        ServiceList.TaskManager tm = this.client.getSnapshot().getTaskManager();
 
         BigInteger memAvailable = tm.getAvailMemoryCounter();
         Date now = new Date();
@@ -1261,7 +1272,7 @@ public class HiPPI {
 
     private PerformanceMetric getCpuUsage() throws Exception {
 
-        ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
+        ServiceList.TaskManager tm = this.client.getSnapshot().getTaskManager();
 
         float cpuUsage = tm.getCPUTotalCounter();
         Date now = new Date();
@@ -1297,7 +1308,7 @@ public class HiPPI {
 
     private PerformanceMetric getDiskAvailable() throws Exception {
 
-        ServiceList.TaskManager tm = this.hiReplySvc.getSnapshot().getTaskManager();
+        ServiceList.TaskManager tm = this.client.getSnapshot().getTaskManager();
 
         String strDiskAvailable = tm.getFreeDiskSpace();
 
@@ -1821,35 +1832,5 @@ public class HiPPI {
         }
 
         return m;
-    }
-
-    private ServiceList.TrafficSensor retrieveSensor(String id) throws Exception {
-
-        String filter = hiReplySvc.createFilter("ID", id);
-        List<ServiceList.TrafficSensor> trafficSensors = this.hiReplySvc.getSnapshotFiltered(filter).getTrafficSensor();
-
-        ServiceList.TrafficSensor currentSensor;
-
-        try {
-            currentSensor = trafficSensors.get(0);
-        } catch (IndexOutOfBoundsException e) {
-        	logger.error("retrieveSensor ID: " + id + " not present.");
-            return null;
-        }
-
-        return currentSensor;
-    }
-
-    private boolean checkTrafficProperty(ServiceList.TrafficSensor currentSensor, String property) {
-        if (currentSensor.getDirectionCount() == 1) {
-            if (!property.equals(this.speedProp) && !property.equals(this.colorProp)) {
-                return false;
-            }
-        } else if (currentSensor.getDirectionCount() == 2) {
-            if (!property.equals(this.speedProp) && !property.equals(this.colorProp) && !property.equals(this.reverseSpeedProp) && !property.equals(this.reverseColorProp)) {
-                return false;
-            }
-        }
-        return true;
     }
 }

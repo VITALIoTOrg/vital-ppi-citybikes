@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
+import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -33,6 +34,7 @@ public class Service {
     @JsonProperty("type")
     private String type;
     @JsonProperty("operations")
+    @Valid
     private List<Operation> operations = new ArrayList<Operation>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();

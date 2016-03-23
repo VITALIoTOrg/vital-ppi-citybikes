@@ -2,11 +2,10 @@ package eu.vital.reply.clients;
 
 import eu.vital.reply.utils.ConfigReader;
 import eu.vital.reply.utils.HttpCommonClient;
+import eu.vital.reply.utils.JsonUtils;
 import eu.vital.reply.utils.UnmarshalUtil;
-import eu.vital.reply.xmlpojos.PropertyList;
-import eu.vital.reply.xmlpojos.ServiceList;
-import eu.vital.reply.xmlpojos.ValueList;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -22,19 +21,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-/**
- * Created by a.martelli on 09/10/2014.
- */
+import eu.vital.reply.jsonpojos.CityBikesNetwork;
 
-/**
- * TODO: Mapping ServiceId with machine prefix or not?
- * Example: San11633-TrS_1 --> TrS_1 ?? --> TrS to make all methods generic. Identify the sensor type from the prefix.
- * TrS: Traffic Sensor
- * Thermometer: Temperature Sensor
- */
-public class HiReplySvc
+public class IoTSystemClient
 {
-    private HttpCommonClient http;
+    private HttpCommonClient httpCC;
     private Logger logger;
 
     private String host;
@@ -48,17 +39,11 @@ public class HiReplySvc
     private String getPropHistValuesPath;
     private String isServiceRunningPath;
 
-    public enum Operators
-    {
-        AND,
-        OR
-    }
-
-    public HiReplySvc()
+    public IoTSystemClient()
     {
         ConfigReader config = ConfigReader.getInstance();
-        http = HttpCommonClient.getInstance();
-        logger = LogManager.getLogger(HiReplySvc.class);
+        httpCC = HttpCommonClient.getInstance();
+        logger = LogManager.getLogger(IoTSystemClient.class);
 
         host = config.get(ConfigReader.HI_HOSTNAME);
         port = Integer.parseInt(config.get(ConfigReader.HI_PORT));
@@ -71,73 +56,81 @@ public class HiReplySvc
         getPropHistValuesPath = config.get(ConfigReader.HI_GETPROPERTYHISTORICALVALUES_PATH);
         isServiceRunningPath = config.get(ConfigReader.HI_ISSERVICERUNNING_PATH);
     }
-
-    private String performRequest(URI uri) throws Exception {
+    
+    private String performRequest(URI uri) throws ClientProtocolException, IOException {
     	String response = null;
-    	int code = 200;
-    	String msg;
+    	int code;
 
     	HttpGet get = new HttpGet(uri);
     	get.setConfig(RequestConfig.custom().setConnectionRequestTimeout(3000).setConnectTimeout(3000).setSocketTimeout(3000).build());
 
         CloseableHttpResponse resp;
         try {
-            resp = http.httpc.execute(get);
+            resp = httpCC.httpc.execute(get);
             code = resp.getStatusLine().getStatusCode();
-            msg = resp.getStatusLine().getReasonPhrase();
             if(code >= 200 && code <= 299) {
             	response = EntityUtils.toString(resp.getEntity());
             }
             resp.close();
         } catch (Exception e) {
             try {
-            	// Try again with a higher timeout
             	try {
-					Thread.sleep(1000); // do not retry immediately
+					Thread.sleep(1000);
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
 				}
             	get.setConfig(RequestConfig.custom().setConnectionRequestTimeout(7000).setConnectTimeout(7000).setSocketTimeout(7000).build());
-                resp = http.httpc.execute(get);
+                resp = httpCC.httpc.execute(get);
                 code = resp.getStatusLine().getStatusCode();
-                msg = resp.getStatusLine().getReasonPhrase();
                 if(code >= 200 && code <= 299) {
                 	response = EntityUtils.toString(resp.getEntity());
                 }
                 resp.close();
             } catch (IOException ea) {
-            	// Try again with an even higher timeout
             	try {
-					Thread.sleep(1000); // do not retry immediately
+					Thread.sleep(1000);
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
 				}
             	get.setConfig(RequestConfig.custom().setConnectionRequestTimeout(12000).setConnectTimeout(12000).setSocketTimeout(12000).build());
-                resp = http.httpc.execute(get);
+                resp = httpCC.httpc.execute(get);
                 code = resp.getStatusLine().getStatusCode();
-                msg = resp.getStatusLine().getReasonPhrase();
                 if(code >= 200 && code <= 299) {
                 	response = EntityUtils.toString(resp.getEntity());
                 }
                 resp.close();
             }
         }
-        
-        if((code >= 200 && code <= 299) && (response == null || !response.contains("502 Proxy Error")))
-        	response = this.cleanOutput(response);
-        else {
-        	if(!(code >= 200 && code <= 299)) {
-        		String error = "{" + System.lineSeparator() + " \"code\": " + code + "," + System.lineSeparator() + " \"message\": \"Error while retrieving " + uri.toString() + ": " + msg + "\"" + System.lineSeparator() + "}";
-        		throw new Exception(error);
-        	} else if(response.contains("502 Proxy Error")) {
-        		String error = "{" + System.lineSeparator() + " \"code\": 502," + System.lineSeparator() + " \"message\": \"Proxy Error while retrieving " + uri.toString() + "\"" + System.lineSeparator() + "}";
-        		throw new Exception(error);
-        	}
-        }
 
     	return response;
     }
     
+    public CityBikesNetwork getNetwork(String apiBasePath, String networkId) {
+    	URI uri;
+    	String respString = null;
+    	CityBikesNetwork network = null;
+
+    	try {
+			uri = new URI(apiBasePath + "/" + networkId);
+			try {
+				respString = performRequest(uri);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	        if(respString != null) {
+	        	try {
+					network = (CityBikesNetwork) JsonUtils.deserializeJson(respString, CityBikesNetwork.class);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	        }
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+
+        return network;
+    }
+
     public ServiceList getSnapshotFiltered(String filter) throws Exception
     {
         String respString;

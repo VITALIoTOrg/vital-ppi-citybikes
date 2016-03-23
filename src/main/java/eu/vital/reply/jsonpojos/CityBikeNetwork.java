@@ -1,9 +1,6 @@
-
 package eu.vital.reply.jsonpojos;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import javax.validation.Valid;
@@ -20,38 +17,38 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "parameters"
+    "network"
 })
-public class ConfigurationReqBody {
+public class CityBikeNetwork {
 
-    @JsonProperty("parameters")
+    @JsonProperty("network")
     @Valid
-    private List<Parameter_> parameters = new ArrayList<Parameter_>();
+    private Network network;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
      * @return
-     *     The parameters
+     *     The network
      */
-    @JsonProperty("parameters")
-    public List<Parameter_> getParameters() {
-        return parameters;
+    @JsonProperty("network")
+    public Network getNetwork() {
+        return network;
     }
 
     /**
      * 
-     * @param parameters
-     *     The parameters
+     * @param network
+     *     The network
      */
-    @JsonProperty("parameters")
-    public void setParameters(List<Parameter_> parameters) {
-        this.parameters = parameters;
+    @JsonProperty("network")
+    public void setNetwork(Network network) {
+        this.network = network;
     }
 
-    public ConfigurationReqBody withParameters(List<Parameter_> parameters) {
-        this.parameters = parameters;
+    public CityBikeNetwork withNetwork(Network network) {
+        this.network = network;
         return this;
     }
 
@@ -70,14 +67,14 @@ public class ConfigurationReqBody {
         this.additionalProperties.put(name, value);
     }
 
-    public ConfigurationReqBody withAdditionalProperty(String name, Object value) {
+    public CityBikeNetwork withAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
         return this;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(parameters).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(network).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -85,11 +82,11 @@ public class ConfigurationReqBody {
         if (other == this) {
             return true;
         }
-        if ((other instanceof ConfigurationReqBody) == false) {
+        if ((other instanceof CityBikeNetwork) == false) {
             return false;
         }
-        ConfigurationReqBody rhs = ((ConfigurationReqBody) other);
-        return new EqualsBuilder().append(parameters, rhs.parameters).append(additionalProperties, rhs.additionalProperties).isEquals();
+        CityBikeNetwork rhs = ((CityBikeNetwork) other);
+        return new EqualsBuilder().append(network, rhs.network).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

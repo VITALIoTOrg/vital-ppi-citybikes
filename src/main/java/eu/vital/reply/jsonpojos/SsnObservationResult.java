@@ -4,6 +4,7 @@ package eu.vital.reply.jsonpojos;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Generated;
+import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,6 +26,7 @@ public class SsnObservationResult {
     @JsonProperty("type")
     private String type;
     @JsonProperty("ssn:hasValue")
+    @Valid
     private SsnHasValue ssnHasValue;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();

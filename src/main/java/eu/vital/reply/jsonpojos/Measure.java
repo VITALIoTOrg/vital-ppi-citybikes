@@ -4,6 +4,7 @@ package eu.vital.reply.jsonpojos;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Generated;
+import javax.validation.Valid;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -38,14 +39,19 @@ public class Measure {
     @JsonProperty("ssn:observedBy")
     private String ssnObservedBy;
     @JsonProperty("ssn:observationProperty")
+    @Valid
     private SsnObservationProperty ssnObservationProperty;
     @JsonProperty("ssn:observationResultTime")
+    @Valid
     private SsnObservationResultTime ssnObservationResultTime;
     @JsonProperty("dul:hasLocation")
+    @Valid
     private DulHasLocation dulHasLocation;
     @JsonProperty("ssn:observationQuality")
+    @Valid
     private SsnObservationQuality ssnObservationQuality;
     @JsonProperty("ssn:observationResult")
+    @Valid
     private SsnObservationResult ssnObservationResult;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();

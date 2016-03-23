@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.vital-iot</groupId>
-    <artifactId>vital-ppi-istanbul-traffic</artifactId>
+    <artifactId>vital-ppi-citybikes</artifactId>
     <version>1.0</version>
     <packaging>war</packaging>
-    <name>VITAL PPI: Istanbul Traffic</name>
-    <description>VITAL PPI for HI Reply Istanbul Traffic</description>
+    <name>VITAL PPI: CityBikes</name>
+    <description>VITAL PPI for CityBikes (http://api.citybik.es/v2)</description>
 
     <properties>
         <!-- Explicitly declaring the source encoding eliminates the following 
@@ -137,7 +137,7 @@
                     <generateBuilders>true</generateBuilders>
                     <includeHashcodeAndEquals>true</includeHashcodeAndEquals>
                     <outputDirectory>${basedir}/src/main/java</outputDirectory>
-                    <sourceType>jsonschema</sourceType>
+                    <sourceType>json</sourceType>
                     <includeJsr303Annotations>true</includeJsr303Annotations>
                     <annotationStyle>jackson2</annotationStyle>
                     <targetPackage>eu.vital.reply.jsonpojos</targetPackage>
