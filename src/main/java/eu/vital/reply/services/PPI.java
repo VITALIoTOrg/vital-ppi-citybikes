@@ -167,7 +167,6 @@ public class PPI {
         sensors.add(uri.getBaseUri() + "/sensor/monitoring");
         iotSystem.setSensors(sensors);
 
-        services.add(uri.getBaseUri() + "/service/configuration");
         services.add(uri.getBaseUri() + "/service/monitoring");
         services.add(uri.getBaseUri() + "/service/observation");
         iotSystem.setServices(services);
@@ -345,81 +344,6 @@ public class PPI {
 		} catch (IOException e) {
 			e.printStackTrace();
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-		}
-    }
-
-    @Path("/configuration")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getConfiguration() throws Exception {
-
-        String out;
-
-        ConfigurationGetBody response = new ConfigurationGetBody();
-
-        Parameter parameter = new Parameter();
-        List<Parameter> parameters = new ArrayList<>();
-
-        parameter.setName(this.logVerbosity);
-        parameter.setValue(this.client.getSnapshot().getTaskManager().getLogsPriorityLevel());
-        parameter.setType("http://www.w3.org/2001/XMLSchema#string");
-        parameter.setPermissions("rw");
-
-        parameters.add(parameter);
-
-        response.setParameters(parameters);
-
-        try {
-            out = JsonUtils.serializeJson(response);
-        } catch (IOException e) {
-            this.logger.error("getConfigurationOptions - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("getConfigurationOptions - Deserialize JSON UTILS IO EXCEPTION");
-        }
-
-        return out;
-    }
-
-    @Path("/configuration")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response setConfiguration(String bodyRequest) {
-        int i;
-
-        ConfigurationReqBody configurationReqBody;
-        boolean success = false;
-
-        try {
-            configurationReqBody = (ConfigurationReqBody) JsonUtils.deserializeJson(bodyRequest, ConfigurationReqBody.class);
-        } catch (IOException e) {
-            this.logger.error("setConfigurationOptions -  error parsing request header");
-            return Response.serverError().build();
-        }
-
-        String taskManagerServiceId;
-		try {
-			taskManagerServiceId = this.client.getSnapshot().getTaskManager().getID();
-	        List<Parameter_> configList = configurationReqBody.getParameters();
-
-	        for(i = 0; i < configList.size(); i++) {
-	            String currentConfiguration = configList.get(i).getName();
-	            if(currentConfiguration.equals(this.logVerbosity)) {
-	                String logsPriorityValue = configList.get(i).getValue().toUpperCase();
-	                try {
-	                    success = this.client.setPropertyValue(taskManagerServiceId, hiLogVerbositySetting, logsPriorityValue);
-	                } catch (Exception e) {
-	                    success = false;
-	                }
-	            }
-	        }
-
-	        if(success) {
-	            return Response.ok().build();
-	        } else {
-	            return Response.status(Response.Status.NOT_FOUND).build();
-	        }
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e1.getMessage()).build();
 		}
     }
 
