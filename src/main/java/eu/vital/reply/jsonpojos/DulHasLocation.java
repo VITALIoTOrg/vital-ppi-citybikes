@@ -19,8 +19,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @JsonPropertyOrder({
     "type",
     "geo:lat",
-    "geo:long",
-    "geo:alt"
+    "geo:long"
 })
 public class DulHasLocation {
 
@@ -30,8 +29,6 @@ public class DulHasLocation {
     private Double geoLat;
     @JsonProperty("geo:long")
     private Double geoLong;
-    @JsonProperty("geo:alt")
-    private Double geoAlt;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -110,31 +107,6 @@ public class DulHasLocation {
         return this;
     }
 
-    /**
-     * 
-     * @return
-     *     The geoAlt
-     */
-    @JsonProperty("geo:alt")
-    public Double getGeoAlt() {
-        return geoAlt;
-    }
-
-    /**
-     * 
-     * @param geoAlt
-     *     The geo:alt
-     */
-    @JsonProperty("geo:alt")
-    public void setGeoAlt(Double geoAlt) {
-        this.geoAlt = geoAlt;
-    }
-
-    public DulHasLocation withGeoAlt(Double geoAlt) {
-        this.geoAlt = geoAlt;
-        return this;
-    }
-
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
@@ -157,7 +129,7 @@ public class DulHasLocation {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(type).append(geoLat).append(geoLong).append(geoAlt).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(type).append(geoLat).append(geoLong).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -169,7 +141,7 @@ public class DulHasLocation {
             return false;
         }
         DulHasLocation rhs = ((DulHasLocation) other);
-        return new EqualsBuilder().append(type, rhs.type).append(geoLat, rhs.geoLat).append(geoLong, rhs.geoLong).append(geoAlt, rhs.geoAlt).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(type, rhs.type).append(geoLat, rhs.geoLat).append(geoLong, rhs.geoLong).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }
