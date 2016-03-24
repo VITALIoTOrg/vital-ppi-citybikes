@@ -1,30 +1,36 @@
 package eu.vital.reply.services;
 
 import eu.vital.reply.clients.IoTSystemClient;
+import eu.vital.reply.jsonpojos.DulHasLocation;
 import eu.vital.reply.jsonpojos.EmptyRequest;
 import eu.vital.reply.jsonpojos.HasLastKnownLocation;
 import eu.vital.reply.jsonpojos.IdTypeRequest;
 import eu.vital.reply.jsonpojos.IoTSystem;
+import eu.vital.reply.jsonpojos.Measure;
 import eu.vital.reply.jsonpojos.Metric;
 import eu.vital.reply.jsonpojos.MetricRequest;
 import eu.vital.reply.jsonpojos.Network;
+import eu.vital.reply.jsonpojos.ObservationRequest;
 import eu.vital.reply.jsonpojos.Operation;
 import eu.vital.reply.jsonpojos.PerformanceMetric;
 import eu.vital.reply.jsonpojos.PerformanceMetricsMetadata;
 import eu.vital.reply.jsonpojos.Sensor;
 import eu.vital.reply.jsonpojos.SensorStatus;
 import eu.vital.reply.jsonpojos.Service;
+import eu.vital.reply.jsonpojos.SsnHasValue;
 import eu.vital.reply.jsonpojos.SsnHasValue_;
 import eu.vital.reply.jsonpojos.SsnHasValue__;
 import eu.vital.reply.jsonpojos.SsnObserf;
+import eu.vital.reply.jsonpojos.SsnObservationProperty;
 import eu.vital.reply.jsonpojos.SsnObservationProperty_;
 import eu.vital.reply.jsonpojos.SsnObservationProperty__;
+import eu.vital.reply.jsonpojos.SsnObservationResult;
+import eu.vital.reply.jsonpojos.SsnObservationResultTime;
 import eu.vital.reply.jsonpojos.SsnObservationResultTime_;
 import eu.vital.reply.jsonpojos.SsnObservationResultTime__;
 import eu.vital.reply.jsonpojos.SsnObservationResult_;
 import eu.vital.reply.jsonpojos.SsnObservationResult__;
 import eu.vital.reply.jsonpojos.Station;
-import eu.vital.reply.utils.ConfigReader;
 import eu.vital.reply.utils.JsonUtils;
 import eu.vital.reply.utils.StatCounter;
 import org.apache.logging.log4j.LogManager;
@@ -43,15 +49,12 @@ import javax.ws.rs.core.UriInfo;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /*
  * PPI Class that provides all the REST API that a system attached to VITAL will expose
@@ -62,17 +65,6 @@ public class PPI {
 
     private Logger logger;
     private IoTSystemClient client;
-
-    private String symbolicUri;
-    private String ontBaseUri;
-    private String contextsUri;
-
-    private String transfProt;
-
-    private String speedProp;
-    private String colorProp;
-    private String reverseSpeedProp;
-    private String reverseColorProp;
 
     // VITAL ontology extended prefix
     private static final String ontologyPrefix = "http://vital-iot.eu/ontology/ns/";
@@ -90,21 +82,8 @@ public class PPI {
     private UriInfo uriInfo;
 
     public PPI() {
-        ConfigReader configReader = ConfigReader.getInstance();
-
         client = new IoTSystemClient();
         logger = LogManager.getLogger(PPI.class);
-
-        symbolicUri = configReader.get(ConfigReader.SYMBOLIC_URI);
-        ontBaseUri = configReader.get(ConfigReader.ONT_BASE_URI_PROPERTY);
-        contextsUri = configReader.get(ConfigReader.CONTEXTS_LOC);
-
-        transfProt = configReader.get(ConfigReader.TRANSF_PROTOCOL);
-
-        speedProp = configReader.get(ConfigReader.SPEED_PROP);
-        colorProp = configReader.get(ConfigReader.COLOR_PROP);
-        reverseSpeedProp = configReader.get(ConfigReader.REVERSE_SPEED_PROP);
-        reverseColorProp = configReader.get(ConfigReader.REVERSE_COLOR_PROP);
 
         if (startupTime == null) {
         	startupTime = new Date();
@@ -653,51 +632,20 @@ public class PPI {
 		}
     }
 
-    /**
-     * Method that returns the observation about the requested ICO/ICOs. This method is mandatory.
-     * @param bodyRequest <br>
-     *            JSON-LD String with the body request <br>
-     *            { <br>
-     *              "sensor":
-     *              [ <br>
-     *                  "http://www.example.com/ico/123/", <br>
-     *                  "http://www.example.com/ico/1234/", <br>
-     *                  "http://www.example.com/ico/12345/" <br>
-     *              ], <br>
-     *              "property": "http://lsm.deri.ie/OpenIot/Temperature", <br>
-     *              "from": "2014-11-17T09:00:00+02:00", <br>
-     *              "to": "2014-11-17T11:00:00+02:00" <br>
-     *            } <br>
-     * <b>from</b> and <b>to</b> determine the time interval, when the observations to return were taken.
-     * Both <b>to</b> and <b>from</b> are optional:
-     * <ul>
-     *     <li>
-     *     If to is omitted, then all observations taken after from are returned
-     *     </li>
-     *     <li>
-     *     If both from and to are omitted, then the last observation taken from the specified ICO for the specified property is returned
-     *     </li>
-     * </ul>
-     * <b>property</b> is the requested property
-     * @return Returns a serialized String with the list of the requested measures.
-     */
     @Path("/sensor/observation")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String getObservation(String bodyRequest) throws Exception {
+    public Response getObservation(String bodyRequest, @Context UriInfo uri) {
         ObservationRequest observationRequest;
-        ArrayList<Measure> measures = new ArrayList<>();
-        ArrayList<PerformanceMetric> metrics = new ArrayList<>();
-        String id;
-        boolean missing;
-        String errmsg = "";
-
-        String out;
+        Network network;
+        ArrayList<Measure> measures = new ArrayList<Measure>();
+        ArrayList<PerformanceMetric> metrics = new ArrayList<PerformanceMetric>();
 
         try {
-            observationRequest = (ObservationRequest) JsonUtils.deserializeJson(bodyRequest, ObservationRequest.class);
-            missing = false;
+        	observationRequest = (ObservationRequest) JsonUtils.deserializeJson(bodyRequest, ObservationRequest.class);
+        	boolean missing = false;
+        	String errmsg = "";
             if (observationRequest.getSensor().isEmpty()) {
             	missing = true;
             	errmsg = errmsg + "sensor";
@@ -706,218 +654,141 @@ public class PPI {
             	missing = true;
             	errmsg = errmsg + " and property";
             }
-            if(missing)
+            if (missing)
             	throw new IOException("field(s) " + errmsg + " is/are required!");
         } catch (IOException e) {
-            this.logger.error("GET OBSERVATION - IOException parsing the json request");
-            return "{\n" +
-                    "\"error\": \"Malformed request body: " + e.getMessage() + "\"\n" +
-                    "}";
+        	this.logger.error("[/sensor/observation] Error parsing request");
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        List<String>ids = observationRequest.getSensor();
-        String property = observationRequest.getProperty().replaceAll("http://" + this.ontBaseUri, "");
-        for (String sid : ids) {
-            id = sid.replaceAll(this.transfProt + this.symbolicUri + "/sensor/", "");
+        network = client.getNetwork(apiBasePath, networkId).getNetwork();
 
+		if (network == null) {
+			// Try and get network from cache
+			network = networkCache.get(networkId);
+			if (network == null) {
+				return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+			}
+		} else {
+			// Well up and running
+			networkCache.put(networkId, network);
+		}
+
+        for (String id : observationRequest.getSensor()) {
             if (id.contains("monitoring")) {
                 // Monitoring sensor
                 PerformanceMetric metric;
-                if (property.contains("UsedMem")) {
-                    metric = this.getMemoryUsed();
-                } else if (property.contains("AvailableMem")) {
-                    metric = this.getMemoryAvailable();
-                } else if (property.contains("AvailableDisk")) {
-                    metric = this.getDiskAvailable();
-                } else if (property.contains("SysLoad")) {
-                    metric = this.getCpuUsage();
-                } else if (property.contains("ServedRequests")) {
-                    metric = this.getServedRequest();
-                } else if (property.contains("Errors")) {
-                    metric = this.getErrors();
-                } else if (property.contains("SysUptime")) {
-                    metric = this.getUpTime();
-                } else if (property.contains("PendingRequests")) {
-                    metric = this.getPendingRequest();
+                Date date = new Date();
+                Runtime runtime = Runtime.getRuntime();
+                SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+                String type, unit, value;
+                if (observationRequest.getProperty().contains("UsedMem")) {
+                	type = "vital:UsedMem";
+                	unit = "qudt:Byte";
+                	value = Long.toString(runtime.totalMemory());
+                } else if (observationRequest.getProperty().contains("AvailableMem")) {
+                	type = "vital:AvailableMem";
+                	unit = "qudt:Byte";
+                	value = Long.toString(runtime.freeMemory());
+                } else if (observationRequest.getProperty().contains("AvailableDisk")) {
+                	type = "vital:AvailableDisk";
+                	unit = "qudt:Byte";
+                	value = Long.toString(new File("/").getFreeSpace());
+                } else if (observationRequest.getProperty().contains("SysLoad")) {
+                	type = "vital:SysLoad";
+                	unit = "qudt:Percentage";
+                	try {
+    					value = Double.toString(getProcessCpuLoad());
+    				} catch (Exception e) {
+    					e.printStackTrace();
+    					return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    				}
+                } else if (observationRequest.getProperty().contains("ServedRequests")) {
+                	type = "vital:ServedRequests";
+                	unit = "qudt:Number";
+                	value = Integer.toString(StatCounter.getRequestNumber().get());
+                } else if (observationRequest.getProperty().contains("Errors")) {
+                	type = "vital:Errors";
+                	unit = "qudt:Number";
+                	value = Integer.toString(StatCounter.getErrorNumber().get());
+                } else if (observationRequest.getProperty().contains("SysUptime")) {
+                	type = "vital:SysUptime";
+                	unit = "qudt:MilliSecond";
+                	value = Long.toString(date.getTime() - startupTime.getTime());
+                } else if (observationRequest.getProperty().contains("PendingRequests")) {
+                	type = "vital:PendingRequests";
+                	unit = "qudt:Number";
+                	value = Integer.toString(StatCounter.getPendingRequest() - 1);
                 } else {
-                    return "{\n" +
-                            "\"error\": \"Performance " + property + " not present.\"\n" +
-                            "}";
+                	this.logger.error("[/system/performance] Bad metric " + observationRequest.getProperty());
+                    return Response.status(Response.Status.BAD_REQUEST).build();
                 }
 
-                if (metric != null) {
-                    metric.setSsnObservedBy(sid);
-                    SsnObservationProperty_ ob = new SsnObservationProperty_();
-                    ob.setType("http://" + this.ontBaseUri + metric.getSsnObservationProperty().getType().replaceAll("vital:", ""));
-                    metric.setSsnObservationProperty(ob);
-                    metrics.add(metric);
-                }
+                metric = new PerformanceMetric();
+                metric.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
+                metric.setId(uri.getBaseUri() + "/sensor/monitoring/observation/" + Long.toHexString(date.getTime()));
+                metric.setType("ssn:Observation");
+
+                SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+                ssnObservationProperty_.setType(type);
+                metric.setSsnObservationProperty(ssnObservationProperty_);
+
+                SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+                ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+                metric.setSsnObservationResultTime(ssnObservationResultTime_);
+
+                SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+                ssnObservationResult_.setType("ssn:SensorOutput");
+                SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+                ssnHasValue_.setType("ssn:ObservationValue");
+                ssnHasValue_.setValue(value);
+                ssnHasValue_.setQudtUnit(unit);
+                ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+                metric.setSsnObservationResult(ssnObservationResult_);
+
+                metric.setSsnFeatureOfInterest(uri.getBaseUri().toString());
+                metrics.add(metric);
 
                 try {
-                    out = JsonUtils.serializeJson(metrics);
-                } catch (IOException e) {
-                    this.logger.error("GET OBSERVATION - serialize to json response IO Exception");
-                    throw new Exception("GET OBSERVATION - serialize to json response IO Exception");
-                }
-
-                return out;
-
+        			return Response.status(Response.Status.OK)
+        				.entity(JsonUtils.serializeJson(metrics))
+        				.build();
+        		} catch (IOException e) {
+        			e.printStackTrace();
+        			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        		}
             } else {
-            	ServiceList.TrafficSensor currentSensor = this.retrieveSensor(id);
-
-                if(currentSensor == null) {
-                    return "{\n" +
-                            "\"error\": \"ID " + id + " not present.\"\n" +
-                            "}";
-                }
-
-                if(!this.checkTrafficProperty(currentSensor, property)) {
-                    return "{\n" +
-                            "\"error\": \"Property " + property + " not present for " + id + " sensor.\"\n" +
-                            "}";
-                }
-                
-                Measure tmpMes;
-
-                if(observationRequest.getFrom() != null && observationRequest.getTo() != null) {
-                    // get history range
-                    SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-                    SimpleDateFormat hiReplyFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
-                    Date fromDate;
-                    Date toDate;
-                    Date fromDateHiReply;
-                    Date toDateHiReply;
-
-                    try {
-                        fromDate = arrivedFormat.parse(observationRequest.getFrom());
-                        toDate = arrivedFormat.parse(observationRequest.getTo());
-                    } catch (ParseException e) {
-                        this.logger.error("GET OBSERVATION - Parse exception during parse date");
-                        return "{\n" +
-                                "\"error\": \"Malformed date in the request body\"\n" +
-                                "}";
-                    }
-
-                    try {
-                        fromDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(fromDate));
-                        toDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(toDate));
-                    } catch (ParseException e) {
-                        this.logger.error("GET OBSERVATION - Parse exception during parse date");
-                        return "{\n" +
-                                "\"error\": \"Malformed date in the request body\"\n" +
-                                "}";
-                    }
-
-                    List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(client.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
-
-                    for (HistoryMeasure hm : historyMeasures) {
-                    	tmpMes = this.createMeasureFromHistoryMeasure(hm, currentSensor, property);
-                    	if (tmpMes != null) {
-                    		measures.add(tmpMes);
-                    	}
-                    }
-
-                } else if (observationRequest.getFrom() != null && observationRequest.getTo() == null) {
-                    // get all values since from
-                    SimpleDateFormat arrivedFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                    SimpleDateFormat hiReplyFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
-                    Date fromDate;
-                    Date toDate = new Date(); // hireply still needs end date (use current date)
-                    Date fromDateHiReply;
-                    Date toDateHiReply;
-
-                    try {
-                        fromDate = arrivedFormat.parse(observationRequest.getFrom());
-                    } catch (ParseException e) {
-                        this.logger.error("GET OBSERVATION - Parse exception during parse date");
-                        return "{\n" +
-                                "\"error\": \"Malformed date in the request body\"\n" +
-                                "}";
-                    }
-
-                    try {
-                        fromDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(fromDate));
-                        toDateHiReply = hiReplyFormat.parse(hiReplyFormat.format(toDate));
-                    } catch (ParseException e) {
-                        this.logger.error("GET OBSERVATION - Parse exception during parse date for hi reply format");
-                        throw new Exception("GET OBSERVATION - Parse exception during parse date for hi reply format");
-                    }
-
-                    List<HistoryMeasure> historyMeasures = this.getHistoryMeasures(client.getPropertyHistoricalValues(id, property, fromDateHiReply, toDateHiReply));
-
-                    for (HistoryMeasure hm : historyMeasures) {
-                    	tmpMes = this.createMeasureFromHistoryMeasure(hm, currentSensor, property);
-                    	if (tmpMes != null) {
-                    		measures.add(tmpMes);
-                    	}
-                    }
-
-                } else if (observationRequest.getFrom() == null && observationRequest.getTo() == null) {
-                    // get last value only
-                	tmpMes = this.createMeasureFromSensor(currentSensor, property);
-                	if (tmpMes != null) {
-                		measures.add(tmpMes);
+            	Measure tmpMeasure;
+            	boolean found = false;
+                for (Station station : network.getStations()) {
+                	if (id.contains(station.getId())) {
+                		try {
+                			tmpMeasure = createMeasureFromStation(station, observationRequest.getProperty(), uri);
+						} catch (ParseException e) {
+							e.printStackTrace();
+							return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+						}
+                		if (tmpMeasure != null)
+                			measures.add(tmpMeasure);
+                		else
+                			return Response.status(Response.Status.BAD_REQUEST).build();
+                		found = true;
+                		break;
                 	}
                 }
+                if (!found)
+                	return Response.status(Response.Status.BAD_REQUEST).build();
             }
         }
 
         try {
-            out = JsonUtils.serializeJson(measures);
-        } catch (IOException e) {
-            this.logger.error("GET OBSERVATION - serialize to json response IO Exception");
-            throw new Exception("GET OBSERVATION - serialize to json response IO Exception");
-        }
-
-        return out;
-    }
-
-    /*
-        Private Class and Methods that adapt
-        HiReply structure with Vital structure
-    */
-    private class HistoryMeasure {
-        private float value;
-        private Date date;
-
-        public HistoryMeasure(float value, Date date) {
-            this.value = value;
-            this.date = date;
-        }
-
-        public float getValue() {
-            return this.value;
-        }
-
-        public Date getDate() {
-            return this.date;
-        }
-    }
-
-    private List<HistoryMeasure> getHistoryMeasures(ValueList valueList) throws Exception {
-
-        ArrayList<HistoryMeasure> historyMeasures = new ArrayList<>();
-        List<String> values = valueList.getValue();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa");
-
-        for(String currentValue : values) {
-            String[] splitted = currentValue.split(","); // splitted[0] = value --- splitted[1] data
-            float auxValue = Float.parseFloat(splitted[0]);
-            Date auxDate;
-
-            try {
-                auxDate = dateFormat.parse(splitted[1]);
-            } catch (ParseException e) {
-                this.logger.error("ERROR PARSING DATE FROM HISTORY VALUE");
-                throw new Exception("ERROR PARSING DATE FROM HISTORY VALUE");
-            }
-
-            historyMeasures.add(new HistoryMeasure(auxValue, auxDate));
-        }
-
-        return historyMeasures;
+			return Response.status(Response.Status.OK)
+				.entity(JsonUtils.serializeJson(measures))
+				.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
     }
 
     private Sensor createMonitoringSensor(UriInfo uri) {
@@ -1150,168 +1021,52 @@ public class PPI {
         return m;
     }
 
-    private Measure createMeasureFromSensor(ServiceList.TrafficSensor currentSensor, String property) throws Exception {
-        Measure m = null;
-
-        SimpleDateFormat timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
+    private Measure createMeasureFromStation(Station station, String property, UriInfo uri) throws ParseException {
+        Measure m;
+        SimpleDateFormat printedDateFormat, timestampDateFormat;
         Date timestamp = null;
-        String hiReplyTimestamp = currentSensor.getMeasureTime().toString();
-        try {
-            timestamp = timestampDateFormat.parse(hiReplyTimestamp);
-        } catch (ParseException e) {
-            this.logger.error("HiPPI - createMeasureFromSensor - ERROR PARSING DATE FROM HIREPLY TIMESTAMP");
-            throw new Exception("HiPPI - createMeasureFromSensor - ERROR PARSING DATE FROM HIREPLY TIMESTAMP");
+
+        printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+        timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+        timestamp = timestampDateFormat.parse(station.getTimestamp());
+
+    	m = new Measure();
+        m.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
+    	m.setId(uri.getBaseUri() + "/sensor/" + station.getId() + "/observation/" + Long.toHexString(timestamp.getTime()));
+        m.setType("ssn:Observation");
+        m.setSsnObservedBy(uri.getBaseUri() + "/sensor/" + station.getId());
+
+        SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
+        ssnObservationProperty.setType("vital:" + property);
+        m.setSsnObservationProperty(ssnObservationProperty);
+
+        SsnObservationResultTime ssnObservationResultTime = new SsnObservationResultTime();
+        ssnObservationResultTime.setTimeInXSDDateTime(printedDateFormat.format(timestamp));
+        m.setSsnObservationResultTime(ssnObservationResultTime);
+
+        DulHasLocation dulHasLocation = new DulHasLocation();
+        dulHasLocation.setType("geo:Point");
+        dulHasLocation.setGeoLat(station.getLatitude());
+        dulHasLocation.setGeoLong(station.getLongitude());
+        m.setDulHasLocation(dulHasLocation);
+
+        SsnObservationResult ssnObservationResult = new SsnObservationResult();
+        ssnObservationResult.setType("ssn:SensorOutput");
+        SsnHasValue ssnHasValue = new SsnHasValue();
+        ssnHasValue.setType("ssn:ObservationValue");
+
+        if (property.equals("AvailableBikes")) {
+            ssnHasValue.setValue(station.getFreeBikes());
+            ssnHasValue.setQudtUnit("qudt:Number");
+        } else if (property.equals("EmptyDocks")) {
+            ssnHasValue.setValue(station.getEmptySlots());
+            ssnHasValue.setQudtUnit("qudt:Number");
+        } else {
+            return null;
         }
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(timestamp);
-        if((cal.get(Calendar.YEAR) != 1900) && (currentSensor.getStatus() != 0)) {
-        	m = new Measure();
-	        m.setContext(contextsUri + "measurement.jsonld");
-	    	String id = Long.toHexString(timestamp.getTime());
-	    	m.setId(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID() + "/observation/" + id);
-	        m.setType("ssn:Observation");
-	        m.setSsnObservedBy(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID());
-	
-	        SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
-	        ssnObservationProperty.setType("vital:" + property);
-	
-	        m.setSsnObservationProperty(ssnObservationProperty);
-	
-	        SsnObservationResultTime ssnObservationResultTime = new SsnObservationResultTime();
-	        ssnObservationResultTime.setTimeInXSDDateTime(printedDateFormat.format(timestamp));
-	
-	        m.setSsnObservationResultTime(ssnObservationResultTime);
-	
-	        DulHasLocation dulHasLocation = new DulHasLocation();
-	        dulHasLocation.setType("geo:Point");
-	        String[] splitted = currentSensor.getPhysicalLocation().split(";");
-	        dulHasLocation.setGeoLat(Double.valueOf(splitted[1]));
-	        dulHasLocation.setGeoLong(Double.valueOf(splitted[0]));
-	        dulHasLocation.setGeoAlt(0.0);
-	
-	        m.setDulHasLocation(dulHasLocation);
-	
-	        SsnObservationResult ssnObservationResult = new SsnObservationResult();
-	        ssnObservationResult.setType("ssn:SensorOutput");
-	        SsnHasValue ssnHasValue = new SsnHasValue();
-	        ssnHasValue.setType("ssn:ObservationValue");
-	        
-	        float speedValue;
-	        int colorValue;
-	
-	        if (currentSensor.getDirectionCount() == 1) {
-	            if (property.equals(this.speedProp)) {
-	                speedValue = currentSensor.getSpeed();
-	                ssnHasValue.setValue((double) speedValue);
-	                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
-	            } else if (property.equals(this.colorProp)) {
-	                colorValue = currentSensor.getColor();
-	                ssnHasValue.setValue((double) colorValue);
-	                ssnHasValue.setQudtUnit("qudt:Color");
-	            } else {
-	                return null;
-	            }
-	        }
-	
-	        if (currentSensor.getDirectionCount() == 2) {
-	            if (property.equals(this.speedProp)) {
-	                speedValue = currentSensor.getSpeed();
-	                ssnHasValue.setValue((double) speedValue);
-	                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
-	            } else if (property.equals(this.colorProp)) {
-	                colorValue = currentSensor.getColor();
-	                ssnHasValue.setValue((double) colorValue);
-	                ssnHasValue.setQudtUnit("qudt:Color");
-	            } else if (property.equals(this.reverseSpeedProp)) {
-	                speedValue = currentSensor.getSpeed();
-	                ssnHasValue.setValue((double) speedValue);
-	                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
-	            } else if (property.equals(this.reverseColorProp)) {
-	                colorValue = currentSensor.getColor();
-	                ssnHasValue.setValue((double) colorValue);
-	                ssnHasValue.setQudtUnit("qudt:Color");
-	            } else {
-	                return null;
-	            }
-	        }
-	
-	        ssnObservationResult.setSsnHasValue(ssnHasValue);
-	        m.setSsnObservationResult(ssnObservationResult);
-        }
-
-        return m;
-    }
-
-    private Measure createMeasureFromHistoryMeasure(HistoryMeasure historyMeasure, ServiceList.TrafficSensor currentSensor, String property) {
-
-        Measure m = null;
-
-        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-        
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(historyMeasure.getDate());
-        if ((cal.get(Calendar.YEAR) != 1900) && (currentSensor.getStatus() != 0)) {
-	        m = new Measure();
-	        m.setContext(contextsUri + "measurement.jsonld");
-	        String id = Long.toHexString(historyMeasure.getDate().getTime());
-	        m.setId(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID() + "/observation/" + id);
-	        m.setType("ssn:Observation");
-	
-	        SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
-	        ssnObservationProperty.setType("vital:" + property);
-	        m.setSsnObservedBy(this.transfProt + this.symbolicUri + "/sensor/" + currentSensor.getID());
-	
-	        m.setSsnObservationProperty(ssnObservationProperty);
-	
-	        SsnObservationResultTime ssnObservationResultTime = new SsnObservationResultTime();
-	        ssnObservationResultTime.setTimeInXSDDateTime(printedDateFormat.format(historyMeasure.getDate()));
-	
-	        m.setSsnObservationResultTime(ssnObservationResultTime);
-	
-	        DulHasLocation dulHasLocation = new DulHasLocation();
-	        dulHasLocation.setType("geo:Point");
-	        String[] splitted = currentSensor.getPhysicalLocation().split(";");
-	        dulHasLocation.setGeoLat(Double.valueOf(splitted[1]));
-	        dulHasLocation.setGeoLong(Double.valueOf(splitted[0]));
-	        dulHasLocation.setGeoAlt(0.0);
-	
-	        m.setDulHasLocation(dulHasLocation);
-	
-	        SsnObservationResult ssnObservationResult = new SsnObservationResult();
-	        ssnObservationResult.setType("ssn:SensorOutput");
-	        SsnHasValue ssnHasValue = new SsnHasValue();
-	        ssnHasValue.setType("ssn:ObservationValue");
-	
-	        if (currentSensor.getDirectionCount() == 1) {
-	            if (property.equals(this.speedProp)) {
-	                ssnHasValue.setValue((double) historyMeasure.getValue());
-	                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
-	            } else if (property.equals(this.colorProp)) {
-	                ssnHasValue.setValue((double) Math.round(historyMeasure.getValue()));
-	                ssnHasValue.setQudtUnit("qudt:Color");
-	            } else {
-	                return null;
-	            }
-	        }
-	
-	        if (currentSensor.getDirectionCount() == 2) {
-	            if (property.equals(this.speedProp) || property.equals(this.reverseSpeedProp)) {
-	                ssnHasValue.setValue((double) historyMeasure.getValue());
-	                ssnHasValue.setQudtUnit("qudt:KilometerPerHour");
-	            } else if (property.equals(this.colorProp) || property.equals(this.reverseColorProp)) {
-	                ssnHasValue.setValue((double) Math.round(historyMeasure.getValue()));
-	                ssnHasValue.setQudtUnit("qudt:Color");
-	            } else {
-	                return null;
-	            }
-	        }
-	
-	        ssnObservationResult.setSsnHasValue(ssnHasValue);
-	        m.setSsnObservationResult(ssnObservationResult);
-        }
+        ssnObservationResult.setSsnHasValue(ssnHasValue);
+        m.setSsnObservationResult(ssnObservationResult);
 
         return m;
     }

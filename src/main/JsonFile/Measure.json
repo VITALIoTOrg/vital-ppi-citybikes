@@ -12,8 +12,7 @@
    "dul:hasLocation":{
       "type":"geo:Point",
       "geo:lat":55.701,
-      "geo:long":12.552,
-      "geo:alt":4.33
+      "geo:long":12.552
    },
    "ssn:observationQuality":{
       "ssn:hasMeasurementProperty":{
@@ -25,7 +24,7 @@
       "type":"ssn:SensorOutput",
       "ssn:hasValue":{
          "type":"ssn:ObservationValue",
-         "value":21.0,
+         "value":21,
          "qudt:unit":"qudt:DegreeCelsius"
       }
    }

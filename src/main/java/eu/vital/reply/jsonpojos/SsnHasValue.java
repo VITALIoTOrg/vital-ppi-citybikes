@@ -26,7 +26,7 @@ public class SsnHasValue {
     @JsonProperty("type")
     private String type;
     @JsonProperty("value")
-    private Double value;
+    private int value;
     @JsonProperty("qudt:unit")
     private String qudtUnit;
     @JsonIgnore
@@ -63,7 +63,7 @@ public class SsnHasValue {
      *     The value
      */
     @JsonProperty("value")
-    public Double getValue() {
+    public int getValue() {
         return value;
     }
 
@@ -73,11 +73,11 @@ public class SsnHasValue {
      *     The value
      */
     @JsonProperty("value")
-    public void setValue(Double value) {
+    public void setValue(int value) {
         this.value = value;
     }
 
-    public SsnHasValue withValue(Double value) {
+    public SsnHasValue withValue(int value) {
         this.value = value;
         return this;
     }
