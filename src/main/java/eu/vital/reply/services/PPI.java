@@ -78,9 +78,6 @@ public class PPI {
     
     private static Date startupTime = new Date();
 
-    @Context
-    private UriInfo uriInfo;
-
     public PPI() {
         client = new IoTSystemClient();
         logger = LogManager.getLogger(PPI.class);
