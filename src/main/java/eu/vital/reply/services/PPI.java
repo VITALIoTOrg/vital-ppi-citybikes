@@ -2,6 +2,7 @@ package eu.vital.reply.services;
 
 import eu.vital.reply.clients.IoTSystemClient;
 import eu.vital.reply.jsonpojos.EmptyRequest;
+import eu.vital.reply.jsonpojos.HasLastKnownLocation;
 import eu.vital.reply.jsonpojos.IdTypeRequest;
 import eu.vital.reply.jsonpojos.IoTSystem;
 import eu.vital.reply.jsonpojos.Metric;
@@ -10,8 +11,10 @@ import eu.vital.reply.jsonpojos.Network;
 import eu.vital.reply.jsonpojos.Operation;
 import eu.vital.reply.jsonpojos.PerformanceMetric;
 import eu.vital.reply.jsonpojos.PerformanceMetricsMetadata;
+import eu.vital.reply.jsonpojos.Sensor;
 import eu.vital.reply.jsonpojos.Service;
 import eu.vital.reply.jsonpojos.SsnHasValue_;
+import eu.vital.reply.jsonpojos.SsnObserf;
 import eu.vital.reply.jsonpojos.SsnObservationProperty_;
 import eu.vital.reply.jsonpojos.SsnObservationResultTime_;
 import eu.vital.reply.jsonpojos.SsnObservationResult_;
@@ -66,12 +69,6 @@ public class PPI {
     private String reverseSpeedProp;
     private String reverseColorProp;
 
-    private String logVerbosity;
-    private String hiLogVerbositySetting;
-
-    private AtomicInteger requestCount;
-    private AtomicInteger requestError;
-    
     // VITAL ontology extended prefix
     private static final String ontologyPrefix = "http://vital-iot.eu/ontology/ns/";
 
@@ -79,7 +76,7 @@ public class PPI {
     private static final String apiBasePath = "http://api.citybik.es/v2/networks";
     private static final String networkId = "to-bike";
 
-    // To be able to return system metadata if CityBikes is temporarily unavailable
+    // To be able to return network data if CityBikes is temporarily unavailable
     private static HashMap<String, Network> networkCache;
     
     private static Date startupTime = new Date();
@@ -103,12 +100,6 @@ public class PPI {
         colorProp = configReader.get(ConfigReader.COLOR_PROP);
         reverseSpeedProp = configReader.get(ConfigReader.REVERSE_SPEED_PROP);
         reverseColorProp = configReader.get(ConfigReader.REVERSE_COLOR_PROP);
-
-        logVerbosity = configReader.get(ConfigReader.LOG_VERBOSITY);
-        hiLogVerbositySetting = configReader.get(ConfigReader.HI_LOGS_VERBOSITITY_SETTING);
-
-        requestCount = new AtomicInteger(0);
-        requestError = new AtomicInteger(0);
 
         if (startupTime == null) {
         	startupTime = new Date();
@@ -136,7 +127,7 @@ public class PPI {
 		network = client.getNetwork(apiBasePath, networkId).getNetwork();
 
 		if (network == null) {
-			// Try and get metadata from cache
+			// Try and get network from cache
 			network = networkCache.get(networkId);
 			if (network == null) {
 				return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
@@ -271,20 +262,19 @@ public class PPI {
         runtime = Runtime.getRuntime();
         metrics = new ArrayList<PerformanceMetric>();
         for (String m : requestedMetrics) {
-            if (m.contains("UsedMem".toLowerCase())) {
+            if (m.contains("UsedMem")) {
             	type = "vital:UsedMem";
             	unit = "qudt:Byte";
             	value = Long.toString(runtime.totalMemory());
-            } else if (m.contains("AvailableMem".toLowerCase())) {
+            } else if (m.contains("AvailableMem")) {
             	type = "vital:AvailableMem";
             	unit = "qudt:Byte";
             	value = Long.toString(runtime.freeMemory());
-            } else if (m.contains("AvailableDisk".toLowerCase())) {
+            } else if (m.contains("AvailableDisk")) {
             	type = "vital:AvailableDisk";
             	unit = "qudt:Byte";
-            	File file;
             	value = Long.toString(new File("/").getFreeSpace());
-            } else if (m.contains("SysLoad".toLowerCase())) {
+            } else if (m.contains("SysLoad")) {
             	type = "vital:SysLoad";
             	unit = "qudt:Percentage";
             	try {
@@ -293,19 +283,19 @@ public class PPI {
 					e.printStackTrace();
 					return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
 				}
-            } else if (m.contains("ServedRequests".toLowerCase())) {
+            } else if (m.contains("ServedRequests")) {
             	type = "vital:ServedRequests";
             	unit = "qudt:Number";
             	value = Integer.toString(StatCounter.getRequestNumber().get());
-            } else if (m.contains("Errors".toLowerCase())) {
+            } else if (m.contains("Errors")) {
             	type = "vital:Errors";
             	unit = "qudt:Number";
             	value = Integer.toString(StatCounter.getErrorNumber().get());
-            } else if (m.contains("SysUptime".toLowerCase())) {
+            } else if (m.contains("SysUptime")) {
             	type = "vital:SysUptime";
             	unit = "qudt:MilliSecond";
             	value = Long.toString(date.getTime() - startupTime.getTime());
-            } else if (m.contains("PendingRequests".toLowerCase())) {
+            } else if (m.contains("PendingRequests")) {
             	type = "vital:PendingRequests";
             	unit = "qudt:Number";
             	value = Integer.toString(StatCounter.getPendingRequest() - 1);
@@ -362,7 +352,7 @@ public class PPI {
 		network = client.getNetwork(apiBasePath, networkId).getNetwork();
 
 		if (network == null) {
-			// Try and get metadata from cache
+			// Try and get network from cache
 			network = networkCache.get(networkId);
 			if (network == null) {
 				return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
@@ -447,15 +437,15 @@ public class PPI {
                 }
             }
             for (String id : serviceRequest.getId()) {
-                if(id.contains("observation")) {
+                if (id.contains("observation")) {
                     tmpService = createObservationService(uri);
-                    if(!services.contains(tmpService)) {
+                    if (!services.contains(tmpService)) {
                         services.add(tmpService);
                     }
                 }
-                else if(id.contains("monitoring")) {
+                else if (id.contains("monitoring")) {
                     tmpService = createMonitoringService(uri);
-                    if(!services.contains(tmpService)) {
+                    if (!services.contains(tmpService)) {
                         services.add(tmpService);
                     }
                 }
@@ -472,181 +462,109 @@ public class PPI {
 		}
     }
 
-    /**
-     * Method that returns the metadata about the requested sensor(s). This method is mandatory.
-     * @param bodyRequest <br>
-     *            JSON-LD String with the body request <br>
-     *            { <br>
-     *              "id": <br>
-     *              [ <br>
-     *                  "http://www.example.com/ico/123/", <br>
-     *                  "http://www.example.com/ico/1234/", <br>
-     *                  "http://www.example.com/ico/12345/" <br>
-     *              ], <br>
-     *              "type": <br>
-     *              [ <br>
-     *                  "http://vital-iot.eu/ontology/ns/VitalSensor", <br>
-     *                  "http://vital-iot.eu/ontology/ns/MonitoringSensor" <br>
-     *              ] <br>
-     *            } <br>
-     * If the id and type fields are omitted, all the sensors are requested <br>
-     * @return Returns a serialized String with the list of the requested sensors. <br>
-     */
     @Path("/sensor/metadata")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String getSensorMetadata(String bodyRequest) throws Exception {
-
-        int i, j;
+    public Response getSensorMetadata(String bodyRequest, @Context UriInfo uri) {
         IdTypeRequest sensorRequest;
-        ServiceList system = null;
+        Network network;
+        Sensor tmpSensor;
+        List<Sensor> sensors;
 
         try {
-            sensorRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
+        	sensorRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
         } catch (IOException e) {
-            this.logger.error("GET SENSOR METADATA - IOException parsing the json request");
-            return "{\n" +
-                    "\"error\": \"Malformed request body\"\n"+
-                    "}";
+        	this.logger.error("[/sensor/metadata] Error parsing request");
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        List<String> requestedSensor;
-        List<String> requestedType;
+		network = client.getNetwork(apiBasePath, networkId).getNetwork();
 
-        try {
-            requestedSensor = sensorRequest.getId();
-            requestedType = sensorRequest.getType();
-        } catch (NullPointerException e) {
-            this.logger.error("/sensor/metadata IO Exception - Requested Sensor");
-            throw new Exception("/sensor/metadata IO Exception - Requested Sensor");
-        }
+		if (network == null) {
+			// Try and get network from cache
+			network = networkCache.get(networkId);
+			if (network == null) {
+				return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+			}
+		} else {
+			// Well up and running
+			networkCache.put(networkId, network);
+		}
 
-        List<Sensor> sensors = new ArrayList<>(); // output list
+        sensors = new ArrayList<Sensor>();
 
-        if ((requestedSensor.size() == 0) && (requestedType.size() == 0)) {
-            // then all the sensors must be returned
-        	if(system == null) {
-        		system = client.getSnapshot();
-        	}
-            List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
-            for (i = 0; i < trafficSensors.size(); i++) {
-                sensors.add(this.createSensorFromTraffic(trafficSensors.get(i)));
+        if ((sensorRequest.getId().size() == 0) && (sensorRequest.getType().size() == 0)) {
+            for (Station station : network.getStations()) {
+                try {
+					sensors.add(createSensorFromStation(station, uri));
+				} catch (ParseException e) {
+					e.printStackTrace();
+					return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+				}
             }
-            sensors.add(this.createMonitoringSensor());
+            sensors.add(createMonitoringSensor(uri));
         } else {
-            String currentType;
-            Sensor tmpSensor;
-            for (i = 0; i < requestedType.size(); i++) {
-                currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
-                if (currentType.toLowerCase().contains("monitoringsensor")) {
-                    tmpSensor = this.createMonitoringSensor();
-                    if(!sensors.contains(tmpSensor)) {
-                        sensors.add(tmpSensor);
-                    }
-                } else {
-                	currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
-                    if (currentType.toLowerCase().contains("vitalsensor")) {
-                    	if(system == null) {
-                    		system = client.getSnapshot();
-                    	}
-	                    List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
-	                    for(j = 0; j < trafficSensors.size(); j++) {
-	                        tmpSensor = this.createSensorFromTraffic(trafficSensors.get(j));
-	                        if(!sensors.contains(tmpSensor)) {
-	                            sensors.add(tmpSensor);
-	                        }
-	                    }
+            for (String type : sensorRequest.getType()) {
+                if (type.contains("VitalSensor")) {
+                	for (Station station : network.getStations()) {
+                        try {
+							sensors.add(createSensorFromStation(station, uri));
+						} catch (ParseException e) {
+							e.printStackTrace();
+							return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+						}
                     }
                 }
+                else if (type.contains("MonitoringSensor")) {
+                	sensors.add(createMonitoringSensor(uri));
+                }
             }
-            // return only some selected sensors
-            String currentId;
-            for (i = 0; i < requestedSensor.size(); i++) {
-                currentId = requestedSensor.get(i).replaceAll(this.transfProt + this.symbolicUri + "/sensor/", "");
-
-                if (currentId.toLowerCase().contains("monitoring")) {
-                    tmpSensor = this.createMonitoringSensor();
-                    if(!sensors.contains(tmpSensor)) {
-                        sensors.add(tmpSensor);
+            for (String id : sensorRequest.getId()) {
+            	if (id.contains("monitoring")) {
+                    tmpSensor = createMonitoringSensor(uri);
+                    if (!sensors.contains(tmpSensor)) {
+                    	sensors.add(tmpSensor);
                     }
                 } else {
-                	/*if(system == null) {
-                		system = client.getSnapshot();
-                	}
-                	List<ServiceList.TrafficSensor> trafficSensors = system.getTrafficSensor();
-                    for(j = 0; j < trafficSensors.size(); j++) {
-                    	ServiceList.TrafficSensor ts = trafficSensors.get(j);
-                    	if(ts.getID().equals(currentId)) {
-	                        tmpSensor = this.createSensorFromTraffic(trafficSensors.get(j));
-	                        if(!sensors.contains(tmpSensor)) {
-	                            sensors.add(tmpSensor);
+                	for (Station station : network.getStations()) {
+                		if (id.contains(station.getId())) {
+	                		try {
+								tmpSensor = createSensorFromStation(station, uri);
+							} catch (ParseException e) {
+								e.printStackTrace();
+								return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+							}
+	                        if (!sensors.contains(tmpSensor)) {
+	                        	sensors.add(tmpSensor);
+	                        	break;
 	                        }
-                    	}
-                    }*/
-                	// The above would mean one call for multiple sensors, but would degrade performance in cases with
-                	// a few sensors only and would move some computation load on the PPI server which is not powerful
-                    String filter = client.createFilter("ID", currentId);
-
-                    ServiceList.TrafficSensor currentTrafficSensor;
-
-                    try {
-                        currentTrafficSensor = this.client.getSnapshotFiltered(filter).getTrafficSensor().get(0);
-                        tmpSensor = this.createSensorFromTraffic(currentTrafficSensor);
-                        if(!sensors.contains(tmpSensor)) {
-                            sensors.add(tmpSensor);
-                        }
-                    } catch (IndexOutOfBoundsException e) {
-                        logger.error("getSensorMetadata ID: " + currentId + " not present.");
-                        // if not present goes on looking for the other requested sensors
+                		}
                     }
                 }
             }
         }
-
-        String out;
 
         try {
-            out = JsonUtils.serializeJson(sensors);
-        } catch (IOException e) {
-            this.logger.error("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
-        }
-
-        return out;
+			return Response.status(Response.Status.OK)
+				.entity(JsonUtils.serializeJson(sensors))
+				.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
     }
 
-    /**
-     * Method that returns the status of the requested sensor(s). This method is optional.
-     * @param bodyRequest <br>
-     *            JSON-LD String with the body request <br>
-     *            { <br>
-     *              "id": <br>
-     *              [ <br>
-     *                  "http://www.example.com/ico/123/", <br>
-     *                  "http://www.example.com/ico/1234/", <br>
-     *                  "http://www.example.com/ico/12345/" <br>
-     *              ], <br>
-     *              "type": <br>
-     *              [ <br>
-     *                  "http://vital-iot.eu/ontology/ns/VitalSensor", <br>
-     *                  "http://vital-iot.eu/ontology/ns/MonitoringSensor" <br>
-     *              ] <br>
-     *            } <br>
-     * If the id and type fields are omitted, all the sensors are requested <br>
-     * @return Returns a serialized String with the list of the requested sensors. <br>
-     */
     @Path("/sensor/status")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String getSensorStatus(String bodyRequest) throws Exception {
+    public String getSensorStatus(String bodyRequest, @Context UriInfo uri) {
 
         int i, j;
         IdTypeRequest sensorRequest;
         ServiceList system = null;
         
-
         try {
             sensorRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
         } catch (IOException e) {
@@ -1014,83 +932,105 @@ public class PPI {
         return historyMeasures;
     }
 
-    private Sensor createSensorFromTraffic(ServiceList.TrafficSensor currentSensor) throws Exception {
+    private Sensor createMonitoringSensor(UriInfo uri) {
+    	String id = "monitoring";
+    	List<SsnObserf> observedProperties;
         Sensor sensor = new Sensor();
-        String id = currentSensor.getID();
 
-        sensor.setContext(contextsUri + "sensor.jsonld");
+        sensor.setContext("http://vital-iot.eu/contexts/sensor.jsonld");
         sensor.setName(id);
+        sensor.setType("vital:MonitoringSensor");
+        sensor.setDescription("CityBikes monitoring sensor");
+        sensor.setId(uri.getBaseUri() + "/sensor/" + id);
+
+        sensor.setStatus("vital:Running");
+
+        observedProperties = new ArrayList<SsnObserf>();
+
+        SsnObserf observedProperty = new SsnObserf();
+        observedProperty.setType("vital:MemUsed");
+        observedProperty.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "usedMem");
+        observedProperties.add(observedProperty);
+
+        observedProperty = new SsnObserf();
+        observedProperty.setType("vital:MemAvailable");
+        observedProperty.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "availableMem");
+        observedProperties.add(observedProperty);
+
+        observedProperty = new SsnObserf();
+        observedProperty.setType("vital:DiskAvailable");
+        observedProperty.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "availableDisk");
+        observedProperties.add(observedProperty);
+
+        observedProperty = new SsnObserf();
+        observedProperty.setType("vital:SysLoad");
+        observedProperty.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "sysLoad");
+        observedProperties.add(observedProperty);
+
+        observedProperty = new SsnObserf();
+        observedProperty.setType("vital:ServedRequest");
+        observedProperty.setId(uri.getBaseUri() + "/sensor/" +id+ "/" + "servedRequests");
+        observedProperties.add(observedProperty);
+
+        observedProperty = new SsnObserf();
+        observedProperty.setType("vital:Errors");
+        observedProperty.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "errors");
+        observedProperties.add(observedProperty);
+
+        observedProperty = new SsnObserf();
+        observedProperty.setType("vital:SysUpTime");
+        observedProperty.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "sysUptime");
+        observedProperties.add(observedProperty);
+
+        observedProperty = new SsnObserf();
+        observedProperty.setType("vital:PendingRequests");
+        observedProperty.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "pendingRequests");
+        observedProperties.add(observedProperty);
+
+        sensor.setSsnObserves(observedProperties);
+        
+        sensor.setStatus("vital:Running");
+
+        return sensor;
+    }
+
+    private Sensor createSensorFromStation(Station station, UriInfo uri) throws ParseException {
+    	SimpleDateFormat timestampDateFormat;
+    	Date now, timestamp = null;
+        String id = station.getId();
+        Sensor sensor = new Sensor();
+
+        sensor.setContext("http://vital-iot.eu/contexts/sensor.jsonld");
+        sensor.setName(station.getName());
         sensor.setType("vital:VitalSensor");
-        sensor.setDescription(currentSensor.getDescription());
-        sensor.setId(this.transfProt + this.symbolicUri + "/sensor/" + id);
+        sensor.setDescription(station.getExtra().getDescription());
+        sensor.setId(uri.getBaseUri() + "/sensor/" + id);
 
-        int status = currentSensor.getStatus();
-
-        if (status == 1) {
-            SimpleDateFormat timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            Date timestamp = null;
-        	String timestampS = currentSensor.getMeasureTime().toString();
-            try {
-                timestamp = timestampDateFormat.parse(timestampS);
-            } catch (ParseException e) {
-                this.logger.error("HiPPI - createSensorFromTraffic - ERROR PARSING DATE FROM HIREPLY TIMESTAMP");
-                throw new Exception("HiPPI - createSensorFromTraffic - ERROR PARSING DATE FROM HIREPLY TIMESTAMP");
-            }
-            Date now = new Date();
-            if(now.getTime() - timestamp.getTime() > 60 * 1000 * 60) { // If not updated for some time (1 hour)
-            	sensor.setStatus("vital:Unavailable");
-            }
-            else {
-            	sensor.setStatus("vital:Running");
-            }
-        } else if (status == 0) {
-            sensor.setStatus("vital:Unavailable");
+        timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        timestamp = timestampDateFormat.parse(station.getTimestamp());
+        now = new Date();
+        if (now.getTime() - timestamp.getTime() > 60 * 1000 * 60) {
+        	sensor.setStatus("vital:Unavailable");
         } else {
-            sensor.setStatus("");
+        	sensor.setStatus("vital:Running");
         }
 
         HasLastKnownLocation location = new HasLastKnownLocation();
         location.setType("geo:Point");
-        String[] splitted = currentSensor.getPhysicalLocation().split(";");
-        location.setGeoLat(Double.valueOf(splitted[1]));
-        location.setGeoLong(Double.valueOf(splitted[0]));
-
+        location.setGeoLat(station.getLatitude());
+        location.setGeoLong(station.getLongitude());
         sensor.setHasLastKnownLocation(location);
 
-        int dirCount = currentSensor.getDirectionCount();
-        List<SsnObserf> observedProperties = new ArrayList<>();
+        List<SsnObserf> observedProperties = new ArrayList<SsnObserf>();
 
-        if (dirCount == 1) {
-            //speed e color
-            SsnObserf speed = new SsnObserf();
-            speed.setType("vital:" + this.speedProp);
-            speed.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + this.speedProp);
-            SsnObserf color = new SsnObserf();
-            color.setType("vital:" + this.colorProp);
-            color.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + this.colorProp);
-            observedProperties.add(speed);
-            observedProperties.add(color);
-        }
-
-        if (dirCount == 2) {
-            //speed e color + reverse
-            SsnObserf speed = new SsnObserf();
-            speed.setType("vital:" + this.speedProp);
-            speed.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + this.speedProp);
-            SsnObserf color = new SsnObserf();
-            color.setType("vital:" + this.colorProp);
-            color.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" +colorProp);
-            observedProperties.add(speed);
-            observedProperties.add(color);
-            SsnObserf revspeed = new SsnObserf();
-            revspeed.setType("vital:" + this.reverseSpeedProp);
-            revspeed.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + this.reverseSpeedProp);
-            SsnObserf revcolor = new SsnObserf();
-            revcolor.setType("vital:" + this.reverseColorProp);
-            revcolor.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + this.reverseColorProp);
-            observedProperties.add(revspeed);
-            observedProperties.add(revcolor);
-        }
+        SsnObserf freeBikes = new SsnObserf();
+        freeBikes.setType("vital:AvailableBikes");
+        freeBikes.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "AvailableBikes".toLowerCase());
+        SsnObserf emptySlots = new SsnObserf();
+        emptySlots.setType("vital:EmptyDocks");
+        emptySlots.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "EmptyDocks".toLowerCase());
+        observedProperties.add(freeBikes);
+        observedProperties.add(emptySlots);
 
         sensor.setSsnObserves(observedProperties);
 
@@ -1138,78 +1078,18 @@ public class PPI {
         operation = new Operation();
         operation.setType("vital:GetSupportedPerformanceMetrics");
         operation.setHrestHasMethod("hrest:GET");
-        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "/system/performance");
+        operation.setHrestHasAddress(uri.getBaseUri() + "/system/performance");
         operations.add(operation);
         operation = new Operation();
         operation.setType("vital:GetPerformanceMetrics");
         operation.setHrestHasMethod("hrest:POST");
-        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "/system/performance");
+        operation.setHrestHasAddress(uri.getBaseUri() + "/system/performance");
         operations.add(operation);
         monitoringService.setOperations(operations);
 
         return monitoringService;
     }
 
-    private Sensor createMonitoringSensor() {
-        Sensor sensor = new Sensor();
-
-        String id = "monitoring";
-
-        sensor.setContext(contextsUri + "sensor.jsonld");
-        sensor.setName(id);
-        sensor.setType("vital:MonitoringSensor");
-        sensor.setDescription("HiReply Monitoring Sensor");
-        sensor.setId(this.transfProt + this.symbolicUri + "/sensor/" + id);
-
-        sensor.setStatus("vital:Running");
-
-        List<SsnObserf> observedProperties = new ArrayList<>();
-
-        SsnObserf observedProperty = new SsnObserf();
-        observedProperty.setType("vital:MemUsed");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + "usedMem");
-        observedProperties.add(observedProperty);
-
-        observedProperty = new SsnObserf();
-        observedProperty.setType("vital:MemAvailable");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + "availableMem");
-        observedProperties.add(observedProperty);
-
-        observedProperty = new SsnObserf();
-        observedProperty.setType("vital:DiskAvailable");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + "availableDisk");
-        observedProperties.add(observedProperty);
-
-        observedProperty = new SsnObserf();
-        observedProperty.setType("vital:SysLoad");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + "sysLoad");
-        observedProperties.add(observedProperty);
-
-        observedProperty = new SsnObserf();
-        observedProperty.setType("vital:ServedRequest");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" +id+ "/" + "servedRequests");
-        observedProperties.add(observedProperty);
-
-        observedProperty = new SsnObserf();
-        observedProperty.setType("vital:Errors");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + "errors");
-        observedProperties.add(observedProperty);
-
-        observedProperty = new SsnObserf();
-        observedProperty.setType("vital:SysUpTime");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + "sysUptime");
-        observedProperties.add(observedProperty);
-
-        observedProperty = new SsnObserf();
-        observedProperty.setType("vital:PendingRequests");
-        observedProperty.setId(this.transfProt + this.symbolicUri + "/sensor/" + id + "/" + "pendingRequests");
-        observedProperties.add(observedProperty);
-
-        sensor.setSsnObserves(observedProperties);
-
-        return sensor;
-    }
-    
     private SensorStatus createStatusMeasureFromSensor(ServiceList.TrafficSensor currentSensor, String property) throws Exception {
         SensorStatus m = new SensorStatus();
 

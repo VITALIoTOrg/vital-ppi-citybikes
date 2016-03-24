@@ -19,5 +19,6 @@
          "type":"openiot:Temperature",
          "id":"http://www.example.com/vital/sensor/123/temperature"
       }
-   ]
+   ],
+   "status": "vital:Running"
 }

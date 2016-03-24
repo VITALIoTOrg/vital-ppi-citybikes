@@ -151,6 +151,31 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.jsonschema2pojo</groupId>
+                <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+                <version>0.4.18</version>
+                <configuration>
+                    <sourceDirectory>${basedir}/src/main/JsonSchema</sourceDirectory>
+                    <useCommonsLang3>true</useCommonsLang3>
+                    <targetVersion>1.8</targetVersion>
+                    <includeDynamicAccessors>false</includeDynamicAccessors>
+                    <generateBuilders>true</generateBuilders>
+                    <includeHashcodeAndEquals>true</includeHashcodeAndEquals>
+                    <outputDirectory>${basedir}/src/main/java</outputDirectory>
+                    <sourceType>jsonschema</sourceType>
+                    <includeJsr303Annotations>true</includeJsr303Annotations>
+                    <annotationStyle>jackson2</annotationStyle>
+                    <targetPackage>eu.vital.reply.jsonpojos</targetPackage>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>${version.war.plugin}</version>
                 <configuration>

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,154 +19,153 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+
+/**
+ * Observation Request
+ * <p>
+ * 
+ * 
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "$schema",
-    "title",
-    "type",
-    "properties",
-    "required"
+    "sensor",
+    "property",
+    "from",
+    "to"
 })
 public class ObservationRequest {
 
-    @JsonProperty("$schema")
-    private String $schema;
-    @JsonProperty("title")
-    private String title;
-    @JsonProperty("type")
-    private String type;
-    @JsonProperty("properties")
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @JsonProperty("sensor")
+    @Size(min = 1)
     @Valid
-    private Properties properties;
-    @JsonProperty("required")
-    @Valid
-    private List<String> required = new ArrayList<String>();
+    @NotNull
+    private List<String> sensor = new ArrayList<String>();
+    /**
+     * 
+     * (Required)
+     * 
+     */
+    @JsonProperty("property")
+    @NotNull
+    private String property;
+    @JsonProperty("from")
+    private String from;
+    @JsonProperty("to")
+    private String to;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * 
+     * (Required)
+     * 
      * @return
-     *     The $schema
+     *     The sensor
      */
-    @JsonProperty("$schema")
-    public String get$schema() {
-        return $schema;
+    @JsonProperty("sensor")
+    public List<String> getSensor() {
+        return sensor;
     }
 
     /**
      * 
-     * @param $schema
-     *     The $schema
+     * (Required)
+     * 
+     * @param sensor
+     *     The sensor
      */
-    @JsonProperty("$schema")
-    public void set$schema(String $schema) {
-        this.$schema = $schema;
+    @JsonProperty("sensor")
+    public void setSensor(List<String> sensor) {
+        this.sensor = sensor;
     }
 
-    public ObservationRequest with$schema(String $schema) {
-        this.$schema = $schema;
+    public ObservationRequest withSensor(List<String> sensor) {
+        this.sensor = sensor;
+        return this;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     * @return
+     *     The property
+     */
+    @JsonProperty("property")
+    public String getProperty() {
+        return property;
+    }
+
+    /**
+     * 
+     * (Required)
+     * 
+     * @param property
+     *     The property
+     */
+    @JsonProperty("property")
+    public void setProperty(String property) {
+        this.property = property;
+    }
+
+    public ObservationRequest withProperty(String property) {
+        this.property = property;
         return this;
     }
 
     /**
      * 
      * @return
-     *     The title
+     *     The from
      */
-    @JsonProperty("title")
-    public String getTitle() {
-        return title;
+    @JsonProperty("from")
+    public String getFrom() {
+        return from;
     }
 
     /**
      * 
-     * @param title
-     *     The title
+     * @param from
+     *     The from
      */
-    @JsonProperty("title")
-    public void setTitle(String title) {
-        this.title = title;
+    @JsonProperty("from")
+    public void setFrom(String from) {
+        this.from = from;
     }
 
-    public ObservationRequest withTitle(String title) {
-        this.title = title;
+    public ObservationRequest withFrom(String from) {
+        this.from = from;
         return this;
     }
 
     /**
      * 
      * @return
-     *     The type
+     *     The to
      */
-    @JsonProperty("type")
-    public String getType() {
-        return type;
+    @JsonProperty("to")
+    public String getTo() {
+        return to;
     }
 
     /**
      * 
-     * @param type
-     *     The type
+     * @param to
+     *     The to
      */
-    @JsonProperty("type")
-    public void setType(String type) {
-        this.type = type;
+    @JsonProperty("to")
+    public void setTo(String to) {
+        this.to = to;
     }
 
-    public ObservationRequest withType(String type) {
-        this.type = type;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The properties
-     */
-    @JsonProperty("properties")
-    public Properties getProperties() {
-        return properties;
-    }
-
-    /**
-     * 
-     * @param properties
-     *     The properties
-     */
-    @JsonProperty("properties")
-    public void setProperties(Properties properties) {
-        this.properties = properties;
-    }
-
-    public ObservationRequest withProperties(Properties properties) {
-        this.properties = properties;
-        return this;
-    }
-
-    /**
-     * 
-     * @return
-     *     The required
-     */
-    @JsonProperty("required")
-    public List<String> getRequired() {
-        return required;
-    }
-
-    /**
-     * 
-     * @param required
-     *     The required
-     */
-    @JsonProperty("required")
-    public void setRequired(List<String> required) {
-        this.required = required;
-    }
-
-    public ObservationRequest withRequired(List<String> required) {
-        this.required = required;
+    public ObservationRequest withTo(String to) {
+        this.to = to;
         return this;
     }
 
@@ -190,7 +191,7 @@ public class ObservationRequest {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append($schema).append(title).append(type).append(properties).append(required).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(sensor).append(property).append(from).append(to).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -202,7 +203,7 @@ public class ObservationRequest {
             return false;
         }
         ObservationRequest rhs = ((ObservationRequest) other);
-        return new EqualsBuilder().append($schema, rhs.$schema).append(title, rhs.title).append(type, rhs.type).append(properties, rhs.properties).append(required, rhs.required).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(sensor, rhs.sensor).append(property, rhs.property).append(from, rhs.from).append(to, rhs.to).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }
