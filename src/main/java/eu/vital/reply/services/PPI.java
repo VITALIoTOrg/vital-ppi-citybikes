@@ -2,12 +2,15 @@ package eu.vital.reply.services;
 
 import eu.vital.reply.clients.IoTSystemClient;
 import eu.vital.reply.jsonpojos.EmptyRequest;
+import eu.vital.reply.jsonpojos.IdTypeRequest;
 import eu.vital.reply.jsonpojos.IoTSystem;
 import eu.vital.reply.jsonpojos.Metric;
 import eu.vital.reply.jsonpojos.MetricRequest;
 import eu.vital.reply.jsonpojos.Network;
+import eu.vital.reply.jsonpojos.Operation;
 import eu.vital.reply.jsonpojos.PerformanceMetric;
 import eu.vital.reply.jsonpojos.PerformanceMetricsMetadata;
+import eu.vital.reply.jsonpojos.Service;
 import eu.vital.reply.jsonpojos.SsnHasValue_;
 import eu.vital.reply.jsonpojos.SsnObservationProperty_;
 import eu.vital.reply.jsonpojos.SsnObservationResultTime_;
@@ -413,126 +416,60 @@ public class PPI {
 		}
     }
 
-    /**
-     * Method that returns the metadata about the requested service(s). This method is optional.
-     * @param bodyRequest <br>
-     *            JSON-LD String with the body request <br>
-     *            { <br>
-     *              "id": <br>
-     *              [ <br>
-     *                  "http://example.com/service/1" <br>
-     *              ], <br>
-     *              "type": <br>
-     *              [ <br>
-     *                  "http://vital-iot.eu/ontology/ns/MonitoringService" <br>
-     *              ] <br>
-     *            } <br>
-     * If the id and type fields are omitted, all the services are requested <br>
-     * @return Returns a serialized String with the list of the requested services. <br>
-     */
     @Path("/service/metadata")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String getServiceMetadata(String bodyRequest) throws Exception {
-
-        int i;
+    public Response getServiceMetadata(String bodyRequest, @Context UriInfo uri) {
         IdTypeRequest serviceRequest;
+        Service tmpService;
+        List<Service> services;
 
         try {
-            serviceRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
+        	serviceRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
         } catch (IOException e) {
-            this.logger.error("GET SERVICE METADATA - IOException parsing the json request");
-            return "{\n" +
-                    "\"error\": \"Malformed request body\"\n"+
-                    "}";
+        	this.logger.error("[/service/metadata] Error parsing request");
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
+        
+        services = new ArrayList<Service>();
 
-        List<String> requestedService;
-        List<String> requestedType;
-
-        try {
-            requestedService = serviceRequest.getId();
-            requestedType = serviceRequest.getType();
-        } catch (NullPointerException e) {
-            this.logger.error("/service/metadata IO Exception - Requested Sensor");
-            throw new Exception("/service/metadata IO Exception - Requested Sensor");
-        }
-
-        List<Service> services = new ArrayList<>(); // output list
-
-        if ((requestedService.size() == 0) && (requestedType.size() == 0)) {
-            // then all the services must be returned
-            services.add(createObservationService());
-            services.add(createMonitoringService());
-            services.add(createConfigurationService());
+        if ((serviceRequest.getId().size() == 0) && (serviceRequest.getType().size() == 0)) {
+            services.add(createObservationService(uri));
+            services.add(createMonitoringService(uri));
         } else {
-            String currentType;
-            Service tmpService;
-            for (i = 0; i < requestedType.size(); i++) {
-                currentType = requestedType.get(i).replaceAll("http://" + this.ontBaseUri, "");
-                if (currentType.contains("ObservationService")) {
-                    tmpService = this.createObservationService();
-                    if(!services.contains(tmpService)) {
-                        services.add(tmpService);
-                    }
+            for (String type : serviceRequest.getType()) {
+                if (type.contains("ObservationService")) {
+                	services.add(createObservationService(uri));
                 }
-                else {
-                    if (currentType.contains("MonitoringService")) {
-                        tmpService = this.createMonitoringService();
-                        if (!services.contains(tmpService)) {
-                            services.add(tmpService);
-                        }
-                    }
-                    else {
-                        if (currentType.contains("ConfigurationService")) {
-                            tmpService = this.createConfigurationService();
-                            if (!services.contains(tmpService)) {
-                                services.add(tmpService);
-                            }
-                        }
-                    }
+                else if (type.contains("MonitoringService")) {
+                    services.add(createMonitoringService(uri));
                 }
             }
-            // return only some selected services
-            String currentId;
-            for (i = 0; i < requestedService.size(); i++) {
-                currentId = requestedService.get(i).replaceAll(this.transfProt + this.symbolicUri + "/service/", "");
-                if(currentId.contains("observation")) {
-                    tmpService = this.createObservationService();
+            for (String id : serviceRequest.getId()) {
+                if(id.contains("observation")) {
+                    tmpService = createObservationService(uri);
                     if(!services.contains(tmpService)) {
                         services.add(tmpService);
                     }
                 }
-                else {
-                    if(currentId.contains("monitoring")) {
-                        tmpService = this.createMonitoringService();
-                        if(!services.contains(tmpService)) {
-                            services.add(tmpService);
-                        }
-                    }
-                    else {
-                        if(currentId.contains("configuration")) {
-                            tmpService = this.createConfigurationService();
-                            if(!services.contains(tmpService)) {
-                                services.add(tmpService);
-                            }
-                        }
+                else if(id.contains("monitoring")) {
+                    tmpService = createMonitoringService(uri);
+                    if(!services.contains(tmpService)) {
+                        services.add(tmpService);
                     }
                 }
             }
         }
-
-        String out;
 
         try {
-            out = JsonUtils.serializeJson(services);
-        } catch (IOException e) {
-            this.logger.error("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
-            throw new Exception("getSensorMetadata - Deserialize JSON UTILS IO EXCEPTION");
-        }
-
-        return out;
+			return Response.status(Response.Status.OK)
+				.entity(JsonUtils.serializeJson(services))
+				.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
     }
 
     /**
@@ -1160,58 +1097,43 @@ public class PPI {
         return sensor;
     }
 
-    private Service createObservationService() {
+    private Service createObservationService(UriInfo uri) {
+    	Operation operation;
+    	List<Operation> operations;
         Service observationService = new Service();
-        observationService.setContext(contextsUri + "service.jsonld");
-        observationService.setId(this.transfProt + this.symbolicUri + "/service/observation");
+        
+        observationService.setContext("http://vital-iot.eu/contexts/service.jsonld");
+        observationService.setId(uri.getBaseUri() + "/service/observation");
         observationService.setType("vital:ObservationService");
-        List<Operation> operations = new ArrayList<>();
-        Operation operation = new Operation();
+        operations = new ArrayList<Operation>();
+        operation = new Operation();
         operation.setType("vital:GetObservations");
         operation.setHrestHasMethod("hrest:POST");
-        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "/sensor/observation");
+        operation.setHrestHasAddress(uri.getBaseUri() + "/sensor/observation");
         operations.add(operation);
         observationService.setOperations(operations);
 
         return observationService;
     }
 
-    private Service createConfigurationService() {
-        Service configurationService = new Service();
-        configurationService.setContext(contextsUri + "service.jsonld");
-        configurationService.setId(this.transfProt + this.symbolicUri + "/service/configuration");
-        configurationService.setType("vital:ConfigurationService");
-        List<Operation> operations = new ArrayList<>();
-        Operation operation = new Operation();
-        operation.setType("vital:GetConfiguration");
-        operation.setHrestHasMethod("hrest:GET");
-        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "/configuration");
-        operations.add(operation);
-        operation = new Operation();
-        operation.setType("vital:SetConfiguration");
-        operation.setHrestHasMethod("hrest:POST");
-        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "/configuration");
-        operations.add(operation);
-        configurationService.setOperations(operations);
-
-        return configurationService;
-    }
-
-    private Service createMonitoringService() {
+    private Service createMonitoringService(UriInfo uri) {
+    	Operation operation;
+    	List<Operation> operations;
         Service monitoringService = new Service();
-        monitoringService.setContext(contextsUri + "service.jsonld");
-        monitoringService.setId(this.transfProt + this.symbolicUri + "/service/monitoring");
+        
+        monitoringService.setContext("http://vital-iot.eu/contexts/service.jsonld");
+        monitoringService.setId(uri.getBaseUri() + "/service/monitoring");
         monitoringService.setType("vital:MonitoringService");
-        List<Operation> operations = new ArrayList<>();
-        Operation operation = new Operation();
+        operations = new ArrayList<Operation>();
+        operation = new Operation();
         operation.setType("vital:GetSystemStatus");
         operation.setHrestHasMethod("hrest:POST");
-        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "/system/status");
+        operation.setHrestHasAddress(uri.getBaseUri() + "/system/status");
         operations.add(operation);
         operation = new Operation();
         operation.setType("vital:GetSensorStatus");
         operation.setHrestHasMethod("hrest:POST");
-        operation.setHrestHasAddress(this.transfProt + this.symbolicUri + "/sensor/status");
+        operation.setHrestHasAddress(uri.getBaseUri() + "/sensor/status");
         operations.add(operation);
         operation = new Operation();
         operation.setType("vital:GetSupportedPerformanceMetrics");
