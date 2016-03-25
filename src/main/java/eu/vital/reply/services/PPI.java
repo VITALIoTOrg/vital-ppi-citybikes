@@ -866,7 +866,7 @@ public class PPI {
         sensor.setDescription(station.getExtra().getDescription());
         sensor.setId(uri.getBaseUri() + networkId + "/sensor/" + id);
 
-        timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         timestamp = timestampDateFormat.parse(station.getTimestamp());
         now = new Date();
         if (now.getTime() - timestamp.getTime() > 60 * 1000 * 60) {
@@ -989,7 +989,7 @@ public class PPI {
         SensorStatus m = new SensorStatus();
 
         printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-        timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         now = new Date();
 
         m.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
@@ -1028,7 +1028,7 @@ public class PPI {
         Date timestamp = null;
 
         printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-        timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
         timestamp = timestampDateFormat.parse(station.getTimestamp());
 
