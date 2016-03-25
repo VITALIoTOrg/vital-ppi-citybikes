@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 
 /*
  * PPI Class that provides all the REST API that a system attached to VITAL will expose
@@ -79,6 +80,8 @@ public class PPI {
     private static Date startupTime = new Date();
 
     public PPI() {
+    	TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    	
         client = new IoTSystemClient();
         logger = LogManager.getLogger(PPI.class);
 
