@@ -1060,10 +1060,10 @@ public class PPI {
         SsnHasValue ssnHasValue = new SsnHasValue();
         ssnHasValue.setType("ssn:ObservationValue");
 
-        if (property.equals("AvailableBikes")) {
+        if (property.contains("AvailableBikes")) {
             ssnHasValue.setValue(station.getFreeBikes());
             ssnHasValue.setQudtUnit("qudt:Number");
-        } else if (property.equals("EmptyDocks")) {
+        } else if (property.contains("EmptyDocks")) {
             ssnHasValue.setValue(station.getEmptySlots());
             ssnHasValue.setQudtUnit("qudt:Number");
         } else {
