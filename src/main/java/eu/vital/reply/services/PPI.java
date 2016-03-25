@@ -132,7 +132,7 @@ public class PPI {
         sensors = new ArrayList<String>();
 
         iotSystem.setContext("http://vital-iot.eu/contexts/system.jsonld");
-        iotSystem.setId(uri.getBaseUri().toString());
+        iotSystem.setId(uri.getBaseUri() + networkId);
         iotSystem.setType("vital:VitalSystem");
         iotSystem.setName(network.getName());
         iotSystem.setDescription("CityBikes " + network.getName() + " network operated by " + network.getCompany());
@@ -141,13 +141,13 @@ public class PPI {
 
         List<Station> stations = network.getStations();
         for (i = 0; i < stations.size(); i++) {
-            sensors.add(uri.getBaseUri() + "/sensor/" + stations.get(i).getId());
+            sensors.add(uri.getBaseUri() + networkId + "/sensor/" + stations.get(i).getId());
         }
-        sensors.add(uri.getBaseUri() + "/sensor/monitoring");
+        sensors.add(uri.getBaseUri() + networkId + "/sensor/monitoring");
         iotSystem.setSensors(sensors);
 
-        services.add(uri.getBaseUri() + "/service/monitoring");
-        services.add(uri.getBaseUri() + "/service/observation");
+        services.add(uri.getBaseUri() + networkId + "/service/monitoring");
+        services.add(uri.getBaseUri() + networkId + "/service/observation");
         iotSystem.setServices(services);
 
         try {
@@ -173,42 +173,42 @@ public class PPI {
 
         metric = new Metric();
         metric.setType(ontologyPrefix + "UsedMem");
-        metric.setId(uri.getBaseUri() + "/sensor/monitoring/usedMem");
+        metric.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/usedMem");
         list.add(metric);
 
         metric = new Metric();
         metric.setType(ontologyPrefix + "AvailableMem");
-        metric.setId(uri.getBaseUri() + "/sensor/monitoring/availableMem");
+        metric.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/availableMem");
         list.add(metric);
 
         metric = new Metric();
         metric.setType(ontologyPrefix + "AvailableDisk");
-        metric.setId(uri.getBaseUri() + "/sensor/monitoring/availableDisk");
+        metric.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/availableDisk");
         list.add(metric);
 
         metric = new Metric();
         metric.setType(ontologyPrefix + "SysLoad");
-        metric.setId(uri.getBaseUri() + "/sensor/monitoring/sysLoad");
+        metric.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/sysLoad");
         list.add(metric);
 
         metric = new Metric();
         metric.setType(ontologyPrefix + "ServedRequests");
-        metric.setId(uri.getBaseUri() + "/sensor/monitoring/servedRequests");
+        metric.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/servedRequests");
         list.add(metric);
 
         metric = new Metric();
         metric.setType(ontologyPrefix + "Errors");
-        metric.setId(uri.getBaseUri() + "/sensor/monitoring/errors");
+        metric.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/errors");
         list.add(metric);
 
         metric = new Metric();
         metric.setType(ontologyPrefix + "SysUptime");
-        metric.setId(uri.getBaseUri() + "/sensor/monitoring/sysUptime");
+        metric.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/sysUptime");
         list.add(metric);
 
         metric = new Metric();
         metric.setType(ontologyPrefix + "PendingRequests");
-        metric.setId(uri.getBaseUri() + "/sensor/monitoring/pendingRequests");
+        metric.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/pendingRequests");
         list.add(metric);
 
         performanceMetricsMetadata.setMetrics(list);
@@ -291,7 +291,7 @@ public class PPI {
 
             metric = new PerformanceMetric();
             metric.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
-            metric.setId(uri.getBaseUri() + "/sensor/monitoring/observation/" + Long.toHexString(date.getTime()));
+            metric.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/observation/" + Long.toHexString(date.getTime()));
             metric.setType("ssn:Observation");
 
             SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -311,7 +311,7 @@ public class PPI {
             ssnObservationResult_.setSsnHasValue(ssnHasValue_);
             metric.setSsnObservationResult(ssnObservationResult_);
 
-            metric.setSsnFeatureOfInterest(uri.getBaseUri().toString());
+            metric.setSsnFeatureOfInterest(uri.getBaseUri() + networkId);
             metrics.add(metric);
         }
 
@@ -360,7 +360,7 @@ public class PPI {
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         lifecycleInformation.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
-        lifecycleInformation.setId(uri.getBaseUri() + "/sensor/monitoring/observation/" + Long.toHexString(now.getTime()));
+        lifecycleInformation.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/observation/" + Long.toHexString(now.getTime()));
         lifecycleInformation.setType("ssn:Observation");
 
         SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -379,7 +379,7 @@ public class PPI {
         ssnObservationResult_.setSsnHasValue(ssnHasValue_);
         lifecycleInformation.setSsnObservationResult(ssnObservationResult_);
 
-        lifecycleInformation.setSsnFeatureOfInterest(uri.getBaseUri().toString());
+        lifecycleInformation.setSsnFeatureOfInterest(uri.getBaseUri() + networkId);
 
         try {
 			return Response.status(Response.Status.OK)
@@ -727,7 +727,7 @@ public class PPI {
 
                 metric = new PerformanceMetric();
                 metric.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
-                metric.setId(uri.getBaseUri() + "/sensor/monitoring/observation/" + Long.toHexString(date.getTime()));
+                metric.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/observation/" + Long.toHexString(date.getTime()));
                 metric.setType("ssn:Observation");
 
                 SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
@@ -747,7 +747,7 @@ public class PPI {
                 ssnObservationResult_.setSsnHasValue(ssnHasValue_);
                 metric.setSsnObservationResult(ssnObservationResult_);
 
-                metric.setSsnFeatureOfInterest(uri.getBaseUri().toString());
+                metric.setSsnFeatureOfInterest(uri.getBaseUri() + networkId);
                 metrics.add(metric);
 
                 try {
@@ -801,7 +801,7 @@ public class PPI {
         sensor.setName(id);
         sensor.setType("vital:MonitoringSensor");
         sensor.setDescription("CityBikes monitoring sensor");
-        sensor.setId(uri.getBaseUri() + "/sensor/" + id);
+        sensor.setId(uri.getBaseUri() + networkId + "/sensor/" + id);
 
         sensor.setStatus("vital:Running");
 
@@ -809,42 +809,42 @@ public class PPI {
 
         SsnObserf observedProperty = new SsnObserf();
         observedProperty.setType("vital:MemUsed");
-        observedProperty.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "usedMem");
+        observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "usedMem");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:MemAvailable");
-        observedProperty.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "availableMem");
+        observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "availableMem");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:DiskAvailable");
-        observedProperty.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "availableDisk");
+        observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "availableDisk");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:SysLoad");
-        observedProperty.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "sysLoad");
+        observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "sysLoad");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:ServedRequest");
-        observedProperty.setId(uri.getBaseUri() + "/sensor/" +id+ "/" + "servedRequests");
+        observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" +id+ "/" + "servedRequests");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:Errors");
-        observedProperty.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "errors");
+        observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "errors");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:SysUpTime");
-        observedProperty.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "sysUptime");
+        observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "sysUptime");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:PendingRequests");
-        observedProperty.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "pendingRequests");
+        observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "pendingRequests");
         observedProperties.add(observedProperty);
 
         sensor.setSsnObserves(observedProperties);
@@ -864,7 +864,7 @@ public class PPI {
         sensor.setName(station.getName());
         sensor.setType("vital:VitalSensor");
         sensor.setDescription(station.getExtra().getDescription());
-        sensor.setId(uri.getBaseUri() + "/sensor/" + id);
+        sensor.setId(uri.getBaseUri() + networkId + "/sensor/" + id);
 
         timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         timestamp = timestampDateFormat.parse(station.getTimestamp());
@@ -885,10 +885,10 @@ public class PPI {
 
         SsnObserf freeBikes = new SsnObserf();
         freeBikes.setType("vital:AvailableBikes");
-        freeBikes.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "AvailableBikes".toLowerCase());
+        freeBikes.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "AvailableBikes".toLowerCase());
         SsnObserf emptySlots = new SsnObserf();
         emptySlots.setType("vital:EmptyDocks");
-        emptySlots.setId(uri.getBaseUri() + "/sensor/" + id + "/" + "EmptyDocks".toLowerCase());
+        emptySlots.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "EmptyDocks".toLowerCase());
         observedProperties.add(freeBikes);
         observedProperties.add(emptySlots);
 
@@ -903,13 +903,13 @@ public class PPI {
         Service observationService = new Service();
         
         observationService.setContext("http://vital-iot.eu/contexts/service.jsonld");
-        observationService.setId(uri.getBaseUri() + "/service/observation");
+        observationService.setId(uri.getBaseUri() + networkId + "/service/observation");
         observationService.setType("vital:ObservationService");
         operations = new ArrayList<Operation>();
         operation = new Operation();
         operation.setType("vital:GetObservations");
         operation.setHrestHasMethod("hrest:POST");
-        operation.setHrestHasAddress(uri.getBaseUri() + "/sensor/observation");
+        operation.setHrestHasAddress(uri.getBaseUri() + networkId + "/sensor/observation");
         operations.add(operation);
         observationService.setOperations(operations);
 
@@ -922,28 +922,28 @@ public class PPI {
         Service monitoringService = new Service();
         
         monitoringService.setContext("http://vital-iot.eu/contexts/service.jsonld");
-        monitoringService.setId(uri.getBaseUri() + "/service/monitoring");
+        monitoringService.setId(uri.getBaseUri() + networkId + "/service/monitoring");
         monitoringService.setType("vital:MonitoringService");
         operations = new ArrayList<Operation>();
         operation = new Operation();
         operation.setType("vital:GetSystemStatus");
         operation.setHrestHasMethod("hrest:POST");
-        operation.setHrestHasAddress(uri.getBaseUri() + "/system/status");
+        operation.setHrestHasAddress(uri.getBaseUri() + networkId + "/system/status");
         operations.add(operation);
         operation = new Operation();
         operation.setType("vital:GetSensorStatus");
         operation.setHrestHasMethod("hrest:POST");
-        operation.setHrestHasAddress(uri.getBaseUri() + "/sensor/status");
+        operation.setHrestHasAddress(uri.getBaseUri() + networkId + "/sensor/status");
         operations.add(operation);
         operation = new Operation();
         operation.setType("vital:GetSupportedPerformanceMetrics");
         operation.setHrestHasMethod("hrest:GET");
-        operation.setHrestHasAddress(uri.getBaseUri() + "/system/performance");
+        operation.setHrestHasAddress(uri.getBaseUri() + networkId + "/system/performance");
         operations.add(operation);
         operation = new Operation();
         operation.setType("vital:GetPerformanceMetrics");
         operation.setHrestHasMethod("hrest:POST");
-        operation.setHrestHasAddress(uri.getBaseUri() + "/system/performance");
+        operation.setHrestHasAddress(uri.getBaseUri() + networkId + "/system/performance");
         operations.add(operation);
         monitoringService.setOperations(operations);
 
@@ -959,7 +959,7 @@ public class PPI {
         now = new Date();
 
         m.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
-    	m.setId(uri.getBaseUri() + "/sensor/monitoring/observation/" + Long.toHexString(now.getTime()));
+    	m.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/observation/" + Long.toHexString(now.getTime()));
         m.setType("ssn:Observation");
 
         SsnObservationProperty__ ssnObservationProperty = new SsnObservationProperty__();
@@ -968,7 +968,7 @@ public class PPI {
 
         SsnObservationResultTime__ ssnObservationResultTime = new SsnObservationResultTime__();
     	ssnObservationResultTime.setTimeInXSDDateTime(printedDateFormat.format(now));
-    	m.setAdditionalProperty("ssn:featureOfInterest", uri.getBaseUri() + "/sensor/monitoring");
+    	m.setAdditionalProperty("ssn:featureOfInterest", uri.getBaseUri() + networkId + "/sensor/monitoring");
         m.setSsnObservationResultTime(ssnObservationResultTime);
 
         SsnObservationResult__ ssnObservationResult = new SsnObservationResult__();
@@ -993,7 +993,7 @@ public class PPI {
         now = new Date();
 
         m.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
-    	m.setId(uri.getBaseUri() + "/sensor/monitoring/observation/" + Long.toHexString(now.getTime()));
+    	m.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/observation/" + Long.toHexString(now.getTime()));
         m.setType("ssn:Observation");
 
         SsnObservationProperty__ ssnObservationProperty = new SsnObservationProperty__();
@@ -1002,7 +1002,7 @@ public class PPI {
 
         SsnObservationResultTime__ ssnObservationResultTime = new SsnObservationResultTime__();
     	ssnObservationResultTime.setTimeInXSDDateTime(printedDateFormat.format(now));
-    	m.setAdditionalProperty("ssn:featureOfInterest", uri.getBaseUri() + "/sensor/" + station.getId());
+    	m.setAdditionalProperty("ssn:featureOfInterest", uri.getBaseUri() + networkId + "/sensor/" + station.getId());
         m.setSsnObservationResultTime(ssnObservationResultTime);
 
         SsnObservationResult__ ssnObservationResult = new SsnObservationResult__();
@@ -1034,9 +1034,9 @@ public class PPI {
 
     	m = new Measure();
         m.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
-    	m.setId(uri.getBaseUri() + "/sensor/" + station.getId() + "/observation/" + Long.toHexString(timestamp.getTime()));
+    	m.setId(uri.getBaseUri() + networkId + "/sensor/" + station.getId() + "/observation/" + Long.toHexString(timestamp.getTime()));
         m.setType("ssn:Observation");
-        m.setSsnObservedBy(uri.getBaseUri() + "/sensor/" + station.getId());
+        m.setSsnObservedBy(uri.getBaseUri() + networkId + "/sensor/" + station.getId());
 
         SsnObservationProperty ssnObservationProperty = new SsnObservationProperty();
         ssnObservationProperty.setType("vital:" + property);
