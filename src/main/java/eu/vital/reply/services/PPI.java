@@ -56,6 +56,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 
 /*
  * PPI Class that provides all the REST API that a system attached to VITAL will expose
@@ -237,6 +238,7 @@ public class PPI {
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
         String type, unit, value;
 
+        printedDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         try {
         	requestedMetrics = ((MetricRequest) JsonUtils.deserializeJson(bodyRequest, MetricRequest.class)).getMetric();
         } catch (IOException e) {
@@ -359,6 +361,7 @@ public class PPI {
 
         now = DateUTC.GetUTCdatetimeAsDate();
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+        printedDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         lifecycleInformation.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
         lifecycleInformation.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/observation/" + Long.toHexString(now.getTime()));
@@ -683,6 +686,7 @@ public class PPI {
                 Date date = DateUTC.GetUTCdatetimeAsDate();
                 Runtime runtime = Runtime.getRuntime();
                 SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+                printedDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
                 String type, unit, value;
                 if (observationRequest.getProperty().contains("UsedMem")) {
                 	type = "vital:UsedMem";
@@ -868,6 +872,7 @@ public class PPI {
         sensor.setId(uri.getBaseUri() + networkId + "/sensor/" + id);
 
         timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        timestampDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         timestamp = timestampDateFormat.parse(station.getTimestamp());
         now = DateUTC.GetUTCdatetimeAsDate();
         if (now.getTime() - timestamp.getTime() > 60 * 1000 * 60) {
@@ -957,6 +962,7 @@ public class PPI {
         SensorStatus m = new SensorStatus();
 
         printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+        printedDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         now = DateUTC.GetUTCdatetimeAsDate();
 
         m.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
@@ -990,7 +996,9 @@ public class PPI {
         SensorStatus m = new SensorStatus();
 
         printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+        printedDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        timestampDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         now = DateUTC.GetUTCdatetimeAsDate();
 
         m.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
@@ -1029,7 +1037,9 @@ public class PPI {
         Date timestamp = null;
 
         printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+        printedDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        timestampDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         timestamp = timestampDateFormat.parse(station.getTimestamp());
 
