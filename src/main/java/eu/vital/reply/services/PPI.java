@@ -31,7 +31,6 @@ import eu.vital.reply.jsonpojos.SsnObservationResultTime__;
 import eu.vital.reply.jsonpojos.SsnObservationResult_;
 import eu.vital.reply.jsonpojos.SsnObservationResult__;
 import eu.vital.reply.jsonpojos.Station;
-import eu.vital.reply.utils.DateUTC;
 import eu.vital.reply.utils.JsonUtils;
 import eu.vital.reply.utils.StatCounter;
 import org.apache.logging.log4j.LogManager;
@@ -77,7 +76,7 @@ public class PPI {
     // To be able to return network data if CityBikes is temporarily unavailable
     private static HashMap<String, Network> networkCache;
     
-    private static Date startupTime = DateUTC.GetUTCdatetimeAsDate();
+    private static Date startupTime = new Date();
 
     public PPI() {
         client = new IoTSystemClient();
@@ -88,7 +87,7 @@ public class PPI {
         }
 
         if (startupTime == null) {
-        	startupTime = DateUTC.GetUTCdatetimeAsDate();
+        	startupTime = new Date();
         }
     }
 
@@ -244,7 +243,7 @@ public class PPI {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        date = DateUTC.GetUTCdatetimeAsDate();
+        date = new Date();
         runtime = Runtime.getRuntime();
         metrics = new ArrayList<PerformanceMetric>();
         for (String m : requestedMetrics) {
@@ -357,7 +356,7 @@ public class PPI {
 			ssnHasValue_.setValue("vital:Running");
 		}
 
-        now = DateUTC.GetUTCdatetimeAsDate();
+        now = new Date();
         SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
         lifecycleInformation.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
@@ -680,7 +679,7 @@ public class PPI {
             if (id.contains("monitoring")) {
                 // Monitoring sensor
                 PerformanceMetric metric;
-                Date date = DateUTC.GetUTCdatetimeAsDate();
+                Date date = new Date();
                 Runtime runtime = Runtime.getRuntime();
                 SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
                 String type, unit, value;
@@ -869,7 +868,7 @@ public class PPI {
 
         timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         timestamp = timestampDateFormat.parse(station.getTimestamp());
-        now = DateUTC.GetUTCdatetimeAsDate();
+        now = new Date();
         if (now.getTime() - timestamp.getTime() > 60 * 1000 * 60) {
         	sensor.setStatus("vital:Unavailable");
         } else {
@@ -957,7 +956,7 @@ public class PPI {
         SensorStatus m = new SensorStatus();
 
         printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-        now = DateUTC.GetUTCdatetimeAsDate();
+        now = new Date();
 
         m.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
     	m.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/observation/" + Long.toHexString(now.getTime()));
@@ -991,7 +990,7 @@ public class PPI {
 
         printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
         timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        now = DateUTC.GetUTCdatetimeAsDate();
+        now = new Date();
 
         m.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
     	m.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/observation/" + Long.toHexString(now.getTime()));
