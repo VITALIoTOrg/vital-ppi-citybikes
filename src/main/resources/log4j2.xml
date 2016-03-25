@@ -1,45 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE project>
 <Configuration status="INFO">
-
     <Appenders>
-
-        <RollingFile name="file_all" fileName="logs/ALL.log" filePattern="logs/ALL-%d{yyyy-MM-dd}-%i.log">
-            <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n</Pattern>
-            </PatternLayout>
-            <Policies>
-            	<OnStartupTriggeringPolicy />
-                <SizeBasedTriggeringPolicy size="75 MB" />
-                <TimeBasedTriggeringPolicy />
-            </Policies>
-            <DefaultRolloverStrategy max="5" />
-        </RollingFile>
-
-        <RollingFile name="file_error" fileName="logs/ERROR.log" filePattern="logs/ERROR-%d{yyyy-MM-dd}-%i.log">
-            <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n</Pattern>
-            </PatternLayout>
-            <Policies>
-            	<OnStartupTriggeringPolicy />
-                <SizeBasedTriggeringPolicy size="75 MB" />
-                <TimeBasedTriggeringPolicy />
-            </Policies>
-            <DefaultRolloverStrategy max="5" />
-        </RollingFile>
-
         <Console name="STDOUT" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
-
     </Appenders>
-
     <Loggers>
         <Root level="trace">
-            <!-- <AppenderRef ref="file_all" level="INFO"/> -->
-            <AppenderRef ref="file_error" level="ERROR"/>
-            <!-- <AppenderRef ref="STDOUT" level="INFO"/> --> <!-- I think stdout goes into wildfly logs, duplicate is not a great idea -->
+            <AppenderRef ref="STDOUT" level="INFO"/>
         </Root>
     </Loggers>
-
 </Configuration>
