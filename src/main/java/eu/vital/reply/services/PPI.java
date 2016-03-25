@@ -72,7 +72,6 @@ public class PPI {
 
     // IoT system data
     private static final String apiBasePath = "http://api.citybik.es/v2/networks";
-    private static final String networkId = "to-bike";
 
     // To be able to return network data if CityBikes is temporarily unavailable
     private static HashMap<String, Network> networkCache;
@@ -94,11 +93,11 @@ public class PPI {
         }
     }
 
-    @Path("/metadata")
+    @Path("/{networkId}/metadata")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMetadata(String bodyRequest, @Context UriInfo uri) {
+    public Response getMetadata(@PathParam("networkId") String networkId, String bodyRequest, @Context UriInfo uri) {
         int i;
         Network network;
         IoTSystem iotSystem;
@@ -163,10 +162,10 @@ public class PPI {
 		}
     }
 
-    @Path("/system/performance")
+    @Path("/{networkId}/system/performance")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSupportedPerformanceMetrics(@Context UriInfo uri) {
+    public Response getSupportedPerformanceMetrics(@PathParam("networkId") String networkId, @Context UriInfo uri) {
     	PerformanceMetricsMetadata performanceMetricsMetadata;
         List<Metric> list;
         Metric metric;
@@ -226,11 +225,11 @@ public class PPI {
 		}
     }
 
-    @Path("/system/performance")
+    @Path("/{networkId}/system/performance")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPerformanceMetrics(String bodyRequest, @Context UriInfo uri) {
+    public Response getPerformanceMetrics(@PathParam("networkId") String networkId, String bodyRequest, @Context UriInfo uri) {
         List<String> requestedMetrics;
         List<PerformanceMetric> metrics;
         PerformanceMetric metric;
@@ -328,10 +327,10 @@ public class PPI {
 		}
     }
 
-    @Path("/system/status")
+    @Path("/{networkId}/system/status")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSystemStatus(@Context UriInfo uri) {
+    public Response getSystemStatus(@PathParam("networkId") String networkId, @Context UriInfo uri) {
     	Date now;
         Network network;
         SsnHasValue_ ssnHasValue_;
@@ -394,11 +393,11 @@ public class PPI {
 		}
     }
 
-    @Path("/service/metadata")
+    @Path("/{networkId}/service/metadata")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getServiceMetadata(String bodyRequest, @Context UriInfo uri) {
+    public Response getServiceMetadata(@PathParam("networkId") String networkId, String bodyRequest, @Context UriInfo uri) {
         IdTypeRequest serviceRequest;
         Service tmpService;
         List<Service> services;
@@ -413,26 +412,26 @@ public class PPI {
         services = new ArrayList<Service>();
 
         if ((serviceRequest.getId().size() == 0) && (serviceRequest.getType().size() == 0)) {
-            services.add(createObservationService(uri));
-            services.add(createMonitoringService(uri));
+            services.add(createObservationService(networkId, uri));
+            services.add(createMonitoringService(networkId, uri));
         } else {
             for (String type : serviceRequest.getType()) {
                 if (type.contains("ObservationService")) {
-                	services.add(createObservationService(uri));
+                	services.add(createObservationService(networkId, uri));
                 }
                 else if (type.contains("MonitoringService")) {
-                    services.add(createMonitoringService(uri));
+                    services.add(createMonitoringService(networkId, uri));
                 }
             }
             for (String id : serviceRequest.getId()) {
                 if (id.contains("observation")) {
-                    tmpService = createObservationService(uri);
+                    tmpService = createObservationService(networkId, uri);
                     if (!services.contains(tmpService)) {
                         services.add(tmpService);
                     }
                 }
                 else if (id.contains("monitoring")) {
-                    tmpService = createMonitoringService(uri);
+                    tmpService = createMonitoringService(networkId, uri);
                     if (!services.contains(tmpService)) {
                         services.add(tmpService);
                     }
@@ -450,11 +449,11 @@ public class PPI {
 		}
     }
 
-    @Path("/sensor/metadata")
+    @Path("/{networkId}/sensor/metadata")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSensorMetadata(String bodyRequest, @Context UriInfo uri) {
+    public Response getSensorMetadata(@PathParam("networkId") String networkId, String bodyRequest, @Context UriInfo uri) {
         IdTypeRequest sensorRequest;
         Network network;
         Sensor tmpSensor;
@@ -485,19 +484,19 @@ public class PPI {
         if ((sensorRequest.getId().size() == 0) && (sensorRequest.getType().size() == 0)) {
             for (Station station : network.getStations()) {
                 try {
-					sensors.add(createSensorFromStation(station, uri));
+					sensors.add(createSensorFromStation(networkId, station, uri));
 				} catch (ParseException e) {
 					e.printStackTrace();
 					return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
 				}
             }
-            sensors.add(createMonitoringSensor(uri));
+            sensors.add(createMonitoringSensor(networkId, uri));
         } else {
             for (String type : sensorRequest.getType()) {
                 if (type.contains("VitalSensor")) {
                 	for (Station station : network.getStations()) {
                         try {
-							sensors.add(createSensorFromStation(station, uri));
+							sensors.add(createSensorFromStation(networkId, station, uri));
 						} catch (ParseException e) {
 							e.printStackTrace();
 							return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -505,12 +504,12 @@ public class PPI {
                     }
                 }
                 else if (type.contains("MonitoringSensor")) {
-                	sensors.add(createMonitoringSensor(uri));
+                	sensors.add(createMonitoringSensor(networkId, uri));
                 }
             }
             for (String id : sensorRequest.getId()) {
             	if (id.contains("monitoring")) {
-                    tmpSensor = createMonitoringSensor(uri);
+                    tmpSensor = createMonitoringSensor(networkId, uri);
                     if (!sensors.contains(tmpSensor)) {
                     	sensors.add(tmpSensor);
                     }
@@ -518,7 +517,7 @@ public class PPI {
                 	for (Station station : network.getStations()) {
                 		if (id.contains(station.getId())) {
 	                		try {
-								tmpSensor = createSensorFromStation(station, uri);
+								tmpSensor = createSensorFromStation(networkId, station, uri);
 							} catch (ParseException e) {
 								e.printStackTrace();
 								return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -543,11 +542,11 @@ public class PPI {
 		}
     }
 
-    @Path("/sensor/status")
+    @Path("/{networkId}/sensor/status")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSensorStatus(String bodyRequest, @Context UriInfo uri) {
+    public Response getSensorStatus(@PathParam("networkId") String networkId, String bodyRequest, @Context UriInfo uri) {
     	IdTypeRequest sensorRequest;
         Network network;
         SensorStatus tmpSensor;
@@ -578,19 +577,19 @@ public class PPI {
         if ((sensorRequest.getId().size() == 0) && (sensorRequest.getType().size() == 0)) {
             for (Station station : network.getStations()) {
                 try {
-					sensorsStatus.add(createStatusMeasureFromStation(station, uri));
+					sensorsStatus.add(createStatusMeasureFromStation(networkId, station, uri));
 				} catch (ParseException e) {
 					e.printStackTrace();
 					return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
 				}
             }
-            sensorsStatus.add(createMonitoringStatusMeasure(uri));
+            sensorsStatus.add(createMonitoringStatusMeasure(networkId, uri));
         } else {
             for (String type : sensorRequest.getType()) {
                 if (type.contains("VitalSensor")) {
                 	for (Station station : network.getStations()) {
                         try {
-							sensorsStatus.add(createStatusMeasureFromStation(station, uri));
+							sensorsStatus.add(createStatusMeasureFromStation(networkId, station, uri));
 						} catch (ParseException e) {
 							e.printStackTrace();
 							return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -598,12 +597,12 @@ public class PPI {
                     }
                 }
                 else if (type.contains("MonitoringSensor")) {
-                	sensorsStatus.add(createMonitoringStatusMeasure(uri));
+                	sensorsStatus.add(createMonitoringStatusMeasure(networkId, uri));
                 }
             }
             for (String id : sensorRequest.getId()) {
             	if (id.contains("monitoring")) {
-                    tmpSensor = createMonitoringStatusMeasure(uri);
+                    tmpSensor = createMonitoringStatusMeasure(networkId, uri);
                     if (!sensorsStatus.contains(tmpSensor)) {
                     	sensorsStatus.add(tmpSensor);
                     }
@@ -611,7 +610,7 @@ public class PPI {
                 	for (Station station : network.getStations()) {
                 		if (id.contains(station.getId())) {
 	                		try {
-								tmpSensor = createStatusMeasureFromStation(station, uri);
+								tmpSensor = createStatusMeasureFromStation(networkId, station, uri);
 							} catch (ParseException e) {
 								e.printStackTrace();
 								return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -636,11 +635,11 @@ public class PPI {
 		}
     }
 
-    @Path("/sensor/observation")
+    @Path("/{networkId}/sensor/observation")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getObservation(String bodyRequest, @Context UriInfo uri) {
+    public Response getObservation(@PathParam("networkId") String networkId, String bodyRequest, @Context UriInfo uri) {
         ObservationRequest observationRequest;
         Network network;
         ArrayList<Measure> measures = new ArrayList<Measure>();
@@ -767,7 +766,7 @@ public class PPI {
                 for (Station station : network.getStations()) {
                 	if (id.contains(station.getId())) {
                 		try {
-                			tmpMeasure = createMeasureFromStation(station, observationRequest.getProperty(), uri);
+                			tmpMeasure = createMeasureFromStation(networkId, station, observationRequest.getProperty(), uri);
 						} catch (ParseException e) {
 							e.printStackTrace();
 							return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -795,7 +794,7 @@ public class PPI {
 		}
     }
 
-    private Sensor createMonitoringSensor(UriInfo uri) {
+    private Sensor createMonitoringSensor(String networkId, UriInfo uri) {
     	String id = "monitoring";
     	List<SsnObserf> observedProperties;
         Sensor sensor = new Sensor();
@@ -803,7 +802,7 @@ public class PPI {
         sensor.setContext("http://vital-iot.eu/contexts/sensor.jsonld");
         sensor.setName(id);
         sensor.setType("vital:MonitoringSensor");
-        sensor.setDescription("CityBikes monitoring sensor");
+        sensor.setDescription("CityBikes monitoring sensor for " + networkId + " network");
         sensor.setId(uri.getBaseUri() + networkId + "/sensor/" + id);
 
         sensor.setStatus("vital:Running");
@@ -857,7 +856,7 @@ public class PPI {
         return sensor;
     }
 
-    private Sensor createSensorFromStation(Station station, UriInfo uri) throws ParseException {
+    private Sensor createSensorFromStation(String networkId, Station station, UriInfo uri) throws ParseException {
     	SimpleDateFormat timestampDateFormat;
     	Date now, timestamp = null;
         String id = station.getId();
@@ -900,7 +899,7 @@ public class PPI {
         return sensor;
     }
 
-    private Service createObservationService(UriInfo uri) {
+    private Service createObservationService(String networkId, UriInfo uri) {
     	Operation operation;
     	List<Operation> operations;
         Service observationService = new Service();
@@ -919,7 +918,7 @@ public class PPI {
         return observationService;
     }
 
-    private Service createMonitoringService(UriInfo uri) {
+    private Service createMonitoringService(String networkId, UriInfo uri) {
     	Operation operation;
     	List<Operation> operations;
         Service monitoringService = new Service();
@@ -953,7 +952,7 @@ public class PPI {
         return monitoringService;
     }
 
-    private SensorStatus createMonitoringStatusMeasure(UriInfo uri) {
+    private SensorStatus createMonitoringStatusMeasure(String networkId, UriInfo uri) {
     	SimpleDateFormat printedDateFormat;
     	Date now;
         SensorStatus m = new SensorStatus();
@@ -986,7 +985,7 @@ public class PPI {
         return m;
     }
 
-    private SensorStatus createStatusMeasureFromStation(Station station, UriInfo uri) throws ParseException {
+    private SensorStatus createStatusMeasureFromStation(String networkId, Station station, UriInfo uri) throws ParseException {
     	SimpleDateFormat timestampDateFormat, printedDateFormat;
     	Date now, timestamp = null;
         SensorStatus m = new SensorStatus();
@@ -1025,7 +1024,7 @@ public class PPI {
         return m;
     }
 
-    private Measure createMeasureFromStation(Station station, String property, UriInfo uri) throws ParseException {
+    private Measure createMeasureFromStation(String networkId, Station station, String property, UriInfo uri) throws ParseException {
         Measure m;
         SimpleDateFormat printedDateFormat, timestampDateFormat;
         Date timestamp = null;
