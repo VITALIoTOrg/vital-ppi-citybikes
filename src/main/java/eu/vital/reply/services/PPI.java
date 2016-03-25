@@ -82,6 +82,10 @@ public class PPI {
         client = new IoTSystemClient();
         logger = LogManager.getLogger(PPI.class);
 
+        if (networkCache == null) {
+        	networkCache = new HashMap<String, Network>();
+        }
+
         if (startupTime == null) {
         	startupTime = new Date();
         }
@@ -101,7 +105,7 @@ public class PPI {
         try {
             JsonUtils.deserializeJson(bodyRequest, EmptyRequest.class);
         } catch (IOException e) {
-            this.logger.error("[/metadata] Error parsing request");
+            logger.error("[/metadata] Error parsing request");
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
@@ -235,7 +239,7 @@ public class PPI {
         try {
         	requestedMetrics = ((MetricRequest) JsonUtils.deserializeJson(bodyRequest, MetricRequest.class)).getMetric();
         } catch (IOException e) {
-        	this.logger.error("[/system/performance] Error parsing request");
+        	logger.error("[/system/performance] Error parsing request");
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
@@ -281,7 +285,7 @@ public class PPI {
             	unit = "qudt:Number";
             	value = Integer.toString(StatCounter.getPendingRequest() - 1);
             } else {
-            	this.logger.error("[/system/performance] Bad metric " + m);
+            	logger.error("[/system/performance] Bad metric " + m);
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
 
@@ -399,7 +403,7 @@ public class PPI {
         try {
         	serviceRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
         } catch (IOException e) {
-        	this.logger.error("[/service/metadata] Error parsing request");
+        	logger.error("[/service/metadata] Error parsing request");
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         
@@ -456,7 +460,7 @@ public class PPI {
         try {
         	sensorRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
         } catch (IOException e) {
-        	this.logger.error("[/sensor/metadata] Error parsing request");
+        	logger.error("[/sensor/metadata] Error parsing request");
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
@@ -549,7 +553,7 @@ public class PPI {
         try {
         	sensorRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
         } catch (IOException e) {
-        	this.logger.error("[/sensor/status] Error parsing request");
+        	logger.error("[/sensor/status] Error parsing request");
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
@@ -654,7 +658,7 @@ public class PPI {
             if (missing)
             	throw new IOException("field(s) " + errmsg + " is/are required!");
         } catch (IOException e) {
-        	this.logger.error("[/sensor/observation] Error parsing request");
+        	logger.error("[/sensor/observation] Error parsing request");
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
@@ -717,7 +721,7 @@ public class PPI {
                 	unit = "qudt:Number";
                 	value = Integer.toString(StatCounter.getPendingRequest() - 1);
                 } else {
-                	this.logger.error("[/system/performance] Bad metric " + observationRequest.getProperty());
+                	logger.error("[/system/performance] Bad metric " + observationRequest.getProperty());
                     return Response.status(Response.Status.BAD_REQUEST).build();
                 }
 
