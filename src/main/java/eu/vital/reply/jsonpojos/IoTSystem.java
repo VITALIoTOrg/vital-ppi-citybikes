@@ -29,6 +29,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
     "serviceArea",
     "sensors",
     "services",
+    "systems",
     "status"
 })
 public class IoTSystem {
@@ -53,6 +54,9 @@ public class IoTSystem {
     @JsonProperty("services")
     @Valid
     private List<String> services = new ArrayList<String>();
+    @JsonProperty("systems")
+    @Valid
+    private List<String> systems = new ArrayList<String>();
     @JsonProperty("status")
     private String status;
     @JsonIgnore
@@ -286,6 +290,31 @@ public class IoTSystem {
     /**
      * 
      * @return
+     *     The systems
+     */
+    @JsonProperty("systems")
+    public List<String> getSystems() {
+        return systems;
+    }
+
+    /**
+     * 
+     * @param systems
+     *     The systems
+     */
+    @JsonProperty("systems")
+    public void setSystems(List<String> systems) {
+        this.systems = systems;
+    }
+
+    public IoTSystem withSystems(List<String> systems) {
+        this.systems = systems;
+        return this;
+    }
+
+    /**
+     * 
+     * @return
      *     The status
      */
     @JsonProperty("status")
@@ -330,7 +359,7 @@ public class IoTSystem {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(Context).append(id).append(type).append(name).append(description).append(operator).append(serviceArea).append(sensors).append(services).append(status).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(Context).append(id).append(type).append(name).append(description).append(operator).append(serviceArea).append(sensors).append(services).append(systems).append(status).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -342,7 +371,7 @@ public class IoTSystem {
             return false;
         }
         IoTSystem rhs = ((IoTSystem) other);
-        return new EqualsBuilder().append(Context, rhs.Context).append(id, rhs.id).append(type, rhs.type).append(name, rhs.name).append(description, rhs.description).append(operator, rhs.operator).append(serviceArea, rhs.serviceArea).append(sensors, rhs.sensors).append(services, rhs.services).append(status, rhs.status).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(Context, rhs.Context).append(id, rhs.id).append(type, rhs.type).append(name, rhs.name).append(description, rhs.description).append(operator, rhs.operator).append(serviceArea, rhs.serviceArea).append(sensors, rhs.sensors).append(services, rhs.services).append(systems, rhs.systems).append(status, rhs.status).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

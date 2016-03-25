@@ -1,6 +1,8 @@
 package eu.vital.reply.services;
 
 import eu.vital.reply.clients.IoTSystemClient;
+import eu.vital.reply.jsonpojos.CityBikesNetwork;
+import eu.vital.reply.jsonpojos.CityBikesNetworks;
 import eu.vital.reply.jsonpojos.DulHasLocation;
 import eu.vital.reply.jsonpojos.EmptyRequest;
 import eu.vital.reply.jsonpojos.HasLastKnownLocation;
@@ -10,6 +12,7 @@ import eu.vital.reply.jsonpojos.Measure;
 import eu.vital.reply.jsonpojos.Metric;
 import eu.vital.reply.jsonpojos.MetricRequest;
 import eu.vital.reply.jsonpojos.Network;
+import eu.vital.reply.jsonpojos.Network_;
 import eu.vital.reply.jsonpojos.ObservationRequest;
 import eu.vital.reply.jsonpojos.Operation;
 import eu.vital.reply.jsonpojos.PerformanceMetric;
@@ -75,6 +78,7 @@ public class PPI {
 
     // To be able to return network data if CityBikes is temporarily unavailable
     private static HashMap<String, Network> networkCache;
+    private static List<Network_> networksCache;
     
     private static Date startupTime = new Date();
 
@@ -93,16 +97,17 @@ public class PPI {
         }
     }
 
-    @Path("/{networkId}/metadata")
+    @Path("/metadata")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMetadata(@PathParam("networkId") String networkId, String bodyRequest, @Context UriInfo uri) {
-        int i;
-        Network network;
+    public Response getMetadata(String bodyRequest, @Context UriInfo uri) {
+    	CityBikesNetworks cbns;
+        List<Network_> networks;
         IoTSystem iotSystem;
         List<String> services;
         List<String> sensors;
+        List<String> systems;
 
         try {
             JsonUtils.deserializeJson(bodyRequest, EmptyRequest.class);
@@ -111,7 +116,85 @@ public class PPI {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-		network = client.getNetwork(apiBasePath, networkId).getNetwork();
+        cbns = client.getNetworks(apiBasePath);
+        networks = null;
+        if (cbns != null)
+        	networks = cbns.getNetworks();
+
+		if (networks == null) {
+			// Try and get network from cache
+			networks = networksCache;
+			if (networks == null) {
+				return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+			} else {
+				iotSystem = new IoTSystem();
+				// Found in cache, but unavailable
+				iotSystem.setStatus("vital:Unavailable");
+			}
+		} else {
+			// Well up and running
+			networksCache = networks;
+			iotSystem = new IoTSystem();
+			iotSystem.setStatus("vital:Running");
+		}
+
+        services = new ArrayList<String>();
+        sensors = new ArrayList<String>();
+        systems = new ArrayList<String>();
+
+        iotSystem.setContext("http://vital-iot.eu/contexts/system.jsonld");
+        iotSystem.setId(uri.getBaseUri().toString().replaceAll("/$", ""));
+        iotSystem.setType("vital:VitalSystem");
+        iotSystem.setName("CityBikes");
+        iotSystem.setDescription("CityBikes super-PPI (http://api.citybik.es/v2/)");
+        iotSystem.setOperator("http://api.citybik.es/v2/");
+        iotSystem.setServiceArea("http://dbpedia.org/page/World");
+
+        sensors.add(uri.getBaseUri() + "sensor/monitoring");
+        iotSystem.setSensors(sensors);
+
+        services.add(uri.getBaseUri() + "service/monitoring");
+        services.add(uri.getBaseUri() + "service/observation");
+        iotSystem.setServices(services);
+        
+        for (Network_ network : networks) {
+        	systems.add(uri.getBaseUri() + network.getId());
+        }
+        iotSystem.setSystems(systems);
+
+        try {
+			return Response.status(Response.Status.OK)
+				.entity(JsonUtils.serializeJson(iotSystem))
+				.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
+    }
+
+    @Path("/{networkId}/metadata")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getMetadata(@PathParam("networkId") String networkId, String bodyRequest, @Context UriInfo uri) {
+        int i;
+        CityBikesNetwork cbn;
+        Network network;
+        IoTSystem iotSystem;
+        List<String> services;
+        List<String> sensors;
+
+        try {
+            JsonUtils.deserializeJson(bodyRequest, EmptyRequest.class);
+        } catch (IOException e) {
+            logger.error("[/" + networkId + "/metadata] Error parsing request");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        cbn = client.getNetwork(apiBasePath, networkId);
+        network = null;
+        if (cbn != null)
+        	network = cbn.getNetwork();
 
 		if (network == null) {
 			// Try and get network from cache
@@ -155,6 +238,69 @@ public class PPI {
         try {
 			return Response.status(Response.Status.OK)
 				.entity(JsonUtils.serializeJson(iotSystem))
+				.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
+    }
+
+    @Path("/system/performance")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSupportedPerformanceMetrics(@Context UriInfo uri) {
+    	PerformanceMetricsMetadata performanceMetricsMetadata;
+        List<Metric> list;
+        Metric metric;
+
+        performanceMetricsMetadata = new PerformanceMetricsMetadata();
+        list = new ArrayList<Metric>();
+
+        metric = new Metric();
+        metric.setType(ontologyPrefix + "UsedMem");
+        metric.setId(uri.getBaseUri() + "sensor/monitoring/usedMem");
+        list.add(metric);
+
+        metric = new Metric();
+        metric.setType(ontologyPrefix + "AvailableMem");
+        metric.setId(uri.getBaseUri() + "sensor/monitoring/availableMem");
+        list.add(metric);
+
+        metric = new Metric();
+        metric.setType(ontologyPrefix + "AvailableDisk");
+        metric.setId(uri.getBaseUri() + "sensor/monitoring/availableDisk");
+        list.add(metric);
+
+        metric = new Metric();
+        metric.setType(ontologyPrefix + "SysLoad");
+        metric.setId(uri.getBaseUri() + "sensor/monitoring/sysLoad");
+        list.add(metric);
+
+        metric = new Metric();
+        metric.setType(ontologyPrefix + "ServedRequests");
+        metric.setId(uri.getBaseUri() + "sensor/monitoring/servedRequests");
+        list.add(metric);
+
+        metric = new Metric();
+        metric.setType(ontologyPrefix + "Errors");
+        metric.setId(uri.getBaseUri() + "sensor/monitoring/errors");
+        list.add(metric);
+
+        metric = new Metric();
+        metric.setType(ontologyPrefix + "SysUptime");
+        metric.setId(uri.getBaseUri() + "sensor/monitoring/sysUptime");
+        list.add(metric);
+
+        metric = new Metric();
+        metric.setType(ontologyPrefix + "PendingRequests");
+        metric.setId(uri.getBaseUri() + "sensor/monitoring/pendingRequests");
+        list.add(metric);
+
+        performanceMetricsMetadata.setMetrics(list);
+
+        try {
+			return Response.status(Response.Status.OK)
+				.entity(JsonUtils.serializeJson(performanceMetricsMetadata))
 				.build();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -225,6 +371,108 @@ public class PPI {
 		}
     }
 
+    @Path("/system/performance")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPerformanceMetrics(String bodyRequest, @Context UriInfo uri) {
+        List<String> requestedMetrics;
+        List<PerformanceMetric> metrics;
+        PerformanceMetric metric;
+        Date date;
+        Runtime runtime;
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+        String type, unit, value;
+
+        try {
+        	requestedMetrics = ((MetricRequest) JsonUtils.deserializeJson(bodyRequest, MetricRequest.class)).getMetric();
+        } catch (IOException e) {
+        	logger.error("[/system/performance] Error parsing request");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        date = new Date();
+        runtime = Runtime.getRuntime();
+        metrics = new ArrayList<PerformanceMetric>();
+        for (String m : requestedMetrics) {
+            if (m.contains("UsedMem")) {
+            	type = "vital:UsedMem";
+            	unit = "qudt:Byte";
+            	value = Long.toString(runtime.totalMemory());
+            } else if (m.contains("AvailableMem")) {
+            	type = "vital:AvailableMem";
+            	unit = "qudt:Byte";
+            	value = Long.toString(runtime.freeMemory());
+            } else if (m.contains("AvailableDisk")) {
+            	type = "vital:AvailableDisk";
+            	unit = "qudt:Byte";
+            	value = Long.toString(new File("/").getFreeSpace());
+            } else if (m.contains("SysLoad")) {
+            	type = "vital:SysLoad";
+            	unit = "qudt:Percentage";
+            	try {
+					value = Double.toString(getProcessCpuLoad());
+				} catch (Exception e) {
+					e.printStackTrace();
+					return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+				}
+            } else if (m.contains("ServedRequests")) {
+            	type = "vital:ServedRequests";
+            	unit = "qudt:Number";
+            	value = Integer.toString(StatCounter.getRequestNumber().get());
+            } else if (m.contains("Errors")) {
+            	type = "vital:Errors";
+            	unit = "qudt:Number";
+            	value = Integer.toString(StatCounter.getErrorNumber().get());
+            } else if (m.contains("SysUptime")) {
+            	type = "vital:SysUptime";
+            	unit = "qudt:MilliSecond";
+            	value = Long.toString(date.getTime() - startupTime.getTime());
+            } else if (m.contains("PendingRequests")) {
+            	type = "vital:PendingRequests";
+            	unit = "qudt:Number";
+            	value = Integer.toString(StatCounter.getPendingRequest() - 1);
+            } else {
+            	logger.error("[/system/performance] Bad metric " + m);
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+
+            metric = new PerformanceMetric();
+            metric.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
+            metric.setId(uri.getBaseUri() + "sensor/monitoring/observation/" + Long.toHexString(date.getTime()));
+            metric.setType("ssn:Observation");
+
+            SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+            ssnObservationProperty_.setType(type);
+            metric.setSsnObservationProperty(ssnObservationProperty_);
+
+            SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+            ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+            metric.setSsnObservationResultTime(ssnObservationResultTime_);
+
+            SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+            ssnObservationResult_.setType("ssn:SensorOutput");
+            SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+            ssnHasValue_.setType("ssn:ObservationValue");
+            ssnHasValue_.setValue(value);
+            ssnHasValue_.setQudtUnit(unit);
+            ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+            metric.setSsnObservationResult(ssnObservationResult_);
+
+            metric.setSsnFeatureOfInterest(uri.getBaseUri().toString().replaceAll("/$", ""));
+            metrics.add(metric);
+        }
+
+        try {
+			return Response.status(Response.Status.OK)
+				.entity(JsonUtils.serializeJson(metrics))
+				.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
+    }
+
     @Path("/{networkId}/system/performance")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -241,7 +489,7 @@ public class PPI {
         try {
         	requestedMetrics = ((MetricRequest) JsonUtils.deserializeJson(bodyRequest, MetricRequest.class)).getMetric();
         } catch (IOException e) {
-        	logger.error("[/system/performance] Error parsing request");
+        	logger.error("[/" + networkId + "/system/performance] Error parsing request");
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
@@ -327,16 +575,90 @@ public class PPI {
 		}
     }
 
+    @Path("/system/status")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSystemStatus(@Context UriInfo uri) {
+    	Date now;
+    	CityBikesNetworks cbns;
+    	List<Network_> networks;
+        SsnHasValue_ ssnHasValue_;
+        PerformanceMetric lifecycleInformation;
+
+        cbns = client.getNetworks(apiBasePath);
+        networks = null;
+        if (cbns != null)
+        	networks = cbns.getNetworks();
+
+		if (networks == null) {
+			// Try and get network from cache
+			networks = networksCache;
+			if (networks == null) {
+				return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+			} else {
+				// Found in cache, but unavailable
+				lifecycleInformation = new PerformanceMetric();
+				ssnHasValue_ = new SsnHasValue_();
+				ssnHasValue_.setValue("vital:Running");
+				ssnHasValue_.setValue("vital:Unavailable");
+			}
+		} else {
+			// Well up and running
+			networksCache =  networks;
+			lifecycleInformation = new PerformanceMetric();
+			ssnHasValue_ = new SsnHasValue_();
+			ssnHasValue_.setValue("vital:Running");
+		}
+
+        now = new Date();
+        SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+        lifecycleInformation.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
+        lifecycleInformation.setId(uri.getBaseUri() + "sensor/monitoring/observation/" + Long.toHexString(now.getTime()));
+        lifecycleInformation.setType("ssn:Observation");
+
+        SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+        ssnObservationProperty_.setType("vital:OperationalState");
+        lifecycleInformation.setSsnObservationProperty(ssnObservationProperty_);
+
+        SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+
+        ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(now));
+        lifecycleInformation.setSsnObservationResultTime(ssnObservationResultTime_);
+
+        SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+        ssnObservationResult_.setType("ssn:SensorOutput");
+        
+        ssnHasValue_.setType("ssn:ObservationValue");
+        ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+        lifecycleInformation.setSsnObservationResult(ssnObservationResult_);
+
+        lifecycleInformation.setSsnFeatureOfInterest(uri.getBaseUri().toString().replaceAll("/$", ""));
+
+        try {
+			return Response.status(Response.Status.OK)
+				.entity(JsonUtils.serializeJson(lifecycleInformation))
+				.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
+    }
+
     @Path("/{networkId}/system/status")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public Response getSystemStatus(@PathParam("networkId") String networkId, @Context UriInfo uri) {
     	Date now;
+    	CityBikesNetwork cbn;
         Network network;
         SsnHasValue_ ssnHasValue_;
         PerformanceMetric lifecycleInformation;
 
-		network = client.getNetwork(apiBasePath, networkId).getNetwork();
+        cbn = client.getNetwork(apiBasePath, networkId);
+        network = null;
+        if (cbn != null)
+        	network = cbn.getNetwork();
 
 		if (network == null) {
 			// Try and get network from cache
@@ -393,6 +715,62 @@ public class PPI {
 		}
     }
 
+    @Path("/service/metadata")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getServiceMetadata(String bodyRequest, @Context UriInfo uri) {
+        IdTypeRequest serviceRequest;
+        Service tmpService;
+        List<Service> services;
+
+        try {
+        	serviceRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
+        } catch (IOException e) {
+        	logger.error("[/service/metadata] Error parsing request");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        
+        services = new ArrayList<Service>();
+
+        if ((serviceRequest.getId().size() == 0) && (serviceRequest.getType().size() == 0)) {
+            services.add(createObservationService(null, uri));
+            services.add(createMonitoringService(null, uri));
+        } else {
+            for (String type : serviceRequest.getType()) {
+                if (type.contains("ObservationService")) {
+                	services.add(createObservationService(null, uri));
+                }
+                else if (type.contains("MonitoringService")) {
+                    services.add(createMonitoringService(null, uri));
+                }
+            }
+            for (String id : serviceRequest.getId()) {
+                if (id.contains("observation")) {
+                    tmpService = createObservationService(null, uri);
+                    if (!services.contains(tmpService)) {
+                        services.add(tmpService);
+                    }
+                }
+                else if (id.contains("monitoring")) {
+                    tmpService = createMonitoringService(null, uri);
+                    if (!services.contains(tmpService)) {
+                        services.add(tmpService);
+                    }
+                }
+            }
+        }
+
+        try {
+			return Response.status(Response.Status.OK)
+				.entity(JsonUtils.serializeJson(services))
+				.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
+    }
+
     @Path("/{networkId}/service/metadata")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -405,7 +783,7 @@ public class PPI {
         try {
         	serviceRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
         } catch (IOException e) {
-        	logger.error("[/service/metadata] Error parsing request");
+        	logger.error("[/" + networkId + "/service/metadata] Error parsing request");
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         
@@ -449,13 +827,12 @@ public class PPI {
 		}
     }
 
-    @Path("/{networkId}/sensor/metadata")
+    @Path("/sensor/metadata")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSensorMetadata(@PathParam("networkId") String networkId, String bodyRequest, @Context UriInfo uri) {
+    public Response getSensorMetadata(String bodyRequest, @Context UriInfo uri) {
         IdTypeRequest sensorRequest;
-        Network network;
         Sensor tmpSensor;
         List<Sensor> sensors;
 
@@ -466,7 +843,58 @@ public class PPI {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-		network = client.getNetwork(apiBasePath, networkId).getNetwork();
+        sensors = new ArrayList<Sensor>();
+
+        if ((sensorRequest.getId().size() == 0) && (sensorRequest.getType().size() == 0)) {
+            sensors.add(createMonitoringSensor(null, uri));
+        } else {
+            for (String type : sensorRequest.getType()) {
+                if (type.contains("MonitoringSensor")) {
+                	sensors.add(createMonitoringSensor(null, uri));
+                }
+            }
+            for (String id : sensorRequest.getId()) {
+            	if (id.contains("monitoring")) {
+                    tmpSensor = createMonitoringSensor(null, uri);
+                    if (!sensors.contains(tmpSensor)) {
+                    	sensors.add(tmpSensor);
+                    }
+                }
+            }
+        }
+
+        try {
+			return Response.status(Response.Status.OK)
+				.entity(JsonUtils.serializeJson(sensors))
+				.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
+    }
+
+    @Path("/{networkId}/sensor/metadata")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSensorMetadata(@PathParam("networkId") String networkId, String bodyRequest, @Context UriInfo uri) {
+        IdTypeRequest sensorRequest;
+        CityBikesNetwork cbn;
+        Network network;
+        Sensor tmpSensor;
+        List<Sensor> sensors;
+
+        try {
+        	sensorRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
+        } catch (IOException e) {
+        	logger.error("[/" + networkId + "/sensor/metadata] Error parsing request");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        cbn = client.getNetwork(apiBasePath, networkId);
+        network = null;
+        if (cbn != null)
+        	network = cbn.getNetwork();
 
 		if (network == null) {
 			// Try and get network from cache
@@ -542,13 +970,12 @@ public class PPI {
 		}
     }
 
-    @Path("/{networkId}/sensor/status")
+    @Path("/sensor/status")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSensorStatus(@PathParam("networkId") String networkId, String bodyRequest, @Context UriInfo uri) {
+    public Response getSensorStatus(String bodyRequest, @Context UriInfo uri) {
     	IdTypeRequest sensorRequest;
-        Network network;
         SensorStatus tmpSensor;
         List<SensorStatus> sensorsStatus;
 
@@ -559,7 +986,58 @@ public class PPI {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-		network = client.getNetwork(apiBasePath, networkId).getNetwork();
+        sensorsStatus = new ArrayList<SensorStatus>();
+
+        if ((sensorRequest.getId().size() == 0) && (sensorRequest.getType().size() == 0)) {
+            sensorsStatus.add(createMonitoringStatusMeasure(null, uri));
+        } else {
+            for (String type : sensorRequest.getType()) {
+                if (type.contains("MonitoringSensor")) {
+                	sensorsStatus.add(createMonitoringStatusMeasure(null, uri));
+                }
+            }
+            for (String id : sensorRequest.getId()) {
+            	if (id.contains("monitoring")) {
+                    tmpSensor = createMonitoringStatusMeasure(null, uri);
+                    if (!sensorsStatus.contains(tmpSensor)) {
+                    	sensorsStatus.add(tmpSensor);
+                    }
+                }
+            }
+        }
+
+        try {
+			return Response.status(Response.Status.OK)
+				.entity(JsonUtils.serializeJson(sensorsStatus))
+				.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
+    }
+
+    @Path("/{networkId}/sensor/status")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSensorStatus(@PathParam("networkId") String networkId, String bodyRequest, @Context UriInfo uri) {
+    	IdTypeRequest sensorRequest;
+    	CityBikesNetwork cbn;
+        Network network;
+        SensorStatus tmpSensor;
+        List<SensorStatus> sensorsStatus;
+
+        try {
+        	sensorRequest = (IdTypeRequest) JsonUtils.deserializeJson(bodyRequest, IdTypeRequest.class);
+        } catch (IOException e) {
+        	logger.error("[/" + networkId + "/sensor/status] Error parsing request");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        cbn = client.getNetwork(apiBasePath, networkId);
+        network = null;
+        if (cbn != null)
+        	network = cbn.getNetwork();
 
 		if (network == null) {
 			// Try and get network from cache
@@ -635,13 +1113,12 @@ public class PPI {
 		}
     }
 
-    @Path("/{networkId}/sensor/observation")
+    @Path("/sensor/observation")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getObservation(@PathParam("networkId") String networkId, String bodyRequest, @Context UriInfo uri) {
+    public Response getObservation(String bodyRequest, @Context UriInfo uri) {
         ObservationRequest observationRequest;
-        Network network;
         ArrayList<Measure> measures = new ArrayList<Measure>();
         ArrayList<PerformanceMetric> metrics = new ArrayList<PerformanceMetric>();
 
@@ -664,7 +1141,136 @@ public class PPI {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        network = client.getNetwork(apiBasePath, networkId).getNetwork();
+        for (String id : observationRequest.getSensor()) {
+            if (id.contains("monitoring")) {
+                // Monitoring sensor
+                PerformanceMetric metric;
+                Date date = new Date();
+                Runtime runtime = Runtime.getRuntime();
+                SimpleDateFormat printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+                String type, unit, value;
+                if (observationRequest.getProperty().contains("UsedMem")) {
+                	type = "vital:UsedMem";
+                	unit = "qudt:Byte";
+                	value = Long.toString(runtime.totalMemory());
+                } else if (observationRequest.getProperty().contains("AvailableMem")) {
+                	type = "vital:AvailableMem";
+                	unit = "qudt:Byte";
+                	value = Long.toString(runtime.freeMemory());
+                } else if (observationRequest.getProperty().contains("AvailableDisk")) {
+                	type = "vital:AvailableDisk";
+                	unit = "qudt:Byte";
+                	value = Long.toString(new File("/").getFreeSpace());
+                } else if (observationRequest.getProperty().contains("SysLoad")) {
+                	type = "vital:SysLoad";
+                	unit = "qudt:Percentage";
+                	try {
+    					value = Double.toString(getProcessCpuLoad());
+    				} catch (Exception e) {
+    					e.printStackTrace();
+    					return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    				}
+                } else if (observationRequest.getProperty().contains("ServedRequests")) {
+                	type = "vital:ServedRequests";
+                	unit = "qudt:Number";
+                	value = Integer.toString(StatCounter.getRequestNumber().get());
+                } else if (observationRequest.getProperty().contains("Errors")) {
+                	type = "vital:Errors";
+                	unit = "qudt:Number";
+                	value = Integer.toString(StatCounter.getErrorNumber().get());
+                } else if (observationRequest.getProperty().contains("SysUptime")) {
+                	type = "vital:SysUptime";
+                	unit = "qudt:MilliSecond";
+                	value = Long.toString(date.getTime() - startupTime.getTime());
+                } else if (observationRequest.getProperty().contains("PendingRequests")) {
+                	type = "vital:PendingRequests";
+                	unit = "qudt:Number";
+                	value = Integer.toString(StatCounter.getPendingRequest() - 1);
+                } else {
+                	logger.error("[/sensor/observation] Bad metric " + observationRequest.getProperty());
+                    return Response.status(Response.Status.BAD_REQUEST).build();
+                }
+
+                metric = new PerformanceMetric();
+                metric.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
+                metric.setId(uri.getBaseUri() + "sensor/monitoring/observation/" + Long.toHexString(date.getTime()));
+                metric.setType("ssn:Observation");
+
+                SsnObservationProperty_ ssnObservationProperty_ = new SsnObservationProperty_();
+                ssnObservationProperty_.setType(type);
+                metric.setSsnObservationProperty(ssnObservationProperty_);
+
+                SsnObservationResultTime_ ssnObservationResultTime_ = new SsnObservationResultTime_();
+                ssnObservationResultTime_.setTimeInXSDDateTime(printedDateFormat.format(date));
+                metric.setSsnObservationResultTime(ssnObservationResultTime_);
+
+                SsnObservationResult_ ssnObservationResult_ = new SsnObservationResult_();
+                ssnObservationResult_.setType("ssn:SensorOutput");
+                SsnHasValue_ ssnHasValue_ = new SsnHasValue_();
+                ssnHasValue_.setType("ssn:ObservationValue");
+                ssnHasValue_.setValue(value);
+                ssnHasValue_.setQudtUnit(unit);
+                ssnObservationResult_.setSsnHasValue(ssnHasValue_);
+                metric.setSsnObservationResult(ssnObservationResult_);
+
+                metric.setSsnFeatureOfInterest(uri.getBaseUri().toString().replaceAll("/$", ""));
+                metrics.add(metric);
+
+                try {
+        			return Response.status(Response.Status.OK)
+        				.entity(JsonUtils.serializeJson(metrics))
+        				.build();
+        		} catch (IOException e) {
+        			e.printStackTrace();
+        			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        		}
+            }
+        }
+
+        try {
+			return Response.status(Response.Status.OK)
+				.entity(JsonUtils.serializeJson(measures))
+				.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
+    }
+
+    @Path("/{networkId}/sensor/observation")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getObservation(@PathParam("networkId") String networkId, String bodyRequest, @Context UriInfo uri) {
+        ObservationRequest observationRequest;
+        CityBikesNetwork cbn;
+        Network network;
+        ArrayList<Measure> measures = new ArrayList<Measure>();
+        ArrayList<PerformanceMetric> metrics = new ArrayList<PerformanceMetric>();
+
+        try {
+        	observationRequest = (ObservationRequest) JsonUtils.deserializeJson(bodyRequest, ObservationRequest.class);
+        	boolean missing = false;
+        	String errmsg = "";
+            if (observationRequest.getSensor().isEmpty()) {
+            	missing = true;
+            	errmsg = errmsg + "sensor";
+            }
+            if (observationRequest.getProperty() == null) {
+            	missing = true;
+            	errmsg = errmsg + " and property";
+            }
+            if (missing)
+            	throw new IOException("field(s) " + errmsg + " is/are required!");
+        } catch (IOException e) {
+        	logger.error("[/" + networkId + "/sensor/observation] Error parsing request");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        cbn = client.getNetwork(apiBasePath, networkId);
+        network = null;
+        if (cbn != null)
+        	network = cbn.getNetwork();
 
 		if (network == null) {
 			// Try and get network from cache
@@ -723,7 +1329,7 @@ public class PPI {
                 	unit = "qudt:Number";
                 	value = Integer.toString(StatCounter.getPendingRequest() - 1);
                 } else {
-                	logger.error("[/system/performance] Bad metric " + observationRequest.getProperty());
+                	logger.error("[/" + networkId + "/sensor/observation] Bad metric " + observationRequest.getProperty());
                     return Response.status(Response.Status.BAD_REQUEST).build();
                 }
 
@@ -802,7 +1408,10 @@ public class PPI {
         sensor.setContext("http://vital-iot.eu/contexts/sensor.jsonld");
         sensor.setName(id);
         sensor.setType("vital:MonitoringSensor");
-        sensor.setDescription("CityBikes monitoring sensor for " + networkId + " network");
+        if (networkId == null)
+        	sensor.setDescription("CityBikes monitoring sensor");
+        else
+        	sensor.setDescription("CityBikes monitoring sensor for " + networkId + " network");
         sensor.setId(uri.getBaseUri() + networkId + "/sensor/" + id);
 
         sensor.setStatus("vital:Running");
@@ -811,42 +1420,66 @@ public class PPI {
 
         SsnObserf observedProperty = new SsnObserf();
         observedProperty.setType("vital:MemUsed");
-        observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "usedMem");
+        if (networkId == null)
+        	observedProperty.setId(uri.getBaseUri() + "sensor/" + id + "/" + "usedMem");
+        else
+        	observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "usedMem");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:MemAvailable");
-        observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "availableMem");
+        if (networkId == null)
+        	observedProperty.setId(uri.getBaseUri() + "sensor/" + id + "/" + "availableMem");
+        else
+        	observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "availableMem");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:DiskAvailable");
-        observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "availableDisk");
+        if (networkId == null)
+        	observedProperty.setId(uri.getBaseUri() + "sensor/" + id + "/" + "availableDisk");
+        else
+        	observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "availableDisk");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:SysLoad");
-        observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "sysLoad");
+        if (networkId == null)
+        	observedProperty.setId(uri.getBaseUri() + "sensor/" + id + "/" + "sysLoad");
+        else
+        	observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "sysLoad");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:ServedRequest");
-        observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" +id+ "/" + "servedRequests");
+        if (networkId == null)
+        	observedProperty.setId(uri.getBaseUri() + "sensor/" + id + "/" + "servedRequests");
+        else
+        	observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "servedRequests");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:Errors");
-        observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "errors");
+        if (networkId == null)
+        	observedProperty.setId(uri.getBaseUri() + "sensor/" + id + "/" + "errors");
+        else
+        	observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "errors");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:SysUpTime");
-        observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "sysUptime");
+        if (networkId == null)
+        	observedProperty.setId(uri.getBaseUri() + "sensor/" + id + "/" + "sysUptime");
+        else
+        	observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "sysUptime");
         observedProperties.add(observedProperty);
 
         observedProperty = new SsnObserf();
         observedProperty.setType("vital:PendingRequests");
-        observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "pendingRequests");
+        if (networkId == null)
+        	observedProperty.setId(uri.getBaseUri() + "sensor/" + id + "/" + "pendingRequests");
+        else
+        	observedProperty.setId(uri.getBaseUri() + networkId + "/sensor/" + id + "/" + "pendingRequests");
         observedProperties.add(observedProperty);
 
         sensor.setSsnObserves(observedProperties);
@@ -905,13 +1538,19 @@ public class PPI {
         Service observationService = new Service();
         
         observationService.setContext("http://vital-iot.eu/contexts/service.jsonld");
-        observationService.setId(uri.getBaseUri() + networkId + "/service/observation");
+        if (networkId == null)
+        	observationService.setId(uri.getBaseUri() + "service/observation");
+        else
+        	observationService.setId(uri.getBaseUri() + networkId + "/service/observation");
         observationService.setType("vital:ObservationService");
         operations = new ArrayList<Operation>();
         operation = new Operation();
         operation.setType("vital:GetObservations");
         operation.setHrestHasMethod("hrest:POST");
-        operation.setHrestHasAddress(uri.getBaseUri() + networkId + "/sensor/observation");
+        if (networkId == null)
+        	operation.setHrestHasAddress(uri.getBaseUri() + "sensor/observation");
+        else
+        	operation.setHrestHasAddress(uri.getBaseUri() + networkId + "/sensor/observation");
         operations.add(operation);
         observationService.setOperations(operations);
 
@@ -924,28 +1563,43 @@ public class PPI {
         Service monitoringService = new Service();
         
         monitoringService.setContext("http://vital-iot.eu/contexts/service.jsonld");
-        monitoringService.setId(uri.getBaseUri() + networkId + "/service/monitoring");
+        if (networkId == null)
+        	monitoringService.setId(uri.getBaseUri() + "service/monitoring");
+        else
+        	monitoringService.setId(uri.getBaseUri() + networkId + "/service/monitoring");
         monitoringService.setType("vital:MonitoringService");
         operations = new ArrayList<Operation>();
         operation = new Operation();
         operation.setType("vital:GetSystemStatus");
         operation.setHrestHasMethod("hrest:POST");
-        operation.setHrestHasAddress(uri.getBaseUri() + networkId + "/system/status");
+        if (networkId == null)
+        	operation.setHrestHasAddress(uri.getBaseUri() + "system/status");
+        else
+        	operation.setHrestHasAddress(uri.getBaseUri() + networkId + "/system/status");
         operations.add(operation);
         operation = new Operation();
         operation.setType("vital:GetSensorStatus");
         operation.setHrestHasMethod("hrest:POST");
-        operation.setHrestHasAddress(uri.getBaseUri() + networkId + "/sensor/status");
+        if (networkId == null)
+        	operation.setHrestHasAddress(uri.getBaseUri() + "sensor/status");
+        else
+        	operation.setHrestHasAddress(uri.getBaseUri() + networkId + "/sensor/status");
         operations.add(operation);
         operation = new Operation();
         operation.setType("vital:GetSupportedPerformanceMetrics");
         operation.setHrestHasMethod("hrest:GET");
-        operation.setHrestHasAddress(uri.getBaseUri() + networkId + "/system/performance");
+        if (networkId == null)
+        	operation.setHrestHasAddress(uri.getBaseUri() + "system/performance");
+        else
+        	operation.setHrestHasAddress(uri.getBaseUri() + networkId + "/system/performance");
         operations.add(operation);
         operation = new Operation();
         operation.setType("vital:GetPerformanceMetrics");
         operation.setHrestHasMethod("hrest:POST");
-        operation.setHrestHasAddress(uri.getBaseUri() + networkId + "/system/performance");
+        if (networkId == null)
+        	operation.setHrestHasAddress(uri.getBaseUri() + "system/performance");
+        else
+        	operation.setHrestHasAddress(uri.getBaseUri() + networkId + "/system/performance");
         operations.add(operation);
         monitoringService.setOperations(operations);
 
@@ -961,7 +1615,10 @@ public class PPI {
         now = new Date();
 
         m.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
-    	m.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/observation/" + Long.toHexString(now.getTime()));
+        if (networkId == null)
+        	m.setId(uri.getBaseUri() + "sensor/monitoring/observation/" + Long.toHexString(now.getTime()));
+        else
+        	m.setId(uri.getBaseUri() + networkId + "/sensor/monitoring/observation/" + Long.toHexString(now.getTime()));
         m.setType("ssn:Observation");
 
         SsnObservationProperty__ ssnObservationProperty = new SsnObservationProperty__();
@@ -970,7 +1627,10 @@ public class PPI {
 
         SsnObservationResultTime__ ssnObservationResultTime = new SsnObservationResultTime__();
     	ssnObservationResultTime.setTimeInXSDDateTime(printedDateFormat.format(now));
-    	m.setAdditionalProperty("ssn:featureOfInterest", uri.getBaseUri() + networkId + "/sensor/monitoring");
+    	if (networkId == null)
+    		m.setAdditionalProperty("ssn:featureOfInterest", uri.getBaseUri() + "sensor/monitoring");
+    	else
+    		m.setAdditionalProperty("ssn:featureOfInterest", uri.getBaseUri() + networkId + "/sensor/monitoring");
         m.setSsnObservationResultTime(ssnObservationResultTime);
 
         SsnObservationResult__ ssnObservationResult = new SsnObservationResult__();

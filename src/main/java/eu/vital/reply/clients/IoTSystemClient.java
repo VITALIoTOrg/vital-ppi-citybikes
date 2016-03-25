@@ -13,6 +13,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import eu.vital.reply.jsonpojos.CityBikesNetwork;
+import eu.vital.reply.jsonpojos.CityBikesNetworks;
 
 public class IoTSystemClient
 {
@@ -94,5 +95,31 @@ public class IoTSystemClient
 		}
 
         return network;
+    }
+
+    public CityBikesNetworks getNetworks(String apiBasePath) {
+    	URI uri;
+    	String respString = null;
+    	CityBikesNetworks networks = null;
+
+    	try {
+			uri = new URI(apiBasePath);
+			try {
+				respString = performRequest(uri);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	        if(respString != null) {
+	        	try {
+					networks = (CityBikesNetworks) JsonUtils.deserializeJson(respString, CityBikesNetworks.class);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	        }
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+
+        return networks;
     }
 }

@@ -17,5 +17,11 @@
     "http://example.com/service/2",
     "http://example.com/service/3"
   ],
+  "systems":
+  [
+    "http://example.com/system/1",
+    "http://example.com/system/2",
+    "http://example.com/system/3"
+  ],
   "status": "vital:Running"
 }
