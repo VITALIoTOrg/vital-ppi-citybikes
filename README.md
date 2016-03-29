@@ -1,9 +1,9 @@
-# vital-ppi-istanbul-traffic
+# vital-ppi-citybikes
 
-* Author: Lorenzo Bracco, Fabrizio De Ceglia, Andrea Martelli
-* Summary: This is the VITAL PPI for HI Reply Istanbul traffic data
+* Author: Lorenzo Bracco
+* Summary: This is the VITAL PPI for the CityBikes bike sharing API
 * Target Project: VITAL (<http://vital-iot.eu>)
-* Source: <http://gitlab.atosresearch.eu/vital-iot/vital-ppi-istanbul-traffic.git>
+* Source: <http://gitlab.atosresearch.eu/vital-iot/vital-ppi-citybikes.git>
 
 ## System requirements
 
@@ -45,57 +45,25 @@ Follow installation instructions of Git, Java, Maven and WildFly.
         For Linux:   WILDFLY_HOME/bin/standalone.sh
         For Windows: WILDFLY_HOME\bin\standalone.bat
 
-## Configure, Build and Deploy the Istanbul Traffic PPI
+## Configure, Build and Deploy the CityBikes PPI
 
 1. Checkout the code from the repository:
 
-        git clone http://gitlab.atosresearch.eu/vital-iot/vital-ppi-istanbul-traffic.git
+        git clone http://gitlab.atosresearch.eu/vital-iot/vital-ppi-citybikes.git
 
-2. Open file **_src/main/resources/config.properties_** and set the values defined there to match you deployment scenario. For example:
-
-      ```
-      # PPI Server configuration (used to construct resources ids)
-      SYMBOLIC_URI=vitalserver.com/hireplyppi
-      TRANSF_PROTOCOL=http://
-
-      # HiReply service configuration (the IoT system external to VITAL)
-      HI_HOSTNAME=istanbul-iot.com
-      HI_PORT=80
-      HI_CONTEXT=/hireply
-      HI_GETSNAPSHOT_PATH=/ServiceRegistry/getsnapshot
-      HI_GETPROPERTYNAMES_PATH=/getpropertynames
-      HI_GETPROPERTYVALUE_PATH=/getpropertyvalue
-      HI_SETPROPERTYVALUE_PATH=/setpropertyvalue
-      HI_GETPROPERTYATTRIBUTE_PATH=/getpropertyattribute
-      HI_GETPROPERTYHISTORICALVALUES_PATH=/getpropertyhistoricalvalues
-      HI_ISSERVICERUNNING_PATH=/isservicerunning
-      HI_LOGS_VERBOSITITY_SETTING=LogsPriorityLevel
-
-      # Ontology configuration
-      ONT_BASE_URI_PROPERTY=vital-iot.eu/ontology/ns/
-      CONTEXTS_LOC=http://vital-iot.eu/contexts/
-      SPEED_PROP=Speed
-      COLOR_PROP=Color
-      REVERSE_SPEED_PROP=ReverseSpeed
-      REVERSE_COLOR_PROP=ReverseColor
-
-      # Configuration options name
-      LOG_VERBOSITY=logVerbosity
-      ```
-
-3. Open a command line and navigate to the root directory of the project.
-4. Type this command to build the application and create a WAR package:
+2. Open a command line and navigate to the root directory of the project.
+3. Type this command to build the application and create a WAR package:
 
         mvn package
 
-5. Make sure you have started the JBoss Server as described above.
-6. In order to deploy copy the package **_target/vital-ppi-istanbul-traffic.war_** to the **_standalone/deployments_** directory of the running instance of the server.
+4. Make sure you have started the JBoss Server as described above.
+5. In order to deploy copy the package **_target/vital-ppi-citybikes.war_** to the **_standalone/deployments_** directory of the running instance of the server.
 
 ## Access the module
 
-The Istanbul Traffic PPI is available at the hostname and port of your WildFly instance at path **_/hireplyppi_**.
+The CityBikes PPI is available at the hostname and port of your WildFly instance at path **_/vital-ppi-citybikes_**. Each sub-PPI (corresponding to a bike sharing network) is accessible at path **_/vital-ppi-citybikes/<network-id>_**.
 
-## Undeploy the Istanbul Traffic PPI
+## Undeploy the CityBikes PPI
 
 1. Stop the WildFly server (by killing the script used to start it).
 2. Remove the package related files from the **_standalone/deployments_** directory of WildFly.
