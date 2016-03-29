@@ -249,6 +249,8 @@ public class PPI {
         services.add(uri.getBaseUri() + networkId + "/service/observation");
         iotSystem.setServices(services);
 
+        iotSystem.setSystems(null); // otherwise an empty array is given back
+
         try {
 			return Response.status(Response.Status.OK)
 				.entity(JsonUtils.serializeJson(iotSystem))
