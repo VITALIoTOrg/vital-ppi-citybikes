@@ -1,6 +1,5 @@
 {
   "network": {
-    "company": "Comunicare S.r.l.", 
     "href": "/v2/networks/to-bike", 
     "id": "to-bike", 
     "location": {

@@ -20,7 +20,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
-    "company",
     "href",
     "id",
     "location",
@@ -29,8 +28,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 })
 public class Network {
 
-    @JsonProperty("company")
-    private String company;
     @JsonProperty("href")
     private String href;
     @JsonProperty("id")
@@ -45,31 +42,6 @@ public class Network {
     private List<Station> stations = new ArrayList<Station>();
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    /**
-     * 
-     * @return
-     *     The company
-     */
-    @JsonProperty("company")
-    public String getCompany() {
-        return company;
-    }
-
-    /**
-     * 
-     * @param company
-     *     The company
-     */
-    @JsonProperty("company")
-    public void setCompany(String company) {
-        this.company = company;
-    }
-
-    public Network withCompany(String company) {
-        this.company = company;
-        return this;
-    }
 
     /**
      * 
@@ -218,7 +190,7 @@ public class Network {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(company).append(href).append(id).append(location).append(name).append(stations).append(additionalProperties).toHashCode();
+        return new HashCodeBuilder().append(href).append(id).append(location).append(name).append(stations).append(additionalProperties).toHashCode();
     }
 
     @Override
@@ -230,7 +202,7 @@ public class Network {
             return false;
         }
         Network rhs = ((Network) other);
-        return new EqualsBuilder().append(company, rhs.company).append(href, rhs.href).append(id, rhs.id).append(location, rhs.location).append(name, rhs.name).append(stations, rhs.stations).append(additionalProperties, rhs.additionalProperties).isEquals();
+        return new EqualsBuilder().append(href, rhs.href).append(id, rhs.id).append(location, rhs.location).append(name, rhs.name).append(stations, rhs.stations).append(additionalProperties, rhs.additionalProperties).isEquals();
     }
 
 }

@@ -172,12 +172,14 @@ public class PPI {
 		}
     }
 
-    @Path("/{networkId}/metadata")
+    @SuppressWarnings("unchecked")
+	@Path("/{networkId}/metadata")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getMetadata(@PathParam("networkId") String networkId, String bodyRequest, @Context UriInfo uri) {
         int i;
+        String companies;
         CityBikesNetwork cbn;
         Network network;
         IoTSystem iotSystem;
@@ -220,8 +222,20 @@ public class PPI {
         iotSystem.setId(uri.getBaseUri() + networkId);
         iotSystem.setType("vital:VitalSystem");
         iotSystem.setName(network.getName());
-        iotSystem.setDescription("CityBikes " + network.getName() + " network operated by " + network.getCompany());
-        iotSystem.setOperator(network.getCompany());
+        companies = "";
+        if (network.getAdditionalProperties().containsKey("company")) {
+        	Object company = network.getAdditionalProperties().get("company");
+        	if (company.getClass() == String.class) {
+        		companies = (String) company;
+        	} else {
+        		for (String c : (ArrayList<String>) company) {
+        			companies = companies + c + ", ";
+        		}
+        		companies = companies.substring(0, companies.length() - 2);
+        	}
+        }
+        iotSystem.setDescription("CityBikes " + network.getName() + " network operated by " + companies);
+        iotSystem.setOperator(companies);
         iotSystem.setServiceArea("http://dbpedia.org/page/" + network.getLocation().getCity());
 
         List<Station> stations = network.getStations();
