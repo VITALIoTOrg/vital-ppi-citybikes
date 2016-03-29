@@ -61,7 +61,7 @@ Follow installation instructions of Git, Java, Maven and WildFly.
 
 ## Access the module
 
-The CityBikes PPI is available at the hostname and port of your WildFly instance at path **_/vital-ppi-citybikes_**. Each sub-PPI (corresponding to a bike sharing network) is accessible at path **_/vital-ppi-citybikes/<network-id>_**.
+The CityBikes PPI is available at the hostname and port of your WildFly instance at path **_/vital-ppi-citybikes_**. Each sub-PPI (corresponding to a bike sharing network) is accessible at path **_/vital-ppi-citybikes/\<network-id\>_**.
 
 ## Undeploy the CityBikes PPI
 
