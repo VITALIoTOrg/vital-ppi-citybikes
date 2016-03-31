@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -19,13 +17,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-
-/**
- * Observation Request
- * <p>
- * 
- * 
- */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
@@ -36,23 +27,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 })
 public class ObservationRequest {
 
-    /**
-     * 
-     * (Required)
-     * 
-     */
     @JsonProperty("sensor")
-    @Size(min = 1)
     @Valid
-    @NotNull
     private List<String> sensor = new ArrayList<String>();
-    /**
-     * 
-     * (Required)
-     * 
-     */
     @JsonProperty("property")
-    @NotNull
     private String property;
     @JsonProperty("from")
     private String from;
@@ -63,8 +41,6 @@ public class ObservationRequest {
 
     /**
      * 
-     * (Required)
-     * 
      * @return
      *     The sensor
      */
@@ -74,8 +50,6 @@ public class ObservationRequest {
     }
 
     /**
-     * 
-     * (Required)
      * 
      * @param sensor
      *     The sensor
@@ -92,8 +66,6 @@ public class ObservationRequest {
 
     /**
      * 
-     * (Required)
-     * 
      * @return
      *     The property
      */
@@ -103,8 +75,6 @@ public class ObservationRequest {
     }
 
     /**
-     * 
-     * (Required)
      * 
      * @param property
      *     The property

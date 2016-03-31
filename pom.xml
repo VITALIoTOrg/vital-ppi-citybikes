@@ -147,19 +147,6 @@
                     <annotationStyle>jackson2</annotationStyle>
                     <targetPackage>eu.vital.reply.jsonpojos</targetPackage>
                 </configuration>
-                <!--<configuration>
-                    <sourceDirectory>${basedir}/src/main/JsonSchema</sourceDirectory>
-                    <useCommonsLang3>true</useCommonsLang3>
-                    <targetVersion>1.8</targetVersion>
-                    <includeDynamicAccessors>false</includeDynamicAccessors>
-                    <generateBuilders>true</generateBuilders>
-                    <includeHashcodeAndEquals>true</includeHashcodeAndEquals>
-                    <outputDirectory>${basedir}/src/main/java</outputDirectory>
-                    <sourceType>jsonschema</sourceType>
-                    <includeJsr303Annotations>true</includeJsr303Annotations>
-                    <annotationStyle>jackson2</annotationStyle>
-                    <targetPackage>eu.vital.reply.jsonpojos</targetPackage>
-                </configuration>-->
                 <executions>
                     <execution>
                         <goals>
