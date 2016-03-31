@@ -615,7 +615,6 @@ public class PPI {
 				// Found in cache, but unavailable
 				lifecycleInformation = new PerformanceMetric();
 				ssnHasValue_ = new SsnHasValue_();
-				ssnHasValue_.setValue("vital:Running");
 				ssnHasValue_.setValue("vital:Unavailable");
 			}
 		} else {
@@ -685,7 +684,6 @@ public class PPI {
 				// Found in cache, but unavailable
 				lifecycleInformation = new PerformanceMetric();
 				ssnHasValue_ = new SsnHasValue_();
-				ssnHasValue_.setValue("vital:Running");
 				ssnHasValue_.setValue("vital:Unavailable");
 			}
 		} else {
