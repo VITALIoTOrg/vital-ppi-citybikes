@@ -928,7 +928,7 @@ public class PPI {
         if ((sensorRequest.getId().size() == 0) && (sensorRequest.getType().size() == 0)) {
             for (Station station : network.getStations()) {
                 try {
-					sensors.add(createSensorFromStation(networkId, station, uri));
+					sensors.add(createSensorFromStation(networkId, network.getName(), station, uri));
 				} catch (ParseException e) {
 					e.printStackTrace();
 					return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -940,7 +940,7 @@ public class PPI {
                 if (type.contains("VitalSensor")) {
                 	for (Station station : network.getStations()) {
                         try {
-							sensors.add(createSensorFromStation(networkId, station, uri));
+							sensors.add(createSensorFromStation(networkId, network.getName(), station, uri));
 						} catch (ParseException e) {
 							e.printStackTrace();
 							return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -961,7 +961,7 @@ public class PPI {
                 	for (Station station : network.getStations()) {
                 		if (id.contains(station.getId())) {
 	                		try {
-								tmpSensor = createSensorFromStation(networkId, station, uri);
+								tmpSensor = createSensorFromStation(networkId, network.getName(), station, uri);
 							} catch (ParseException e) {
 								e.printStackTrace();
 								return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -1505,16 +1505,23 @@ public class PPI {
         return sensor;
     }
 
-    private Sensor createSensorFromStation(String networkId, Station station, UriInfo uri) throws ParseException {
+    private Sensor createSensorFromStation(String networkId, String networkName, Station station, UriInfo uri) throws ParseException {
     	SimpleDateFormat timestampDateFormat;
     	Date now, timestamp = null;
         String id = station.getId();
         Sensor sensor = new Sensor();
+        String description = null;
 
         sensor.setContext("http://vital-iot.eu/contexts/sensor.jsonld");
         sensor.setName(station.getName());
         sensor.setType("vital:VitalSensor");
-        sensor.setDescription(station.getExtra().getDescription());
+        if (station.getExtra() != null)
+        	description = station.getExtra().getDescription();
+        if (description != null && !description.equals(""))
+        	description = networkName + " bike sharing station (" + description + ")";
+        else
+        	description = networkName + " bike sharing station";
+        sensor.setDescription(description);
         sensor.setId(uri.getBaseUri() + networkId + "/sensor/" + id);
 
         timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
