@@ -1516,7 +1516,12 @@ public class PPI {
         sensor.setId(uri.getBaseUri() + networkId + "/sensor/" + id);
 
         timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        timestamp = timestampDateFormat.parse(station.getTimestamp());
+        try {
+			timestamp = timestampDateFormat.parse(station.getTimestamp());
+		} catch (ParseException e) {
+			timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+			timestamp = timestampDateFormat.parse(station.getTimestamp());
+		}
         now = new Date();
         if (now.getTime() - timestamp.getTime() > 60 * 1000 * 60) {
         	sensor.setStatus("vital:Unavailable");
@@ -1686,7 +1691,12 @@ public class PPI {
         SsnHasValue__ ssnHasValue = new SsnHasValue__();
         ssnHasValue.setType("ssn:ObservationValue");
 
-        timestamp = timestampDateFormat.parse(station.getTimestamp());
+        try {
+			timestamp = timestampDateFormat.parse(station.getTimestamp());
+		} catch (ParseException e) {
+			timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+			timestamp = timestampDateFormat.parse(station.getTimestamp());
+		}
         if (now.getTime() - timestamp.getTime() > 60 * 1000 * 60) {
         	ssnHasValue.setValue("vital:Unavailable");
         } else {
@@ -1706,7 +1716,12 @@ public class PPI {
         printedDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
         timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-        timestamp = timestampDateFormat.parse(station.getTimestamp());
+        try {
+			timestamp = timestampDateFormat.parse(station.getTimestamp());
+		} catch (ParseException e) {
+			timestampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+			timestamp = timestampDateFormat.parse(station.getTimestamp());
+		}
 
     	m = new Measure();
         m.setContext("http://vital-iot.eu/contexts/measurement.jsonld");
