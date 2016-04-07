@@ -51,7 +51,9 @@ import javax.ws.rs.core.UriInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -177,7 +179,7 @@ public class PPI {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMetadata(@PathParam("networkId") String networkId, String bodyRequest, @Context UriInfo uri) {
+    public Response getMetadata(@PathParam("networkId") String networkId, String bodyRequest, @Context UriInfo uri) throws UnsupportedEncodingException {
         int i;
         String companies;
         CityBikesNetwork cbn;
@@ -235,7 +237,7 @@ public class PPI {
         	}
         }
         iotSystem.setDescription("CityBikes " + network.getName() + " network operated by " + companies);
-        iotSystem.setOperator(companies);
+        iotSystem.setOperator(URLEncoder.encode(companies, "UTF-8"));
         iotSystem.setServiceArea("http://dbpedia.org/page/" + network.getLocation().getCity());
 
         List<Station> stations = network.getStations();
